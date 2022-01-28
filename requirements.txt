@@ -1,0 +1,4 @@
+Django==2.2.16
+requests==2.26.0
+mixer==7.1.2
+six==1.16.0

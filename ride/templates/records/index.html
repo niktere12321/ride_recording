@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block tittle %}
+Запись на покатушки
+{% endblock %}
+{% block content %}
+  <h1>Календарик покатушек</h1>
+  <a href="{% url 'records:records' %}">
+      Записаться
+  </a>
+  {% for records in records %}
+  <ul>
+    <li>
+      Дата : {{record.start_date}}
+    </li>
+    <li>
+        Время конца : {{record.end_date}}
+    </li>
+    <li>
+        Транспортное средство : {{record.car_or_ship}}
+  </ul>
+  {% if not forloop.last %}<hr>{% endif %}
+{% endfor %}
+{% endblock %} 
