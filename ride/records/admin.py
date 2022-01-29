@@ -7,7 +7,8 @@ class RecordsAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'start_date',
-        'end_date',
+        'start_time',
+        'end_time',
         'driver',
         'car_or_ship'
     )

@@ -1,0 +1,53 @@
+.bg-ex-gradient-animation{
+  background:linear-gradient(200deg,#a8d7e0,#213b40); /* Цвета градиента */
+  background-size:500% 500%;
+  -webkit-animation:ServiceAnimation 10s ease infinite;
+  -moz-animation:ServiceAnimation 10s ease infinite;
+  -o-animation:ServiceAnimation 10s ease infinite;
+  animation:ServiceAnimation 10s ease infinite; /* Время смены цвета */
+}
+@-webkit-keyframes ServiceAnimation{0%
+  {background-position:90% 0}50%
+  {background-position:10% 100%}100%
+  {background-position:90% 0}
+}
+@-moz-keyframes ServiceAnimation{0%
+  {background-position:90% 0}50%
+  {background-position:10% 100%}100%
+  {background-position:90% 0}
+}
+@-o-keyframes ServiceAnimation{0%
+  {background-position:90% 0}50%
+  {background-position:10% 100%}100%
+  {background-position:90% 0}
+}
+@keyframes ServiceAnimation{0%
+  {background-position:90% 0}50%
+  {background-position:10% 100%}100%
+  {background-position:90% 0}
+}
+
+
+
+
+
+.copyright {
+  width: 740px; /* Ширина макета без полей */
+  padding: 0 10px 10px; /* Поля */
+  margin: auto; /* Выравнивание по центру */
+  color: #526118; /* Цвет текста */
+ }
+.copyright p { 
+  margin: 0 0 5px 170px; /* Отступы текста */ 
+ }
+
+.footer-bg {
+  background: #20dd2a; /* Цвет фона */
+ }
+
+a {
+  color: red;
+  font-family: helvetica;
+  text-decoration: none;
+  text-transform: uppercase;
+}

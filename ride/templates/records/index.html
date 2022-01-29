@@ -4,20 +4,27 @@
 Запись на покатушки
 {% endblock %}
 {% block content %}
-  <h1>Календарик покатушек</h1>
-  <a href="{% url 'records:records' %}">
+  <p style="text-align:center">
+    <a href="{% url 'records:records' %}">
       Записаться
   </a>
+  </p>
+  <h1>Календарик покатушек</h1>
   {% for records in records %}
   <ul>
     <li>
-      Дата : {{record.start_date}}
+      Дата: {{records.start_date}}
     </li>
     <li>
-        Время конца : {{record.end_date}}
+      Время начала: {{records.start_time}}
     </li>
     <li>
-        Транспортное средство : {{record.car_or_ship}}
+        Продолжительность: {{records.end_time}}
+    </li>
+    <li>
+      Водитель: {{records.driver}}
+    <li>
+        Транспортное средство: {{records.car_or_ship}}
   </ul>
   {% if not forloop.last %}<hr>{% endif %}
 {% endfor %}

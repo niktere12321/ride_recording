@@ -1,3 +1,5 @@
+import calendar
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
@@ -8,7 +10,9 @@ from .models import Records
 @login_required
 def index(request):
     records = Records.objects.all()
-    context = {'records': records}
+    cl = calendar.HTMLCalendar(firstweekday=0)
+    cal = cl.formatyear(2022)
+    context = {'records': records, 'cal': cal}
     return render(request, 'records/index.html', context)
 
 

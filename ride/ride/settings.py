@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'records.apps.RecordsConfig',
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
+    'bootstrap3',
 ]
 
 MIDDLEWARE = [
