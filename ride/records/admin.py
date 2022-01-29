@@ -6,7 +6,6 @@ from .models import Records
 class RecordsAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
-        'start_date',
         'start_time',
         'end_time',
         'driver',

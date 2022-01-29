@@ -1,31 +1,13 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block tittle %}
 Запись на покатушки
 {% endblock %}
 {% block content %}
-  <p style="text-align:center">
-    <a href="{% url 'records:records' %}">
-      Записаться
-  </a>
-  </p>
+  <div class="clearfix">
+    <a class="btn btn-info left" href="{% url 'records:index' %}?{{ prev_month }}"> Previous Month </a>
+    <a class="btn btn-info right" href="{% url 'records:index' %}?{{ next_month }}"> Next Month </a>
+    <a class="btn btn-info right" href="{% url 'records:records' %}"> Записаться </a>
+  </div>
   <h1>Календарик покатушек</h1>
-  {% for records in records %}
-  <ul>
-    <li>
-      Дата: {{records.start_date}}
-    </li>
-    <li>
-      Время начала: {{records.start_time}}
-    </li>
-    <li>
-        Продолжительность: {{records.end_time}}
-    </li>
-    <li>
-      Водитель: {{records.driver}}
-    <li>
-        Транспортное средство: {{records.car_or_ship}}
-  </ul>
-  {% if not forloop.last %}<hr>{% endif %}
-{% endfor %}
+  {{ calendar }}
 {% endblock %} 

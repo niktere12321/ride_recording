@@ -30,27 +30,7 @@
 
             <form method="post" action="{% url 'records:records' %}">
               {% csrf_token %}
-              <div class="form-group row my-3 p-3">
-                    <span class="required text-danger">*</span>
-                    Дата:
-                    <input type="date" name="start_date" placeholder="Дата поездочки">
-                    Время:
-                    <input type="integer" name="start_time" placeholder="Время начала поездочки" max="24" min="0" maxlength="2">
-                    Продолжительность:
-                    <input type="integer" name="end_time" list="time">
-                    <datalist id="time">
-                      <option value="1" label="1">
-                      <option value="2" label="2">
-                      <option value="3" label="3">
-                      <option value="4" label="4">
-                      <option value="5" label="5">
-                    </datalist>
-                    Транспортное средство:
-                    <input type="text" name="car_or_ship" list="car_or_ship">
-                    <datalist id="car_or_ship">
-                      <option value="квадроцикл" label="квадроцикл">
-                      <option value="лодка" label="лодка">
-              </div>
+              {{ form }}
               <div class="col-md-6 offset-md-4">
                 <button type="submit" class="btn btn-primary">
                   Записаться
