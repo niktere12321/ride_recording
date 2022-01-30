@@ -14,10 +14,8 @@ SECRET_KEY = '*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul'
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-    'testserver',
+    'www.Ilikeworkinautosensor.pythonanywhere.com',
+    'Ilikeworkinautosensor.pythonanywhere.com',
 ]
 
 
