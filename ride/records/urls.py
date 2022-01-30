@@ -9,5 +9,5 @@ app_name = 'records'
 urlpatterns = [
     path(r'', views.CalendarView.as_view(), name='index'),
     path(r'records/', views.records, name='records'),
-    path(r'^records/edit/(?P<records_id>\d+)/$', views.records, name='records_edit'),
+    url(r'^records/edit/(?P<records_id>\d+)/$', views.records, name='records_edit'),
 ]
