@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'records.apps.RecordsConfig',
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
+    'django_crontab',
     'bootstrap3',
 ]
 

@@ -1,6 +1,7 @@
 import calendar
 from datetime import date, datetime, timedelta
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -11,6 +12,8 @@ from django.views import generic
 from .forms import RecordsForm
 from .models import Records
 from .utils import Calendar
+
+User = get_user_model()
 
 
 class CalendarView(generic.ListView):
@@ -53,6 +56,10 @@ def next_month(d):
 @login_required
 def records(request, records_id=None):
     instance = Records()
+    pk_user = User.objects.get(username=request.user.username).id
+    about_count = Records.objects.filter(driver=pk_user).count()
+    if about_count == 10:
+        return render(request, 'records/records.html', context={"error": "Максимум записей 3"})
     if records_id:
         instance = get_object_or_404(Records, pk=records_id)
     else:
