@@ -18,5 +18,6 @@ class Records(models.Model):
         tme1 = str_time1[11:16]
         str_time2 = str(self.end_time)
         tme2 = str_time2[11:16]
-        #url = reverse('records:records_edit', args=(self.id,))
         return f'{tme1}-{tme2}:{self.driver}-{self.car_or_ship}'
+
+#url = reverse('records:records_edit', args=(self.id,))

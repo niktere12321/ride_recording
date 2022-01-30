@@ -3,7 +3,6 @@ from datetime import date, datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -69,5 +68,5 @@ def records(request, records_id=None):
         records = form.save(commit=False)
         records.driver = request.user
         records.save()
-        return HttpResponseRedirect(reverse('records:index'))
+        return redirect(reverse('records:index'))
     return render(request, 'records/records.html', {'form': form})
