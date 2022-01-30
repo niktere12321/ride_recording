@@ -1,10 +1,12 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
 User = get_user_model()
 
-Car_park = (('квадроцикл', 'atv'), ('лодка', 'boat'))
+Car_park = (('квадроцикл', 'квадроцикл'), ('лодка', 'лодка'))
 
 
 class Records(models.Model):
@@ -15,5 +17,11 @@ class Records(models.Model):
 
     @property
     def get_html_url(self):
+        str_time1 = str(self.start_time)
+        tme1 = str_time1[11:16]
+        str_time2 = str(self.end_time)
+        tme2 = str_time2[11:16]
         url = reverse('records:records_edit', args=(self.id,))
-        return f'<a href="{url}">{self.start_time}</a>'
+        return f'<a href="{url}">{tme1}-{tme2}:{self.driver}-{self.car_or_ship}</a>'
+
+#datetime.strptime(str_time, '%y-%m-%d %H-%M-%S+%SZ').time()

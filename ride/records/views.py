@@ -57,7 +57,6 @@ def records(request, records_id=None):
         instance = get_object_or_404(Records, pk=records_id)
     else:
         instance = Records()
-
     form = RecordsForm(request.POST or None, instance=instance)
     if request.POST and form.is_valid():
         records = form.save(commit=False)
