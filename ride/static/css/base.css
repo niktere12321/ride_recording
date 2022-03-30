@@ -1,74 +1,104 @@
-.bg-ex-gradient-animation{
-  background:linear-gradient(200deg,#a8d7e0,#213b40); /* Цвета градиента */
-  background-size:500% 500%;
-  -webkit-animation:ServiceAnimation 10s ease infinite;
-  -moz-animation:ServiceAnimation 10s ease infinite;
-  -o-animation:ServiceAnimation 10s ease infinite;
-  animation:ServiceAnimation 10s ease infinite; /* Время смены цвета */
-}
-@-webkit-keyframes ServiceAnimation{0%
-  {background-position:90% 0}50%
-  {background-position:10% 100%}100%
-  {background-position:90% 0}
-}
-@-moz-keyframes ServiceAnimation{0%
-  {background-position:90% 0}50%
-  {background-position:10% 100%}100%
-  {background-position:90% 0}
-}
-@-o-keyframes ServiceAnimation{0%
-  {background-position:90% 0}50%
-  {background-position:10% 100%}100%
-  {background-position:90% 0}
-}
-@keyframes ServiceAnimation{0%
-  {background-position:90% 0}50%
-  {background-position:10% 100%}100%
-  {background-position:90% 0}
+/* Common styles */
+body {
+  font-family: "ptsans", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.left {
+  float: left;
+}
 
+.right {
+  float: right;
+}
 
+.btn {
+  outline: none;
+  color: black;
+  background-color: transparent;
+  box-shadow: 0 0 0 0;
+  margin-right: 3px;
+}
 
+.clearfix {
+  margin: 15px;
+}
 
-.copyright {
-  width: 740px; /* Ширина макета без полей */
-  padding: 0 10px 10px; /* Поля */
-  margin: auto; /* Выравнивание по центру */
-  color: #526118; /* Цвет текста */
- }
-.copyright p { 
-  margin: 0 0 5px 170px; /* Отступы текста */ 
- }
+.form {
+  margin: auto;
+}
 
-.footer-bg {
-  background: #20dd2a; /* Цвет фона */
- }
+.form input, .form select, .form textarea {
+  border-radius: 5px;
+  border: 1px solid #17a2b8;
+  outline: none;
+  background: none;
+  padding: 5px;
+  width: 100%;
+}
+
+/* App styles */
+.title {
+  text-align: center;
+  margin: 10px;
+}
+
+.calendar {
+  width: 98%;
+  margin: auto;
+  font-size: 13px;
+}
+
+.calendar tr, .calendar td {
+  border: 1px solid black;
+}
+
+.calendar th {
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.calendar td {
+  width: 200px;
+  height: 150px;
+  padding: 20px 0px 0px 5px;
+}
+
+.month {
+  font-size: 25px;
+}
+
+.date {
+  font-size: 16px;
+}
+
+ul {
+  height: 100%;
+  padding: 0px 5px 0px 20px;
+}
 
 a {
-  color: red;
-  font-family: helvetica;
-  text-decoration: none;
-  text-transform: uppercase;
+  color: #17a2b8;
 }
 
+.right_a {
+  text-align: right;
+}
 
-* {
-	margin: 0;
-	padding: 0;
+i[data-v-5a51e4e0] {
+  margin-right: 8px;
 }
-html,
-body {
-	height: 100%;
+
+*, :after, :before {
+  box-sizing: border-box;
 }
-.wrapper {
-	display: flex;
-	flex-direction: column;
-	min-height: 100%;
+
+.fa-lock::before {
+  content: "?";
 }
-.content {
-	flex: 1 0 auto;
-}
-.footer {
-	flex: 0 0 auto;
+
+h3 {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
 }

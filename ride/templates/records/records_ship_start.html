@@ -2,16 +2,13 @@
 {% block tittle %}
 Запись
 {% endblock %}
+{% load static %}
 {% block content %}
 <h1>Запись</h1>
   <div class="row justify-content-center">
     <div class="col-md-8 p-5">
       <div class="card">
-        <div class="card-header">
-          Запаситься
-        </div>
         <div class="card-body">
-          {# Этот блок будет показан, если в форме есть ошибки #}
           {% if error %}
             {{error}}
           {% endif %}
@@ -28,14 +25,13 @@
                 {{ error|escape }}
               </div>
             {% endfor %}
-          {% endif %}
-
-            <form method="post" action="{% url 'records:records' %}">
+            {% endif %}
+            <form method="post">
               {% csrf_token %}
               {{ form }}
               <div class="col-md-6 offset-md-4">
                 {% if error%}
-                  <a href="{% url 'records:index' %}">
+                  <a href="{% url 'records:index_ship' %}">
                     На главную
                   </a>
                 {% endif %}
@@ -46,7 +42,12 @@
                 {% endif %}
               </div>
             </form>
-          </div> <!-- card body -->
+          </div>
+        <div class="card-header">
+          Записи
+        </div>
+        <div class="card-body">
+          {{ record_st }}-{{ record_en }}
         </div> <!-- card -->
       </div> <!-- col -->
   </div>

@@ -1,0 +1,27 @@
+{% if user.is_authenticated %}
+  <div class="row my-3" style="background-color: rgb(188, 143, 143)">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a 
+          class="nav-link {% if index %}active{% endif %}"
+          href="{% url 'records:index' %}"
+        >
+          Квадроцикл
+        </a>
+      </li>
+      <li class="nav-item">
+        <a 
+           class="nav-link {% if ship %}active{% endif %}"
+           href="{% url 'records:index_ship' %}"
+        >
+          Лодка
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'records:profiles' %}" class="nav-link">
+          Ваш профиль
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endif %}
