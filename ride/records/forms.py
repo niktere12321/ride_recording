@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms import NumberInput
+from django.utils.translation import ugettext_lazy as _
 
 from .models import Records, Records_ship
 
@@ -12,12 +13,15 @@ class RecordsForm(forms.ModelForm):
     class Meta:
         model = Records
         fields = ['start_time', 'end_time']
+        labels = {
+            'start_time': _('Время начала поездки'),
+            'end_time': _('Время конца поездки'),
+        }
         widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18}),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18}),
+            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6}),
+            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
         }
 
-    
     def clean(self):
         data = self.cleaned_data
         start_time = data.get('start_time')
@@ -36,12 +40,15 @@ class Records_shipForm(forms.ModelForm):
     class Meta:
         model = Records_ship
         fields = ['start_time', 'end_time']
+        labels = {
+            'start_time': _('Время начала поездки'),
+            'end_time': _('Время конца поездки'),
+        }
         widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18}),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18}),
+            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6},),
+            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
         }
 
-    
     def clean(self):
         data = self.cleaned_data
         start_time = data.get('start_time')

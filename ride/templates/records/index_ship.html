@@ -6,8 +6,8 @@
 {% block content %}
 {% include 'records/includes/switcher.html' %}
   <div class="clearfix">
-    <a class="btn btn-info right" href="{% url 'records:index' %}?{{ next_month }}"> Следующий месяц </a>
-    <a class="btn btn-info left" href="{% url 'records:index' %}?{{prev_month}}"> Предыдущий месяц </a>
+    <a class="btn btn-info right" href="{% url 'records:index_ship' %}?{{ next_month }}"> Следующий месяц </a>
+    <a class="btn btn-info left" href="{% url 'records:index_ship' %}?{{prev_month}}"> Предыдущий месяц </a>
   </div>
   <h1>Календарик покатушек</h1>
   {{ calendar_ship }}

@@ -4,11 +4,11 @@
 {% endblock %}
 {% load static %}
 {% block content %}
-<h1>Запись</h1>
+<h1 style="margin-left: 40%">Запись</h1>
   <div class="row justify-content-center">
     <div class="col-md-8 p-5">
       <div class="card">
-        <div class="card-body">
+        <div class="card-body" style="margin-left: 25%">
           {% if error %}
             {{error}}
           {% endif %}
@@ -28,8 +28,8 @@
             {% endif %}
             <form method="post">
               {% csrf_token %}
-              {{ form }}
-              <div class="col-md-6 offset-md-4">
+              {{ form.as_p }}
+              <div style="margin-left: 15%">
                 {% if error%}
                   <a href="{% url 'records:index' %}">
                     На главную
@@ -46,9 +46,13 @@
         <div class="card-header">
           Записи
         </div>
-        <div class="card-body">
-          {{ record_st }}-{{ record_en }}
-        </div> <!-- card -->
-      </div> <!-- col -->
+        <div style='height: 230px'>
+          <div style='height: 130px; border-bottom: 3px solid #000000'>
+            {{ride_rec|safe}}
+          </div>
+          {{color_table|safe}}
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock %} 
