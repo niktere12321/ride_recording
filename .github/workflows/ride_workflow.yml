@@ -37,7 +37,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
             sudo docker pull niktere/ride_recording:v1
-            sudo docker compose down
+            sudo docker compose stop
             sudo docker compose rm web
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
