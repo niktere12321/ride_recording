@@ -88,29 +88,29 @@ def records_start(request, date):
     c4 = lol_green
     for event in record_list:
         for i in range(6, 19):
-            if i == 6 and i >= event.start_time and i < event.end_time:
+            if i == 6 and i >= event.start_int and i < event.end_int:
                 a1 = lol_red
-            elif i == 7 and i >= event.start_time and i < event.end_time:
+            elif i == 7 and i >= event.start_int and i < event.end_int:
                 a2 = lol_red
-            elif i == 8 and i >= event.start_time and i < event.end_time:
+            elif i == 8 and i >= event.start_int and i < event.end_int:
                 a3 = lol_red
-            elif i == 9 and i >= event.start_time and i < event.end_time:
+            elif i == 9 and i >= event.start_int and i < event.end_int:
                 a4 = lol_red
-            elif i == 10 and i >= event.start_time and i < event.end_time:
+            elif i == 10 and i >= event.start_int and i < event.end_int:
                 b1 = lol_red
-            elif i == 11 and i >= event.start_time and i < event.end_time:
+            elif i == 11 and i >= event.start_int and i < event.end_int:
                 b2 = lol_red
-            elif i == 12 and i >= event.start_time and i < event.end_time:
+            elif i == 12 and i >= event.start_int and i < event.end_int:
                 b3 = lol_red
-            elif i == 13 and i >= event.start_time and i < event.end_time:
+            elif i == 13 and i >= event.start_int and i < event.end_int:
                 b4 = lol_red
-            elif i == 14 and i >= event.start_time and i < event.end_time:
+            elif i == 14 and i >= event.start_int and i < event.end_int:
                 c1 = lol_red
-            elif i == 15 and i >= event.start_time and i < event.end_time:
+            elif i == 15 and i >= event.start_int and i < event.end_int:
                 c2 = lol_red
-            elif i == 16 and i >= event.start_time and i < event.end_time:
+            elif i == 16 and i >= event.start_int and i < event.end_int:
                 c3 = lol_red
-            elif i == 17 and i >= event.start_time and i < event.end_time:
+            elif i == 17 and i >= event.start_int and i < event.end_int:
                 c4 = lol_red
     line_1 = f"{a1}{a2}{a3}{a4}"
     line_2 = f"{b1}{b2}{b3}{b4}"
@@ -122,8 +122,8 @@ def records_start(request, date):
     record_dri = []
     record_pk = []
     for i in range(0, len(record_list)):
-        record_st.append(record_list[i].start_time)
-        record_en.append(record_list[i].end_time)
+        record_st.append(record_list[i].start_int)
+        record_en.append(record_list[i].end_int)
         record_dri.append(record_list[i].driver)
         record_pk.append(record_list[i].pk)
     ride_rec = ''
@@ -153,7 +153,7 @@ def records_start(request, date):
                    'old_date': "Нельзя записаться в прошлом !"}
         return render(request, 'records/records_start.html', context)
     pk_user = User.objects.get(username=request.user.username).id
-    about_count = Records.objects.filter(driver=pk_user).filter(date_start__gt=datetime.now()).count()
+    about_count = Records.objects.filter(driver=pk_user).filter(date_start__gt=dateint.now()).count()
     if about_count == 10:
         context = {'ride_rec_adm': ride_rec_adm,
                    'ride_rec': ride_rec,
@@ -164,12 +164,12 @@ def records_start(request, date):
                    'many_rec': "Максимум записей 10"}
         return render(request, 'records/records_start.html', context)
     form = RecordsForm(request.POST or None)
-    if request.POST and form.is_valid() and (datetime.strptime(new_date, '%Y-%m-%d') > datetime.now()):
+    if request.POST and form.is_valid() and (dateint.strpint(new_date, '%Y-%m-%d') > dateint.now()):
         records = form.save(commit=False)
         records.date_start = new_date
         records.driver = request.user
-        start_ti = form.cleaned_data['start_time']
-        end_ti = form.cleaned_data['end_time']
+        start_ti = form.cleaned_data['start_int']
+        end_ti = form.cleaned_data['end_int']
         for i in record_st:
             for p in record_en:
                 if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
@@ -178,8 +178,8 @@ def records_start(request, date):
                     break
                 elif start_ti < i and end_ti < p:
                     return render(request, 'records/records_start.html', context={"error": "Это время уже занято!", "date": date})
-        records.start_time = start_ti
-        records.end_time = end_ti
+        records.start_int = start_ti
+        records.end_int = end_ti
         records.save()
         return redirect(reverse('records:index'))
     context = {'ride_rec_adm': ride_rec_adm,
@@ -212,29 +212,29 @@ def records_ship_start(request, date):
     c4 = lol_green
     for event in record_list:
         for i in range(6, 19):
-            if i == 6 and i >= event.start_time and i < event.end_time:
+            if i == 6 and i >= event.start_int and i < event.end_int:
                 a1 = lol_red
-            elif i == 7 and i >= event.start_time and i < event.end_time:
+            elif i == 7 and i >= event.start_int and i < event.end_int:
                 a2 = lol_red
-            elif i == 8 and i >= event.start_time and i < event.end_time:
+            elif i == 8 and i >= event.start_int and i < event.end_int:
                 a3 = lol_red
-            elif i == 9 and i >= event.start_time and i < event.end_time:
+            elif i == 9 and i >= event.start_int and i < event.end_int:
                 a4 = lol_red
-            elif i == 10 and i >= event.start_time and i < event.end_time:
+            elif i == 10 and i >= event.start_int and i < event.end_int:
                 b1 = lol_red
-            elif i == 11 and i >= event.start_time and i < event.end_time:
+            elif i == 11 and i >= event.start_int and i < event.end_int:
                 b2 = lol_red
-            elif i == 12 and i >= event.start_time and i < event.end_time:
+            elif i == 12 and i >= event.start_int and i < event.end_int:
                 b3 = lol_red
-            elif i == 13 and i >= event.start_time and i < event.end_time:
+            elif i == 13 and i >= event.start_int and i < event.end_int:
                 b4 = lol_red
-            elif i == 14 and i >= event.start_time and i < event.end_time:
+            elif i == 14 and i >= event.start_int and i < event.end_int:
                 c1 = lol_red
-            elif i == 15 and i >= event.start_time and i < event.end_time:
+            elif i == 15 and i >= event.start_int and i < event.end_int:
                 c2 = lol_red
-            elif i == 16 and i >= event.start_time and i < event.end_time:
+            elif i == 16 and i >= event.start_int and i < event.end_int:
                 c3 = lol_red
-            elif i == 17 and i >= event.start_time and i < event.end_time:
+            elif i == 17 and i >= event.start_int and i < event.end_int:
                 c4 = lol_red
     line_1 = f"{a1}{a2}{a3}{a4}"
     line_2 = f"{b1}{b2}{b3}{b4}"
@@ -246,8 +246,8 @@ def records_ship_start(request, date):
     record_dri = []
     record_pk = []
     for i in range(0, len(record_list)):
-        record_st.append(record_list[i].start_time)
-        record_en.append(record_list[i].end_time)
+        record_st.append(record_list[i].start_int)
+        record_en.append(record_list[i].end_int)
         record_dri.append(record_list[i].driver)
     ride_rec = ''
     color_text = "style='font-size: 16px;'"
@@ -266,7 +266,7 @@ def records_ship_start(request, date):
     d = get_date(request.GET.get('month', None))
     cal_ship = Calendar_ship(d.year, month_ride)
     html_cal_ship = cal_ship.formatmonth(withyear=True)
-    if datetime.strptime(new_date, '%Y-%m-%d') <= datetime.now():
+    if datetime.strpint(new_date, '%Y-%m-%d') <= datetime.now():
         context = {'ride_rec_adm': ride_rec_adm,
                    'ride_rec': ride_rec,
                    'color_table': color_table,
@@ -291,8 +291,8 @@ def records_ship_start(request, date):
         records_ship = form.save(commit=False)
         records_ship.date_start = new_date
         records_ship.driver = request.user
-        start_ti = form.cleaned_data['start_time']
-        end_ti = form.cleaned_data['end_time']
+        start_ti = form.cleaned_data['start_int']
+        end_ti = form.cleaned_data['end_int']
         for i in record_st:
             for p in record_en:
                 if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
@@ -301,8 +301,8 @@ def records_ship_start(request, date):
                     break
                 elif start_ti < i and end_ti < p:
                     return render(request, 'records/records_ship_start.html', context={"error": "Это время уже занято!", "date": date})
-        records_ship.start_time = start_ti
-        records_ship.end_time = end_ti
+        records_ship.start_int = start_ti
+        records_ship.end_int = end_ti
         records_ship.save()
         return redirect(reverse('records:index_ship'))
     context = {'ride_rec_adm': ride_rec_adm,
@@ -329,8 +329,8 @@ def profiles(request):
     html_rec_user_new = f""
     for i in range(0, len(rec_user_new)):
         record_date.append(rec_user_new[i].date_start)
-        record_st.append(rec_user_new[i].start_time)
-        record_en.append(rec_user_new[i].end_time)
+        record_st.append(rec_user_new[i].start_int)
+        record_en.append(rec_user_new[i].end_int)
         records_pk.append(rec_user_new[i].pk)
     for i in range(0, len(record_st)):
         html_rec_user_new += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date[i]}:{record_st[i]}-{record_en[i]}<a href='records/{records_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
@@ -342,8 +342,8 @@ def profiles(request):
     html_rec_user_old = f""
     for i in range(0, len(rec_user_old)):
         record_date_old.append(rec_user_old[i].date_start)
-        record_st_old.append(rec_user_old[i].start_time)
-        record_en_old.append(rec_user_old[i].end_time)
+        record_st_old.append(rec_user_old[i].start_int)
+        record_en_old.append(rec_user_old[i].end_int)
         records_pk_old.append(rec_user_old[i].pk)
     for i in range(0, len(record_st_old)):
         html_rec_user_old += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date_old[i]}:{record_st_old[i]}-{record_en_old[i]}</span><br>"
@@ -355,8 +355,8 @@ def profiles(request):
     html_rec_user_old_ship = f""
     for i in range(0, len(rec_user_old_ship)):
         record_date_old_ship.append(rec_user_old_ship[i].date_start)
-        record_st_old_ship.append(rec_user_old_ship[i].start_time)
-        record_en_old_ship.append(rec_user_old_ship[i].end_time)
+        record_st_old_ship.append(rec_user_old_ship[i].start_int)
+        record_en_old_ship.append(rec_user_old_ship[i].end_int)
         records_pk_old_ship.append(rec_user_old_ship[i].pk)
     for i in range(0, len(record_st_old_ship)):
         html_rec_user_old_ship += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date_old_ship[i]}:{record_st_old_ship[i]}-{record_en_old_ship[i]}</span><br>"
@@ -368,8 +368,8 @@ def profiles(request):
     html_rec_user_new_ship = f""
     for i in range(0, len(rec_user_new_ship)):
         record_date_ship.append(rec_user_new_ship[i].date_start)
-        record_st_ship.append(rec_user_new_ship[i].start_time)
-        record_en_ship.append(rec_user_new_ship[i].end_time)
+        record_st_ship.append(rec_user_new_ship[i].start_int)
+        record_en_ship.append(rec_user_new_ship[i].end_int)
         records_pk_ship.append(rec_user_new_ship[i].pk)
     for i in range(0, len(record_st_ship)):
         html_rec_user_new_ship += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date_ship[i]}:{record_st_ship[i]}-{record_en_ship[i]}<a href='records/{records_pk_ship[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
@@ -409,8 +409,8 @@ def admining_pk(request, username):
         html_rec_user_new = f""
         for i in range(0, len(rec_user_new)):
             record_date.append(rec_user_new[i].date_start)
-            record_st.append(rec_user_new[i].start_time)
-            record_en.append(rec_user_new[i].end_time)
+            record_st.append(rec_user_new[i].start_int)
+            record_en.append(rec_user_new[i].end_int)
             records_pk.append(rec_user_new[i].pk)
         for i in range(0, len(record_st)):
             html_rec_user_new += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date[i]}:{record_st[i]}-{record_en[i]}<a href='records/{records_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
@@ -422,8 +422,8 @@ def admining_pk(request, username):
         html_rec_user_old = f""
         for i in range(0, len(rec_user_old)):
             record_date_old.append(rec_user_old[i].date_start)
-            record_st_old.append(rec_user_old[i].start_time)
-            record_en_old.append(rec_user_old[i].end_time)
+            record_st_old.append(rec_user_old[i].start_int)
+            record_en_old.append(rec_user_old[i].end_int)
             records_pk_old.append(rec_user_old[i].pk)
         for i in range(0, len(record_st_old)):
             html_rec_user_old += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date_old[i]}:{record_st_old[i]}-{record_en_old[i]}</span><br>"
@@ -435,8 +435,8 @@ def admining_pk(request, username):
         html_rec_user_old_ship = f""
         for i in range(0, len(rec_user_old_ship)):
             record_date_old_ship.append(rec_user_old_ship[i].date_start)
-            record_st_old_ship.append(rec_user_old_ship[i].start_time)
-            record_en_old_ship.append(rec_user_old_ship[i].end_time)
+            record_st_old_ship.append(rec_user_old_ship[i].start_int)
+            record_en_old_ship.append(rec_user_old_ship[i].end_int)
             records_pk_old_ship.append(rec_user_old_ship[i].pk)
         for i in range(0, len(record_st_old_ship)):
             html_rec_user_old_ship += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date_old_ship[i]}:{record_st_old_ship[i]}-{record_en_old_ship[i]}</span><br>"
@@ -448,8 +448,8 @@ def admining_pk(request, username):
         html_rec_user_new_ship = f""
         for i in range(0, len(rec_user_new_ship)):
             record_date_ship.append(rec_user_new_ship[i].date_start)
-            record_st_ship.append(rec_user_new_ship[i].start_time)
-            record_en_ship.append(rec_user_new_ship[i].end_time)
+            record_st_ship.append(rec_user_new_ship[i].start_int)
+            record_en_ship.append(rec_user_new_ship[i].end_int)
             records_pk_ship.append(rec_user_new_ship[i].pk)
         for i in range(0, len(records_pk_ship)):
             html_rec_user_new_ship += f"<span style='font-size: 18px;'>{prof_lastname} {prof_firstname}: {record_date_ship[i]}:{record_st_ship[i]}-{record_en_ship[i]}<a href='records/{records_pk_ship[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"

@@ -27,29 +27,29 @@ class Calendar(HTMLCalendar):
 		c4 = lol_green
 		for event in events_per_day:
 			for i in range(6, 19):
-				if i == 6 and i >= event.start_time and i < event.end_time:
+				if i == 6 and i >= event.start_int and i < event.end_int:
 					a1 = lol_red
-				elif i == 7 and i >= event.start_time and i < event.end_time:
+				elif i == 7 and i >= event.start_int and i < event.end_int:
 					a2 = lol_red
-				elif i == 8 and i >= event.start_time and i < event.end_time:
+				elif i == 8 and i >= event.start_int and i < event.end_int:
 					a3 = lol_red
-				elif i == 9 and i >= event.start_time and i < event.end_time:
+				elif i == 9 and i >= event.start_int and i < event.end_int:
 					a4 = lol_red
-				elif i == 10 and i >= event.start_time and i < event.end_time:
+				elif i == 10 and i >= event.start_int and i < event.end_int:
 					b1 = lol_red
-				elif i == 11 and i >= event.start_time and i < event.end_time:
+				elif i == 11 and i >= event.start_int and i < event.end_int:
 					b2 = lol_red
-				elif i == 12 and i >= event.start_time and i < event.end_time:
+				elif i == 12 and i >= event.start_int and i < event.end_int:
 					b3 = lol_red
-				elif i == 13 and i >= event.start_time and i < event.end_time:
+				elif i == 13 and i >= event.start_int and i < event.end_int:
 					b4 = lol_red
-				elif i == 14 and i >= event.start_time and i < event.end_time:
+				elif i == 14 and i >= event.start_int and i < event.end_int:
 					c1 = lol_red
-				elif i == 15 and i >= event.start_time and i < event.end_time:
+				elif i == 15 and i >= event.start_int and i < event.end_int:
 					c2 = lol_red
-				elif i == 16 and i >= event.start_time and i < event.end_time:
+				elif i == 16 and i >= event.start_int and i < event.end_int:
 					c3 = lol_red
-				elif i == 17 and i >= event.start_time and i < event.end_time:
+				elif i == 17 and i >= event.start_int and i < event.end_int:
 					c4 = lol_red
 		line_1 = f"{a1}{a2}{a3}{a4}"
 		line_2 = f"{b1}{b2}{b3}{b4}"
@@ -106,29 +106,29 @@ class Calendar_ship(HTMLCalendar):
 		c44 = lol_green
 		for event_ship in events_per_day_ship:
 			for i in range(6, 19):
-				if i == 6 and i >= event_ship.start_time and i < event_ship.end_time:
+				if i == 6 and i >= event_ship.start_int and i < event_ship.end_int:
 					a11 = lol_red
-				elif i == 7 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 7 and i >= event_ship.start_int and i < event_ship.end_int:
 					a22 = lol_red
-				elif i == 8 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 8 and i >= event_ship.start_int and i < event_ship.end_int:
 					a33 = lol_red
-				elif i == 9 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 9 and i >= event_ship.start_int and i < event_ship.end_int:
 					a44 = lol_red
-				elif i == 10 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 10 and i >= event_ship.start_int and i < event_ship.end_int:
 					b11 = lol_red
-				elif i == 11 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 11 and i >= event_ship.start_int and i < event_ship.end_int:
 					b22 = lol_red
-				elif i == 12 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 12 and i >= event_ship.start_int and i < event_ship.end_int:
 					b33 = lol_red
-				elif i == 13 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 13 and i >= event_ship.start_int and i < event_ship.end_int:
 					b44 = lol_red
-				elif i == 14 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 14 and i >= event_ship.start_int and i < event_ship.end_int:
 					c11 = lol_red
-				elif i == 15 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 15 and i >= event_ship.start_int and i < event_ship.end_int:
 					c22 = lol_red
-				elif i == 16 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 16 and i >= event_ship.start_int and i < event_ship.end_int:
 					c33 = lol_red
-				elif i == 17 and i >= event_ship.start_time and i < event_ship.end_time:
+				elif i == 17 and i >= event_ship.start_int and i < event_ship.end_int:
 					c44 = lol_red
 		line_11 = f"{a11}{a22}{a33}{a44}"
 		line_22 = f"{b11}{b22}{b33}{b44}"

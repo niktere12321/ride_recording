@@ -12,25 +12,25 @@ class RecordsForm(forms.ModelForm):
 
     class Meta:
         model = Records
-        fields = ['start_time', 'end_time']
+        fields = ['start_int', 'end_int']
         labels = {
-            'start_time': _('Время начала поездки'),
-            'end_time': _('Время конца поездки'),
+            'start_int': _('Время начала поездки'),
+            'end_int': _('Время конца поездки'),
         }
         widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6}),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
+            'start_int': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6}),
+            'end_int': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
         }
 
     def clean(self):
         data = self.cleaned_data
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        if start_time > end_time:
+        start_int = data.get('start_int')
+        end_int = data.get('end_int')
+        if start_int > end_int:
             raise forms.ValidationError('Введите корректное время поездки')
-        if (end_time - start_time) > 8:
+        if (end_int - start_int) > 8:
             raise forms.ValidationError('Нельзя кататься больше 8 часов')
-        if (end_time - start_time) <= 1:
+        if (end_int - start_int) <= 1:
             raise forms.ValidationError('Нельзя кататься меньше 2 часов')
         return data
 
@@ -39,24 +39,24 @@ class Records_shipForm(forms.ModelForm):
 
     class Meta:
         model = Records_ship
-        fields = ['start_time', 'end_time']
+        fields = ['start_int', 'end_int']
         labels = {
-            'start_time': _('Время начала поездки'),
-            'end_time': _('Время конца поездки'),
+            'start_int': _('Время начала поездки'),
+            'end_int': _('Время конца поездки'),
         }
         widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6},),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
+            'start_int': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6},),
+            'end_int': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
         }
 
     def clean(self):
         data = self.cleaned_data
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        if start_time > end_time:
+        start_int = data.get('start_int')
+        end_int = data.get('end_int')
+        if start_int > end_int:
             raise forms.ValidationError('Введите корректное время поездки')
-        if (end_time - start_time) > 8:
+        if (end_int - start_int) > 8:
             raise forms.ValidationError('Нельзя кататься больше 8 часов')
-        if (end_time - start_time) <= 1:
+        if (end_int - start_int) <= 1:
             raise forms.ValidationError('Нельзя кататься меньше 2 часов')
         return data

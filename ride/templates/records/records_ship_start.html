@@ -62,24 +62,17 @@
         </div>
         <div style='height: 230px'>
           <div style='height: 130px; border-bottom: 3px solid #000000'>
-<<<<<<< HEAD
             {% if user.is_authenticated and user.is_superuser %}
               {{ride_rec_adm|safe}}
             {% else %}
               {{ride_rec|safe}}
             {% endif %}
-=======
             {{ride_rec|safe}}
->>>>>>> 155fd82fdcf576c5725b1756790078ab5f18f716
           </div>
           {{color_table|safe}}
         </div>
       </div>
     </div>
   </div>
-<<<<<<< HEAD
 {{ calendar_ship }}
-{% endblock %} 
-=======
-{% endblock %} 
->>>>>>> 155fd82fdcf576c5725b1756790078ab5f18f716
+{% endblock %}
