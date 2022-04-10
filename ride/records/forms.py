@@ -60,20 +60,3 @@ class Records_shipForm(forms.ModelForm):
         if (end_time - start_time) <= 1:
             raise forms.ValidationError('Нельзя кататься меньше 2 часов')
         return data
-
-
-class long_recordsForm(forms.ModelForm):
-
-    class Meta:
-        model = Records
-        fields = ['date_start', 'date_end', 'start_time', 'end_time']
-        labels = {
-            'date_start': _('День начала'),
-            'date_end': _('День конца'),
-            'start_time': _('Время начала поездки'),
-            'end_time': _('Время конца поездки'),
-        }
-        widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6}),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
-        }

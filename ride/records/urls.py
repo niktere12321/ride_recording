@@ -16,6 +16,3 @@ urlpatterns = [
     path('records/admining/<str:username>', views.admining_pk, name='admining_pk'),
     path('records/admining/delete/<str:username>', views.user_delete, name='user_delete'),
 ]
-
-
-#url(r'^records/edit/(?P<records_id>\d+)/$', views.records, name='records_edit')

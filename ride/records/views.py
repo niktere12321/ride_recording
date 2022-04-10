@@ -127,18 +127,18 @@ def records_start(request, date):
         record_dri.append(record_list[i].driver)
         record_pk.append(record_list[i].pk)
     ride_rec = ''
-    color_text = "style='font-size: 16px; color: rgb(255, 215, 0);'"
+    color_text = "style='font-size: 16px;'"
     for i in range(0, len(record_st)):
-        if (i % 4) == 0 and i != 0:
-            ride_rec += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}</span><br>"
+        if (i % 3) == 0 and i != 0:
+            ride_rec += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}</span><br>"
         else:
-            ride_rec += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}-</span><span {color_text}> до {record_en[i]}</span>"
+            ride_rec += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]};  </span>"
     ride_rec_adm = ''
     for i in range(0, len(record_st)):
-        if (i % 4) == 0 and i != 0:
-            ride_rec_adm += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
+        if (i % 3) == 0 and i != 0:
+            ride_rec_adm += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
         else:
-            ride_rec_adm += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}-</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span>"
+            ride_rec_adm += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]};  <a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span>"
     month_ride = int(date[4:6])
     d = get_date(request.GET.get('month', None))
     cal = Calendar(d.year, month_ride)
@@ -250,18 +250,18 @@ def records_ship_start(request, date):
         record_en.append(record_list[i].end_time)
         record_dri.append(record_list[i].driver)
     ride_rec = ''
-    color_text = "style='font-size: 16px; color: rgb(255, 215, 0);'"
+    color_text = "style='font-size: 16px;'"
     for i in range(0, len(record_st)):
-        if (i % 4) == 0 and i != 0:
-            ride_rec += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}</span><br>"
+        if (i % 3) == 0 and i != 0:
+            ride_rec += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}</span><br>"
         else:
-            ride_rec += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}-</span><span {color_text}> до {record_en[i]}</span>"
+            ride_rec += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]};  </span>"
     ride_rec_adm = ''
     for i in range(0, len(record_pk)):
-        if (i % 4) == 0 and i != 0:
-            ride_rec_adm += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
+        if (i % 3) == 0 and i != 0:
+            ride_rec_adm += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
         else:
-            ride_rec_adm += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}-</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span>"
+            ride_rec_adm += f"<span {color_text}>{record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]};  <a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span>"
     month_ride = int(date[4:6])
     d = get_date(request.GET.get('month', None))
     cal_ship = Calendar_ship(d.year, month_ride)
@@ -313,33 +313,6 @@ def records_ship_start(request, date):
                'date_str': new_date_str,
                'date': date}
     return render(request, 'records/records_ship_start.html', context)
-
-
-@login_required
-def long_records(request):
-    pk_user = User.objects.get(username=request.user.username).id
-    about_count = Records_ship.objects.filter(driver=pk_user).filter(date_start__gt=datetime.now()).count()
-    if about_count == 2:
-        return render(request, 'records/records_ship_start.html', context={"error": "Максимум записей 2"})
-    form = RecordsForm(request.POST or None)
-    if request.POST and form.is_valid() and (datetime.strptime(new_date, '%Y-%m-%d') > datetime.now()):
-        records = form.save(commit=False)
-        records.date_start = new_date
-        records.driver = request.user
-        start_ti = form.cleaned_data['start_time']
-        end_ti = form.cleaned_data['end_time']
-        for i in record_st:
-            for p in record_en:
-                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
-                    return render(request, 'records/records_start.html', context={"error": "Нельзя кататься когаться когда уже катается!"})
-                elif start_ti < i and end_ti <= i:
-                    break
-                elif start_ti < i and end_ti < p:
-                    return render(request, 'records/records_start.html', context={"error": "Нельзя кататься когаться когда уже катается!"})
-        records.start_time = start_ti
-        records.end_time = end_ti
-        records.save()
-        return redirect(reverse('records:index'))
 
 
 @login_required

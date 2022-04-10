@@ -1,7 +1,5 @@
 from calendar import HTMLCalendar
 
-from django.template.loader import render_to_string
-
 from .models import Records, Records_ship
 
 

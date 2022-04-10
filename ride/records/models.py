@@ -5,8 +5,7 @@ User = get_user_model()
 
 
 class Records(models.Model):
-    date_start = models.DateField(blank=True, null=True)
-    date_end = models.DateField(blank=True, null=True)
+    date_start = models.DateField()
     start_time = models.IntegerField()
     end_time = models.IntegerField()
     driver = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -17,7 +16,7 @@ class Records(models.Model):
 
 
 class Records_ship(models.Model):
-    date_start = models.DateField(blank=True, null=True)
+    date_start = models.DateField()
     start_time = models.IntegerField()
     end_time = models.IntegerField()
     driver = models.ForeignKey(User, on_delete=models.CASCADE)
