@@ -7,8 +7,8 @@ class RecordsAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'date_start',
-        'start_int',
-        'end_int',
+        'start_time',
+        'end_time',
         'driver',
     )
 
@@ -17,8 +17,8 @@ class Records_shipAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'date_start',
-        'start_int',
-        'end_int',
+        'start_time',
+        'end_time',
         'driver',
     )
 

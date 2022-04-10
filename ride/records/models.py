@@ -6,21 +6,21 @@ User = get_user_model()
 
 class Records(models.Model):
     date_start = models.DateField()
-    start_int = models.IntegerField()
-    end_int = models.IntegerField()
+    start_time = models.IntegerField()
+    end_time = models.IntegerField()
     driver = models.ForeignKey(User, on_delete=models.CASCADE)
 
     @property
     def get_html_url(self):
-        return f'{self.start_int}-{self.end_int}:{self.driver}'
+        return f'{self.start_time}-{self.end_time}:{self.driver}'
 
 
 class Records_ship(models.Model):
     date_start = models.DateField()
-    start_int = models.IntegerField()
-    end_int = models.IntegerField()
+    start_time = models.IntegerField()
+    end_time = models.IntegerField()
     driver = models.ForeignKey(User, on_delete=models.CASCADE)
 
     @property
     def get_html_url(self):
-        return f'{self.start_int}-{self.end_int}:{self.driver}'
+        return f'{self.start_time}-{self.end_time}:{self.driver}'
