@@ -9,30 +9,46 @@
     <div class="card">
       <div class="card-body">
         <h1>Мой профиль</h1>
-        <small data-v-5a51e4e0 class="text-muted">Настройка и просмотр вашей личной информации.</small>
         <p>{{prof}}</p>
-        <h3 data-v-5a51e4e0>
-          Приватная информация
-        </h3>
-        <span data-v-5a51e4e0="" class="text-muted block mb32">
-          Раскрытие вашей личной информации не является обязательным. Другие пользователи не могут видеть вашу личную информацию.
-        </span>
-        <div data-v-5a51e4e0="" class="row mb24">
-          <div data-v-5a51e4e0="" class="col-sm-6">
-            <div data-v-cd6a838e="" data-v-5a51e4e0="" class="field-wrap input-undefined">
-              <div data-v-cd6a838e="" class="label-row">
-                <label data-v-cd6a838e="">
-                  Адрес электронной почты *
-                </label>
-              </div>
-              <div data-v-1e3c7d4e="" data-v-5a51e4e0="" class="input-group" data-v-cd6a838e="">
-                <input data-v-1e3c7d4e="" type="text" name="email" placeholder="Адрес электронной почты" maxlength="" class="form-control">
-              </div>
-            </div>
-          </div>
+        <div data-v-cd6a838e="" class="label-row">
+          <label data-v-cd6a838e="">
+            Адрес электронной почты
+          </label>
+        </div>
+        <p> {{prof_email}} </p>
+        <div data-v-cd6a838e="" class="label-row">
+          <label data-v-cd6a838e="">
+            Ваше имя
+          </label>
+        </div>
+        <p> {{prof_firstname}} </p>
+        <div data-v-cd6a838e="" class="label-row">
+          <label data-v-cd6a838e="">
+            Ваша фамилия
+          </label>
+        </div>
+        <p> {{prof_lastname}} </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5"> 
+    <div class="card">
+      <div class="card-body">
+        <div>
+          <h3>Записи на кадроцикл</h3>
+          {{html_rec_user_new|safe}}
+          <h3>Записи на катер</h3>
+          {{html_rec_user_new_ship|safe}}
+          <h3>Вы катались на кадроцикле</h3>
+          {{html_rec_user_old|safe}}
+          <h3>Вы плыли на катер</h3>
+          {{html_rec_user_old_ship|safe}}
         </div>
       </div>
     </div>
   </div>
 </div>
+{{password_us}}
 {% endblock %} 

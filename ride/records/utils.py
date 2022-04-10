@@ -1,5 +1,7 @@
 from calendar import HTMLCalendar
 
+from django.template.loader import render_to_string
+
 from .models import Records, Records_ship
 
 
@@ -11,9 +13,8 @@ class Calendar(HTMLCalendar):
 
 	def formatday(self, day, events):
 		events_per_day = events.filter(date_start__day=day)
-		d = ''
-		lol_red = f"<span style='outline: 2px solid #000; font-size: 18px; color: red; background-color: red'> --- </span>"
-		lol_green = f"<span style='outline: 2px solid #000; font-size: 18px; color: green; background-color: green'> --- </span>"
+		lol_red = f"<div style='outline: 1px solid #000; height: 25px; width: 25px; background: red; display: table-cell;'> </div>"
+		lol_green = f"<div style='outline: 1px solid #000; height: 25px; width: 25px; background: green; display: table-cell;'> </div>"
 		a1 = lol_green
 		a2 = lol_green
 		a3 = lol_green
@@ -52,18 +53,19 @@ class Calendar(HTMLCalendar):
 					c3 = lol_red
 				elif i == 17 and i >= event.start_time and i < event.end_time:
 					c4 = lol_red
-			d += f'<li> {event.get_html_url} </li>'
 		line_1 = f"{a1}{a2}{a3}{a4}"
 		line_2 = f"{b1}{b2}{b3}{b4}"
 		line_3 = f"{c1}{c2}{c3}{c4}"
-		color_table = f"<span>{line_1}</span><br><span>{line_2}</span><br><span>{line_3}</span>"
+		color_table = f"<div style='display: table;'>{line_1}</div><div style='display: table;'>{line_2}</div><div style='display: table;'>{line_3}</div>"
 		if day != 0 and day < 10 and self.month < 10:
-			return f"<td><a href='records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px; background-color: white'>{color_table} </div></a></td>"
+			return f"<td><a href='records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'>{color_table} </div></a></td>"
 		elif day != 0 and day >= 10 and self.month < 10:
-			return f"<td><a href='records/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px; background-color: white'>{color_table} </div></a></td>"
-		elif day != 0 and day < 10 and self.month > 10:
-			return f"<td><a href='records/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px; background-color: white'>{color_table} </div></a></td>"
-		return '<td></td>'
+			return f"<td><a href='records/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'>{color_table} </div></a></td>"
+		elif day != 0 and day < 10 and self.month >= 10:
+			return f"<td><a href='records/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'>{color_table} </div></a></td>"
+		elif day != 0 and day >= 10 and self.month >= 10:
+			return f"<td><a href='records/{ self.year }{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'>{color_table} </div></a></td>"
+		return f"<td></td>"
 
 	def formatweek(self, theweek, events):
 		week = ''
@@ -73,9 +75,10 @@ class Calendar(HTMLCalendar):
 
 	def formatmonth(self, withyear=True):
 		events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month)
+		week_day = f'<tr><th> Пон </th><th> Вто </th><th> Сре </th><th> Чет </th><th> Пят </th><th> Суб </th><th> Вос </th></tr>'
 		cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
 		cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
-		cal += f'{self.formatweekheader()}\n'
+		cal += f'{week_day}'
 		for week in self.monthdays2calendar(self.year, self.month):
 			cal += f'{self.formatweek(week, events)}\n'
 		return cal
@@ -89,8 +92,8 @@ class Calendar_ship(HTMLCalendar):
 
 	def formatday(self, day, events_ship):
 		events_per_day_ship = events_ship.filter(date_start__day=day)
-		lol_red = f"<span style='outline: 2px solid #000; font-size: 18px; color: red; background-color: red'> --- </span>"
-		lol_green = f"<span style='outline: 2px solid #000; font-size: 18px; color: green; background-color: green'> --- </span>"
+		lol_red = f"<div style='outline: 1px solid #000; height: 25px; width: 25px; background: red; display: table-cell;'> </div>"
+		lol_green = f"<div style='outline: 1px solid #000; height: 25px; width: 25px; background: green; display: table-cell;'> </div>"
 		a11 = lol_green
 		a22 = lol_green
 		a33 = lol_green
@@ -132,16 +135,16 @@ class Calendar_ship(HTMLCalendar):
 		line_11 = f"{a11}{a22}{a33}{a44}"
 		line_22 = f"{b11}{b22}{b33}{b44}"
 		line_33 = f"{c11}{c22}{c33}{c44}"
-		color_table1 = f"<span>{line_11}</span><br><span>{line_22}</span><br><span>{line_33}</span>"
+		color_table1 = f"<div style='display: table;'>{line_11}</div><div style='display: table;'>{line_22}</div><div style='display: table;'>{line_33}</div>"
 		if day != 0 and day < 10 and self.month < 10:
-			return f"<td><a href='records_ship/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px; background-color: white'{color_table1} </div></a></td>"
+			return f"<td><a href='records_ship/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'> {color_table1} </div></a></td>"
 		elif day != 0 and day >= 10 and self.month < 10:
-			return f"<td><a href='records_ship/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px; background-color: white'{color_table1} </div></a></td>"
-		elif day != 0 and day < 10 and self.month > 10:
-			return f"<td><a href='records_ship/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px; background-color: white'{color_table1} </div></a></td>"
+			return f"<td><a href='records_ship/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'> {color_table1} </div></a></td>"
+		elif day != 0 and day < 10 and self.month >= 10:
+			return f"<td><a href='records_ship/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'> {color_table1} </div></a></td>"
+		elif day != 0 and day >= 10 and self.month >= 10:
+			return f"<td><a href='records_ship/{ self.year }{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи</p><div style='height: 100px;'> {color_table1} </div></a></td>"
 		return '<td></td>'
-
-#d += f'<li> {event_ship.get_html_url} </li>'
 
 	def formatweek(self, theweek, events_ship):
 		week1 = ''
@@ -151,9 +154,10 @@ class Calendar_ship(HTMLCalendar):
 
 	def formatmonth(self, withyear=True):
 		events_ship = Records_ship.objects.filter(date_start__year=self.year, date_start__month=self.month)
+		week_day = f'<tr><th> Пон </th><th> Вто </th><th> Сре </th><th> Чет </th><th> Пят </th><th> Суб </th><th> Вос </th></tr>'
 		cal1 = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
 		cal1 += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
-		cal1 += f'{self.formatweekheader()}\n'
+		cal1 += f'{week_day}\n'
 		for week1 in self.monthdays2calendar(self.year, self.month):
 			cal1 += f'{self.formatweek(week1, events_ship)}\n'
 		return cal1

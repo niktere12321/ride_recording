@@ -8,7 +8,10 @@
   <div class="clearfix">
     <a class="btn btn-info right" href="{% url 'records:index_ship' %}?{{ next_month }}"> Следующий месяц </a>
     <a class="btn btn-info left" href="{% url 'records:index_ship' %}?{{prev_month}}"> Предыдущий месяц </a>
+    {% if not user.is_authenticated %}
+    <a class="btn btn-info left" href="{% url 'users:login' %}?{{prev_month}}"> Войти </a>
+    {% endif %}
   </div>
-  <h1>Календарик покатушек</h1>
+  <h1>Календарик покатушек на катер</h1>
   {{ calendar_ship }}
 {% endblock %} 

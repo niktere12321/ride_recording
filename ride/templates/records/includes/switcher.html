@@ -1,25 +1,33 @@
 {% if user.is_authenticated %}
-  <div class="row my-3" style="background-color: rgb(188, 143, 143)">
+  <div  style="background-color: rgb(66, 170, 255); margin-top: 0px">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a 
-          class="nav-link {% if index %}active{% endif %}"
-          href="{% url 'records:index' %}"
-        >
+        <a class="nav-link {% if index %}active{% endif %}"
+          href="{% url 'records:index' %}"  style='color: rgb(0, 0, 255)'>
           Квадроцикл
         </a>
       </li>
       <li class="nav-item">
-        <a 
-           class="nav-link {% if ship %}active{% endif %}"
-           href="{% url 'records:index_ship' %}"
-        >
-          Лодка
+        <a class="nav-link {% if ship %}active{% endif %}"
+           href="{% url 'records:index_ship' %}"  style='color: rgb(0, 0, 255)'>
+          Катер
         </a>
       </li>
       <li class="nav-item">
-        <a href="{% url 'records:profiles' %}" class="nav-link">
+        <a href="{% url 'records:profiles' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
           Ваш профиль
+        </a>
+      </li>
+      {% if user.is_authenticated and user.is_superuser %}
+      <li class="nav-item">
+        <a href="{% url 'records:admining_pk' user.username %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
+          Управление
+        </a>
+      </li>
+      {% endif %}
+      <li class="nav-item">
+        <a href="{% url 'users:logout'%}" class="nav-link" style='color: rgb(0, 0, 255)'>
+          Выйти
         </a>
       </li>
     </ul>

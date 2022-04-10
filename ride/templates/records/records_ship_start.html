@@ -4,13 +4,27 @@
 {% endblock %}
 {% load static %}
 {% block content %}
-<h1>Запись</h1>
+<h1 style="margin-left: 35%">Запись на катер</h1>
   <div class="row justify-content-center">
     <div class="col-md-8 p-5">
       <div class="card">
-        <div class="card-body">
+        <div class="card-body" style="margin-left: 25%">
+          <h3 style="margin-left: 8%">
+            {{date_str}}
+          </h3>
+          {% if old_date or many_rec%}
+          <h3>
+            {{old_date}}
+            {{many_rec}}
+          </h3>
+          {% endif %}
           {% if error %}
+          <h2>
             {{error}}
+          </h2>
+          <a href="{% url 'records:records_ship_start' date %}" class="btn btn-primary" style="margin-left: 14%">
+            Начать заново
+          </a>
           {% endif %}
           {% if form.errors %}
             {% for field in form %}
@@ -28,14 +42,14 @@
             {% endif %}
             <form method="post">
               {% csrf_token %}
-              {{ form }}
-              <div class="col-md-6 offset-md-4">
-                {% if error%}
-                  <a href="{% url 'records:index_ship' %}">
+              {{ form.as_p }}
+              <div style="margin-left: 15%">
+                {% if error or old_date or many_rec %}
+                  <a href="{% url 'records:index_ship' %}" class="btn btn-primary">
                     На главную
                   </a>
                 {% endif %}
-                {% if not error %}
+                {% if not error and not old_date and not many_rec %}
                 <button type="submit" class="btn btn-primary">
                   Записаться
                 </button>
@@ -47,12 +61,17 @@
           Записи
         </div>
         <div style='height: 230px'>
-          <div style='height: 130px'>
-            {{ride_rec|safe}}
+          <div style='height: 130px; border-bottom: 3px solid #000000'>
+            {% if user.is_authenticated and user.is_superuser %}
+              {{ride_rec_adm|safe}}
+            {% else %}
+              {{ride_rec|safe}}
+            {% endif %}
           </div>
           {{color_table|safe}}
         </div>
       </div>
     </div>
   </div>
+{{ calendar_ship }}
 {% endblock %} 
