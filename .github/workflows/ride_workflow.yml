@@ -22,6 +22,7 @@ jobs:
           context: ride/
           push: true
           tags: niktere/ride_recording:v1
+          file: ride/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
