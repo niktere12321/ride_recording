@@ -19,10 +19,9 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2 
         with:
-          context: ride_recording
+          context: ride
           push: true
           tags: niktere/ride_recording:v1
-          file: ride_recording/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
