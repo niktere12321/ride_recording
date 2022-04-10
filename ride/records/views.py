@@ -305,23 +305,6 @@ def records_ship_start(request, date):
         records_ship.end_time = end_ti
         records_ship.save()
         return redirect(reverse('records:index_ship'))
-    ride_rec = ''
-    color_text = "style='font-size: 16px; color: rgb(255, 215, 0);'"
-    for i in range(0, len(record_st)):
-        if (i % 4) == 0 and i != 0:
-            ride_rec += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}</span><br>"
-        else:
-            ride_rec += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}-</span><span {color_text}> до {record_en[i]}</span>"
-    ride_rec_adm = ''
-    for i in range(0, len(record_pk)):
-        if (i % 4) == 0 and i != 0:
-            ride_rec_adm += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span><br>"
-        else:
-            ride_rec_adm += f"<span {color_text}>Водитель: {record_dri[i]}:</span><span {color_text}> Время с {record_st[i]}-</span><span {color_text}> до {record_en[i]}<a href='../records/{record_pk[i]}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a></span>"
-    month_ride = int(date[4:6])
-    d = get_date(request.GET.get('month', None))
-    cal_ship = Calendar_ship(d.year, month_ride)
-    html_cal_ship = cal_ship.formatmonth(withyear=True)
     context = {'ride_rec_adm': ride_rec_adm,
                'ride_rec': ride_rec,
                'color_table': color_table,
