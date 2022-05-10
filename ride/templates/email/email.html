@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block tittle %}
+Добавление нового пользователя
+{% endblock %}
+{% block content %}
+{% include 'records/includes/switcher.html' %}
+<h1 class="text-center">Оставьте заявку</h1>
+  <div class="container text-center">
+    <div id="form_container">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions form-group ">
+          <button type="submit" class="form-control btn btn-success">Отправить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

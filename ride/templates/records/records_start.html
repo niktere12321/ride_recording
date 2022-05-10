@@ -4,14 +4,20 @@
 {% endblock %}
 {% load static %}
 {% block content %}
-<h1 style="margin-left: 33%">Запись на квадроцикл</h1>
+{% include 'records/includes/switcher.html' %}
+<h1 style="margin-left: 42%">Запись</h1>
   <div class="row justify-content-center">
     <div class="col-md-8 p-5">
       <div class="card">
         <div class="card-body" style="margin-left: 25%">
-          <h3 style="margin-left: 8%">
+          <h3 style="margin-left: 17%">
             {{date_str}}
           </h3>
+          {% if not error and not old_date and not many_rec %}
+          <h6 style="margin-left: 6%">
+          Запись доступна с {{services.low_time}} до {{services.high_time}}
+          </h6>
+          {% endif %}
           {% if old_date or many_rec%}
           <h3>
             {{old_date}}
@@ -22,7 +28,7 @@
           <h2>
             {{error}}
           </h2>
-          <a href="{% url 'records:records_start' date %}" class="btn btn-primary" style="margin-left: 14%">
+          <a href="{% url 'records:records_start' project date %}" class="btn btn-primary" style="margin-left: 14%">
             Начать заново
           </a>
           {% endif %}
@@ -40,12 +46,12 @@
               </div>
             {% endfor %}
             {% endif %}
-            <form method="post">
+            <form method="post" style="margin: 20px 0 0 0 !important;">
               {% csrf_token %}
               {{ form.as_p }}
               <div style="margin-left: 15%">
                 {% if error or old_date or many_rec %}
-                <a href="{% url 'records:index' %}" class="btn btn-primary">
+                <a href="{% url 'records:index_records' project %}" class="btn btn-primary">
                   На главную
                 </a>
                 {% endif %}
@@ -57,21 +63,37 @@
               </div>
             </form>
           </div>
+          {% if not error and not old_date and not many_rec %}
+          <div id="slider-range"></div>
+          {{color_table|safe}}
+          {% endif %}
         <div class="card-header">
           Записи
         </div>
         <div style='height: 230px'>
-          <div style='height: 130px; border-bottom: 3px solid #000000'>
-            {% if user.is_authenticated and user.is_superuser %}
-              {{ride_rec_adm|safe}}
-            {% else %}
-            {{ride_rec|safe}}
-            {% endif %}
+          {{ride_rec|safe}}
+          {% if ride_rec_empty %}
+          <div style='text-align: center; position: relative; top: 40%;'>
+            <h1>{{ride_rec_empty}}</h1>
           </div>
-          {{color_table|safe}}
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-{{ calendar }}
+{{calendar}}
+<script>
+  $(document).ready(function(){
+    $( "#slider-range" ).slider({
+        range: true,
+        min: {{services.low_time}},
+        max: {{services.high_time}},
+        values: [ 6, 10 ],
+        slide: function( event, ui ) {
+          $( "#id_start_time" ).val(  ui.values[ 0 ] );
+          $( "#id_end_time" ).val(  ui.values[ 1 ] );
+        }
+      });
+});
+</script>
 {% endblock %} 

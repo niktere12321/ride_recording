@@ -12,12 +12,11 @@ from . import views
 app_name = 'users'
 
 urlpatterns = [
+    path('add_new_user', views.add_new_user, name='add_new_user'),
     path('logout/',
          LogoutView.as_view(template_name='users/logged_out.html'),
          name='logout'),
-    path(
-        'signup/', views.SignUp.as_view(template_name='users/signup.html'),
-        name='signup'),
+    path('signup/', views.SignUp, name='signup'),
     path(
         'login/',
         LoginView.as_view

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block tittle %}
+Выбор транспортного средства
+{% endblock %}
+{% block content %}
+{% load thumbnail %}
+{% include 'records/includes/switcher.html' %}
+  <h1 >Выбор транспортного средства:</h1>
+  {% for project in all_services %}
+    <div style="position: relative; margin: 20px; padding: 20px; border: 1px solid #2a52be; display: inline-block; border-radius: 20px; height: 30%; width: 45%; text-align: center">
+      <div>
+        <h2>{{ project.name_project }}</h2>
+      </div>
+      <div>
+        {% thumbnail project.image "600x300" crop="center" upscale=True as im %}
+          <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету">
+        {% endthumbnail %}
+      </div>
+      <div style="word-wrap: break-word;">
+        {{ project.description }}
+      </div>
+      <br>
+      <div>
+        Контакты: {{ project.contact.first_name }} {{ project.contact.last_name }} - <a href="https://{{ project.contact.email }}">Написать для помощи </a> или позвонить {{ project.contact.phone }}
+      </div>
+      <br>
+      <a href="{% url 'records:index_records' project.pk %}">
+        <div class="btn btn-primary" style="width: 50%; font-size: 2.5vw; white-space: nowrap;">
+          Расписание
+        </div>
+      </a>
+    </div>
+  {% endfor %}
+{% endblock %} 

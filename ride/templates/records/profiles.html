@@ -4,6 +4,7 @@
 Профиль
 {% endblock %}
 {% block content %}
+{% include 'records/includes/switcher.html' %}
 <div class="row justify-content-center">
   <div class="col-md-8 p-5">
     <div class="card">
@@ -15,19 +16,19 @@
             Адрес электронной почты
           </label>
         </div>
-        <p> {{prof_email}} </p>
+        <p> {{prof.email}} </p>
         <div data-v-cd6a838e="" class="label-row">
           <label data-v-cd6a838e="">
             Ваше имя
           </label>
         </div>
-        <p> {{prof_firstname}} </p>
+        <p> {{prof.first_name}} </p>
         <div data-v-cd6a838e="" class="label-row">
           <label data-v-cd6a838e="">
             Ваша фамилия
           </label>
         </div>
-        <p> {{prof_lastname}} </p>
+        <p> {{prof.last_name}} </p>
       </div>
     </div>
   </div>
@@ -37,14 +38,10 @@
     <div class="card">
       <div class="card-body">
         <div>
-          <h3>Записи на кадроцикл</h3>
-          {{html_rec_user_new|safe}}
-          <h3>Записи на катер</h3>
-          {{html_rec_user_new_ship|safe}}
-          <h3>Вы катались на кадроцикле</h3>
-          {{html_rec_user_old|safe}}
-          <h3>Вы плыли на катер</h3>
-          {{html_rec_user_old_ship|safe}}
+          <h3>Будующие записи</h3>
+          {{html_rec_new|safe}}
+          <h3>Прошлые записи</h3>
+          {{html_rec_old|safe}}
         </div>
       </div>
     </div>

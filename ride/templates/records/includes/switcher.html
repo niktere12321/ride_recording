@@ -3,15 +3,11 @@
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <a class="nav-link {% if index %}active{% endif %}"
-          href="{% url 'records:index' %}"  style='color: rgb(0, 0, 255)'>
-          Квадроцикл
+          href="{% url 'records:index_services' %}"  style='color: rgb(0, 0, 255)'>
+          Транспортные средства
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {% if ship %}active{% endif %}"
-           href="{% url 'records:index_ship' %}"  style='color: rgb(0, 0, 255)'>
-          Катер
-        </a>
       </li>
       <li class="nav-item">
         <a href="{% url 'records:profiles' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
@@ -20,7 +16,7 @@
       </li>
       {% if user.is_authenticated and user.is_superuser %}
       <li class="nav-item">
-        <a href="{% url 'records:admining_pk' user.username %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
+        <a href="{% url 'records:admining' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
           Управление
         </a>
       </li>

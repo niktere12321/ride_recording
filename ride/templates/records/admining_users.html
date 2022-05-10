@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block tittle %}
+Профили пользователей
+{% endblock %}
+{% block content %}
+{% include 'records/includes/switcher.html' %}
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5"> 
+    <div class="card">
+      {% include 'records/includes/admin_switcher.html' %}
+      <div class="card-body">
+        <ol>
+          {% for user in all_users %}
+            <a href="{% url 'records:admining_pk' user.username %}">
+              <li> {{user.username}} {{user.first_name}} {{user.last_name}} {{user.email}} </li>
+            </a>
+          {% endfor %}
+        </ol>
+        <a href="{% url 'users:add_new_user' %}">
+          <div class="btn btn-primary">
+            Добавить нового пользователся
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -4,19 +4,11 @@
 Профиль {{prof}}
 {% endblock %}
 {% block content %}
-<div style='width: 150px; position: fixed; z-index: 1; top: 21%; left: 8%; background: #eee; overflow-x: hidden; padding: 8px 0;'>
-  <a href='{% url 'users:signup' %}' style='padding: 6px 8px 6px 16px; text-decoration: none; font-size: 20px; color: #2196F3; display: block;'>
-    Добавить нового пользователя
-  </a>
-  {% for username in user_username %}
-    <a href='{% url 'records:admining_pk' username %}' style='padding: 6px 8px 6px 16px; text-decoration: none; font-size: 20px; color: #2196F3; display: block;'>
-        {{username}}
-    </a>
-  {% endfor %}
-</div>
+{% include 'records/includes/switcher.html' %}
 <div class="row justify-content-center">
   <div class="col-md-8 p-5">
     <div class="card">
+      {% include 'records/includes/admin_switcher.html' %}
       <div class="card-body">
         <h1>Профиль {{prof}}</h1>
         <p>{{prof}}</p>
@@ -25,19 +17,19 @@
             Адрес электронной почты
           </label>
         </div>
-        <p> {{prof_email}} </p>
+        <p> {{prof.email}} </p>
         <div data-v-cd6a838e="" class="label-row">
           <label data-v-cd6a838e="">
             Ваше имя
           </label>
         </div>
-        <p> {{prof_firstname}} </p>
+        <p> {{prof.first_name}} </p>
         <div data-v-cd6a838e="" class="label-row">
           <label data-v-cd6a838e="">
             Ваша фамилия
           </label>
         </div>
-        <p> {{prof_lastname}} </p>
+        <p> {{prof.last_name}} </p>
         <a href="{% url 'records:user_delete' prof %}" onclick="return confirm('Вы уыерены что хотите удалить пользователя?')">
          <p> Хотите удалить пользователя ? </p>
         </a>
@@ -50,14 +42,10 @@
     <div class="card">
       <div class="card-body">
         <div>
-          <h3>Записи на кадроцикл</h3>
-          {{html_rec_user_new|safe}}
-          <h3>Записи на катер</h3>
-          {{html_rec_user_new_ship|safe}}
-          <h3>{{prof_firstname}} каталя на кадроцикле</h3>
-          {{html_rec_user_old|safe}}
-          <h3>{{prof_firstname}}  плыл на катер</h3>
-          {{html_rec_user_old_ship|safe}}
+          <h3>Будующие записи</h3>
+          {{html_rec_new|safe}}
+          <h3>Прошлые записи</h3>
+          {{html_rec_old|safe}}
         </div>
       </div>
     </div>

@@ -1,11 +1,12 @@
 from django.contrib import admin
 
-from .models import Records, Records_ship
+from .models import Records, Services
 
 
 class RecordsAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
+        'project',
         'date_start',
         'start_time',
         'end_time',
@@ -13,15 +14,16 @@ class RecordsAdmin(admin.ModelAdmin):
     )
 
 
-class Records_shipAdmin(admin.ModelAdmin):
+class ServicesAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
-        'date_start',
-        'start_time',
-        'end_time',
-        'driver',
+        'name_project',
+        'description',
+        'low_time',
+        'high_time',
+        'contact',
     )
 
 
+admin.site.register(Services, ServicesAdmin)
 admin.site.register(Records, RecordsAdmin)
-admin.site.register(Records_ship, Records_shipAdmin)

@@ -4,11 +4,16 @@
 Удаление
 {% endblock %}
 {% block content %}
+{% include 'records/includes/switcher.html' %}
 <div class="row justify-content-center">
   <div class="col-md-8 p-5">
     <div class="card">
-      <div class="card-body">
+      <div class="card-body" style="margin-left: 30%">
         {{messages}}
+        <br>
+        <a class="btn btn-primary" style="margin-left: 10%" href="{% url 'records:index_services' %}">
+          На главную
+        </a>
       </div>
     </div>
   </div>

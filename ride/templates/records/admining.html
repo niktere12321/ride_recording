@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block tittle %}
+Транспортые средства
+{% endblock %}
+{% block content %}
+{% include 'records/includes/switcher.html' %}
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5"> 
+    <div class="card">
+      {% include 'records/includes/admin_switcher.html' %}
+      <div class="card-body">
+        <ol>
+          {% for services in all_services %}
+            <a href="{% url 'records:admining_services' services.pk %}">
+              <li> {{services.name_project}} {{services.contact}} </li>
+            </a>
+          {% endfor %}
+        </ol>
+        <a href="{% url 'records:admining_services_create' %}">
+          <div class="btn btn-primary">
+            Добавить транспортое средство
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

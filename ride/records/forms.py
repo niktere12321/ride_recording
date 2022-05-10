@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.forms import NumberInput
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Records, Records_ship
+from .models import Records, Services
 
 User = get_user_model()
 
@@ -18,45 +18,31 @@ class RecordsForm(forms.ModelForm):
             'end_time': _('Время конца поездки'),
         }
         widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6}),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
+            'start_time': NumberInput(attrs={'type': 'number'}),
+            'end_time': NumberInput(attrs={'type': 'number'}),
         }
 
-    def clean(self):
-        data = self.cleaned_data
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        if start_time > end_time:
-            raise forms.ValidationError('Введите корректное время поездки')
-        if (end_time - start_time) > 8:
-            raise forms.ValidationError('Нельзя кататься больше 8 часов')
-        if (end_time - start_time) <= 1:
-            raise forms.ValidationError('Нельзя кататься меньше 2 часов')
-        return data
 
-
-class Records_shipForm(forms.ModelForm):
-
+class ServicesForm(forms.ModelForm):
+    
     class Meta:
-        model = Records_ship
-        fields = ['start_time', 'end_time']
+        model = Services
+        fields = '__all__'
         labels = {
-            'start_time': _('Время начала поездки'),
-            'end_time': _('Время конца поездки'),
-        }
-        widgets = {
-            'start_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 6},),
-            'end_time': NumberInput(attrs={'type': 'number', 'min': 6, 'max': 18, 'value': 10}),
+            'name_project': _('Название транспортного сретства'),
+            'description': _('Описание'),
+            'low_time': _('Разрешенное время начала поездки'),
+            'high_time': _('Разрешенное время конца поездки'),
+            'low_duration': _('Минимальная длительность поездки'),
+            'high_duration': _('Максимальная длительность поездки'),
+            'image': _('Изображение'),
+            'contact': _('Человек ответственный за т.с.'),
         }
 
     def clean(self):
         data = self.cleaned_data
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
-        if start_time > end_time:
-            raise forms.ValidationError('Введите корректное время поездки')
-        if (end_time - start_time) > 8:
-            raise forms.ValidationError('Нельзя кататься больше 8 часов')
-        if (end_time - start_time) <= 1:
-            raise forms.ValidationError('Нельзя кататься меньше 2 часов')
+        low_time = data.get('low_time')
+        high_time = data.get('high_time')
+        if low_time >= high_time:
+            raise forms.ValidationError('Разрешенное время начала катания не может быть больше конца')
         return data

@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = '*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -15,9 +15,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'projects.apps.ProjectsConfig',
     'records.apps.RecordsConfig',
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
+    'sorl.thumbnail',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -52,12 +55,8 @@ WSGI_APPLICATION = 'ride.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', default='postgres'),
-        'USER': os.getenv('POSTGRES_USER', default='postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', default='db'),
-        'PORT': os.getenv('DB_PORT', default='5432')
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -78,7 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -86,19 +85,29 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+AUTH_USER_MODEL = 'users.User'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/staticfiles/'
 
-#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'users:login'
 
-LOGIN_REDIRECT_URL = 'records:index'
+LOGIN_REDIRECT_URL = 'records:index_services'
 
 # LOGOUT_REDIRECT_URL = 'records:index'
+
+RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
+
+DEFAULT_FROM_EMAIL = 'nikterekhoff4242@gmail.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 

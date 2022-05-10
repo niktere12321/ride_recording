@@ -7,12 +7,18 @@ app_name = 'records'
 
 
 urlpatterns = [
-    path(r'', views.CalendarView.as_view(), name='index'),
-    path(r'ship/', views.Calendar_shipView.as_view(), name='index_ship'),
-    url(r'records/(?P<date>[0-9]{8})/$', views.records_start, name='records_start'),
-    url(r'ship/records_ship/(?P<date>[0-9]{8})/$', views.records_ship_start, name='records_ship_start'),
+    path('', views.index_services, name='index_services'),
+    path(r'<int:project>', views.CalendarView.as_view(), name='index_records'),
+    url(r'(?P<project>[0-9])/records/(?P<date>[0-9]{8})/$', views.records_start, name='records_start'),
     path('records/records/<int:rec_pk>/delete/', views.records_delete, name='records_delete'),
     path('records/profiles', views.profiles, name='profiles'),
+    path('records/admining', views.admining, name='admining'),
+    path('records/services/<int:service_id>', views.admining_services, name='admining_services'),
+    path('records/services/create', views.admining_services_create, name='admining_services_create'),
+    path('records/services/edit/<int:services_id>', views.admining_services_edit, name='admining_services_edit'),
+    path('records/admining/users', views.admining_users, name='admining_users'),
     path('records/admining/<str:username>', views.admining_pk, name='admining_pk'),
     path('records/admining/delete/<str:username>', views.user_delete, name='user_delete'),
+    path('records/admining/services/<int:services_id>', views.admining_services_del, name='admining_services_del'),
+    path('records/admining_statistics', views.admining_statistics, name='admining_statistics'),
 ]
