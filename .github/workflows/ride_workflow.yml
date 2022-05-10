@@ -1,4 +1,4 @@
-name: ride_workflow
+name: ride_of_records_workflow
 
 on: [push]
 
