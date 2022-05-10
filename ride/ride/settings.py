@@ -91,7 +91,7 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.User'
 
-STATIC_URL = '/staticfiles/'
+STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
