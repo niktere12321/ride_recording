@@ -46,6 +46,4 @@ class ServicesForm(forms.ModelForm):
         name_projects = data.get('name_project')
         if low_time >= high_time:
             raise forms.ValidationError('Разрешенное время начала катания не может быть больше конца')
-        if Services.objects.filter(name_project=name_projects) is not None:
-            raise forms.ValidationError('Такое транспортое средство уже существует')
         return data
