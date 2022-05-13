@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block tittle %}Зарегистрироваться{% endblock %}
 {% block content %}
-  <div class="row justify-content-center">
+  <div class="row justify-content-center lol_width">
     <div class="col-md-8 p-5">
       <div class="card">
         <div class="card-header">
@@ -23,7 +23,7 @@
             {% endfor %}
           {% endif %}
 
-            <form method="post" action="{% url 'users:signup' %}">
+            <form method="post" action="{% url 'users:signup' new_email%}">
               {% csrf_token %}
               {% for field in form %}
               <div class="form-group row my-3 p-3">

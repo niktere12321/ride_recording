@@ -1,6 +1,10 @@
+import datetime
 from calendar import HTMLCalendar
 
 import telegram
+from django.conf import settings
+from django.core.mail import BadHeaderError, send_mail
+from django.http import HttpResponse
 
 from .models import Records, Services
 
@@ -13,6 +17,17 @@ bot = telegram.Bot(token=TELEGRAM_TOKEN)
 def send_message(message):
     text = message
     bot.send_message(CHAT_ID, text)
+
+
+def send_email(to_email, name_project, first_name, last_name, date, start_time, end_time):
+    email = [to_email]
+    email_from = settings.EMAIL_HOST_USER
+    subject = f'Вы записались на {name_project}'
+    message = f'{first_name} {last_name} вы записались на {name_project} {date} с {start_time} по {end_time}'
+    try:
+        send_mail(subject, message, email_from, email)
+    except BadHeaderError:
+        return HttpResponse('Ошибка в теме письма.')
 
 
 class Calendar(HTMLCalendar):
@@ -33,7 +48,10 @@ class Calendar(HTMLCalendar):
         for p in events_per_day:
             counter = 0
             for i in range(services.low_time, services.high_time):
-                if i >= p.start_time and i < p.end_time:
+                time_i = datetime.datetime.strptime(f"{i}:00:00", "%H:%M:%S")
+                time_start = datetime.datetime.strptime(str(p.start_time), "%H:%M:%S")
+                time_end = datetime.datetime.strptime(str(p.end_time), "%H:%M:%S")
+                if time_i >= time_start and time_i < time_end:
                     col[counter] = lol_red
                 counter += 1
         line_1 = f""

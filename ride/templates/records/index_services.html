@@ -22,7 +22,7 @@
       </div>
       <br>
       <div>
-        Контакты: {{ project.contact.first_name }} {{ project.contact.last_name }} - <a href="https://{{ project.contact.email }}">Написать для помощи </a> или позвонить {{ project.contact.phone }}
+        Контакты: {{ project.contact }}
       </div>
       <br>
       <a href="{% url 'records:index_records' project.pk %}">

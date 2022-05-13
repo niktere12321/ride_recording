@@ -4,11 +4,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = '*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -17,7 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'projects.apps.ProjectsConfig',
     'records.apps.RecordsConfig',
-    'users.apps.UsersConfig',
     'core.apps.CoreConfig',
     'sorl.thumbnail',
     'phonenumber_field',
@@ -55,12 +55,12 @@ WSGI_APPLICATION = 'ride.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', default='postgres'),
-        'USER': os.getenv('POSTGRES_USER', default='postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', default='db'),
-        'PORT': os.getenv('DB_PORT', default='5432')
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': os.getenv('DB_NAME', default='db.sqlite3'),
+        'USER': os.getenv('POSTGRES_USER', default=''),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=''),
+        'HOST': os.getenv('DB_HOST', default=''),
+        'PORT': os.getenv('DB_PORT', default='')
     }
 }
 
@@ -91,11 +91,11 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'users.User'
 
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
 
 MEDIA_URL = '/media/'
 
@@ -109,10 +109,20 @@ LOGIN_REDIRECT_URL = 'records:index_services'
 
 # LOGOUT_REDIRECT_URL = 'records:index'
 
-RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-DEFAULT_FROM_EMAIL = 'nikterekhoff4242@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_USE_TLS = True
 
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = 'nikterekhoff42@gmail.com'
+
+EMAIL_HOST_PASSWORD = 'Ter12321nik'
+
+#RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
+
+#DEFAULT_FROM_EMAIL = 'nikterekhoff4242@gmail.com'
+
+#EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')

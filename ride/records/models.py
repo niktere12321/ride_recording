@@ -13,16 +13,13 @@ class Services(models.Model):
     low_duration = models.IntegerField(default=1,  validators=[MaxValueValidator(24), MinValueValidator(1)])
     high_duration = models.IntegerField(default=24,  validators=[MaxValueValidator(24), MinValueValidator(1)])
     image = models.ImageField(upload_to='images/', blank=True, null=True)
-    contact = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    contact = models.TextField(max_length=200)
 
 
 class Records(models.Model):
     project = models.ForeignKey(Services, on_delete=models.CASCADE)
     date_start = models.DateField()
-    start_time = models.IntegerField(validators=[MaxValueValidator(24), MinValueValidator(0)])
-    end_time = models.IntegerField(validators=[MaxValueValidator(24), MinValueValidator(0)])
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     driver = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    @property
-    def get_html_url(self):
-        return f'{self.start_time}-{self.end_time}:{self.driver}'

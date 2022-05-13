@@ -9,7 +9,7 @@
 {% load static %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}
-<div class="row justify-content-center">
+<div class="row justify-content-center lol_width">
   <div class="col-md-8 p-5">
     <div class="card">
       {% include 'records/includes/admin_switcher.html' %}
@@ -21,6 +21,23 @@
         {% endif %}
       </div>
       <div class="card-body">
+        {% if error %}
+          {{ error }}
+        {% endif %}
+        {% if form.errors %}
+            {% for field in form %}
+              {% for error in field.errors %}            
+                <div class="alert alert-danger">
+                  {{ error|escape }}
+                </div>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ error|escape }}
+              </div>
+            {% endfor %}
+            {% endif %}
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
           {% for field in form %}
@@ -46,10 +63,10 @@
             {% endfor %}
           <div class="col-md-6 offset-md-4">
             <button type="submit" class="btn btn-primary">
-              {% if post %}
+              {% if services %}
                 Сохранить изменения
               {% else %}
-                Опубликовать запись
+                Создать Т.С.
               {% endif %}
             </button>
           </div>

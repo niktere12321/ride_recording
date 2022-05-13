@@ -10,7 +10,7 @@ from django.views import generic
 
 from .forms import RecordsForm, ServicesForm
 from .models import Records, Services
-from .utils import Calendar, send_message
+from .utils import Calendar, send_email, send_message
 
 User = get_user_model()
 
@@ -79,7 +79,10 @@ def records_start(request, date, project):
     for p in record_list:
         counter = 0
         for i in range(services.low_time, services.high_time):
-            if i >= p.start_time and i < p.end_time:
+            time_i = datetime.strptime(f"{i}:00:00", "%H:%M:%S")
+            time_start = datetime.strptime(str(p.start_time), "%H:%M:%S")
+            time_end = datetime.strptime(str(p.end_time), "%H:%M:%S")
+            if time_i >= time_start and time_i < time_end:
                 col[counter] = lol_red
             counter += 1
     line_1 = f""
@@ -87,19 +90,18 @@ def records_start(request, date, project):
         line_1 += col[i]
     color_table = f"<div style='max-width: 100%; height: 30px; margin: 5px 5px 0px 5px;'>{line_1}</div>"
     ride_rec = ''
-    color_text = "style='font-size: 16px;'"
     for i in range(0, len(record_list)):
         del_rec = f" <a href='../../../records/records/{record_list[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
         if (i % 3) == 0 and i != 0:
             if request.user.is_superuser:
-                ride_rec += f"<span {color_text}>{record_list[i].driver}:</span><span {color_text}> Время с {record_list[i].start_time}</span><span {color_text}> до {record_list[i].end_time} {del_rec}</span><br>"
+                ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span><br>"
             else:
-                ride_rec += f"<span {color_text}>{record_list[i].driver}:</span><span {color_text}> Время с {record_list[i].start_time}</span><span {color_text}> до {record_list[i].end_time}</span><br>"
+                ride_rec += f"<span>{record_list[i].driver}:Время с {record_list[i].start_time} до {record_list[i].end_time}</span><br>"
         else:
             if request.user.is_superuser:
-                ride_rec += f"<span {color_text}>{record_list[i].driver}:</span><span {color_text}> Время с {record_list[i].start_time}</span><span {color_text}> до {record_list[i].end_time} {del_rec}</span>"
+                ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span>"
             else:
-                ride_rec += f"<span {color_text}>{record_list[i].driver}:</span><span {color_text}> Время с {record_list[i].start_time}</span><span {color_text}> до {record_list[i].end_time};  </span>"
+                ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time};  </span>"
     ride_rec_empty = None
     if ride_rec == "":
         ride_rec_empty = "День полностью пустой"
@@ -136,7 +138,7 @@ def records_start(request, date, project):
         records = form.save(commit=False)
         records.date_start = new_date
         records.driver = request.user
-        records.project = Services.objects.get(pk=project)
+        records.project = services
         start_ti = form.cleaned_data['start_time']
         end_ti = form.cleaned_data['end_time']
         if start_ti > end_ti:
@@ -144,7 +146,7 @@ def records_start(request, date, project):
                        "date": date,
                        "project": project}
             return render(request, 'records/records_start.html', context)
-        if (end_ti - start_ti) > services.high_duration:
+        if datetime.strptime((end_ti.timestamp() - start_ti.timestamp()), "%H:%M:%S") > datetime.strptime(f'{services.high_duration}:00:00', "%H:%M:%S"):
             context = {"error": f"Нельзя кататься больше {services.high_duration} часов",
                        "date": date,
                        "project": project}
@@ -195,6 +197,7 @@ def records_start(request, date, project):
         records.start_time = start_ti
         records.end_time = end_ti
         records.save()
+        send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
         send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
         return redirect(reverse('records:index_records', args=[project]))
     context = {'ride_rec': ride_rec,
@@ -289,6 +292,13 @@ def admining_services_create(request):
     if request.user.is_superuser:
         form = ServicesForm(request.POST or None)
         if request.POST and form.is_valid():
+            name_project = form.cleaned_data['name_project']
+            name_exists = name_project is not None and Services.objects.filter(name_project=name_project).exists()
+            if name_exists:
+                context = {'form': form,
+                           'error': 'Это транспортное средство уже существует.'}
+                return render(request, 'records/create_services.html', context)
+            form.name_project = name_project
             form.save()
         else:
             context =  {'form': form}

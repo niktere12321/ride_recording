@@ -1,13 +1,14 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import EmailInput, TextInput
+from django.forms import EmailInput, Textarea, TextInput
 from django.utils.translation import ugettext_lazy as _
 
 User = get_user_model()
 
 
 class CreationForm(UserCreationForm):
+
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'phone',)
@@ -26,4 +27,4 @@ class CreationForm(UserCreationForm):
 
 
 class Add_new_userForm(forms.Form):
-    from_email = forms.EmailField(label='Введите email нового пользователя')
+    to_email = forms.CharField(label='Введите email новых пользователей(я)', widget=forms.Textarea(attrs={'cols': 50, 'rows': 1, 'required': True, 'placeholder': 'email1@email1.email1,email2@email1.email1'}))

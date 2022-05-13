@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.forms import NumberInput
+from django.forms import NumberInput, TimeInput
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Records, Services
@@ -18,13 +18,13 @@ class RecordsForm(forms.ModelForm):
             'end_time': _('Время конца поездки'),
         }
         widgets = {
-            'start_time': NumberInput(attrs={'type': 'number'}),
-            'end_time': NumberInput(attrs={'type': 'number'}),
+            'start_time': TimeInput(attrs={'type': 'time'}),
+            'end_time': TimeInput(attrs={'type': 'time'}),
         }
 
 
 class ServicesForm(forms.ModelForm):
-    
+
     class Meta:
         model = Services
         fields = '__all__'
@@ -43,7 +43,6 @@ class ServicesForm(forms.ModelForm):
         data = self.cleaned_data
         low_time = data.get('low_time')
         high_time = data.get('high_time')
-        name_projects = data.get('name_project')
         if low_time >= high_time:
             raise forms.ValidationError('Разрешенное время начала катания не может быть больше конца')
         return data

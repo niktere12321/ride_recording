@@ -6,7 +6,7 @@
 {% block content %}
 {% load thumbnail %}
 {% include 'records/includes/switcher.html' %}
-<div class="row justify-content-center">
+<div class="row justify-content-center lol_width">
   <div class="col-md-8 p-5"> 
     <div class="card">
       {% include 'records/includes/admin_switcher.html' %}
@@ -20,7 +20,7 @@
             <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету">
           {% endthumbnail %}
         </div>
-        <h4 style="text-align: center"> Ответственный {{ services.contact }}</h4>
+        <h4 style="text-align: center"> Контакты {{ services.contact }}</h4>
         <a href="{% url 'records:admining_services_edit' services.pk %}">
           <div class="btn btn-primary">
             Изменить

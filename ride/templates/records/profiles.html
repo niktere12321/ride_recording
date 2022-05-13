@@ -5,26 +5,26 @@
 {% endblock %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}
-<div class="row justify-content-center">
+<div class="row justify-content-center lol_width">
   <div class="col-md-8 p-5">
     <div class="card">
       <div class="card-body">
         <h1>Мой профиль</h1>
         <p>{{prof}}</p>
-        <div data-v-cd6a838e="" class="label-row">
-          <label data-v-cd6a838e="">
+        <div class="label-row">
+          <label>
             Адрес электронной почты
           </label>
         </div>
         <p> {{prof.email}} </p>
-        <div data-v-cd6a838e="" class="label-row">
-          <label data-v-cd6a838e="">
+        <div class="label-row">
+          <label>
             Ваше имя
           </label>
         </div>
         <p> {{prof.first_name}} </p>
-        <div data-v-cd6a838e="" class="label-row">
-          <label data-v-cd6a838e="">
+        <div class="label-row">
+          <label>
             Ваша фамилия
           </label>
         </div>
@@ -33,7 +33,7 @@
     </div>
   </div>
 </div>
-<div class="row justify-content-center">
+<div class="row justify-content-center lol_width">
   <div class="col-md-8 p-5"> 
     <div class="card">
       <div class="card-body">
@@ -47,5 +47,4 @@
     </div>
   </div>
 </div>
-{{password_us}}
 {% endblock %} 
