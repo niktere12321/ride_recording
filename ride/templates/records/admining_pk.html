@@ -10,7 +10,7 @@
     <div class="card">
       {% include 'records/includes/admin_switcher.html' %}
       <div class="card-body">
-        <h1>Профиль {{prof}}</h1>
+        <h1>Профиль {{prof}} {{ active|safe }}</h1>
         <p>{{prof}}</p>
         <div data-v-cd6a838e="" class="label-row">
           <label data-v-cd6a838e="">
@@ -30,7 +30,15 @@
           </label>
         </div>
         <p> {{prof.last_name}} </p>
-        <a href="{% url 'records:user_delete' prof %}" onclick="return confirm('Вы уыерены что хотите удалить пользователя?')">
+        <div data-v-cd6a838e="" class="label-row">
+          <label data-v-cd6a838e="">
+            Статус{% if status %} Разблокирован {% else %} Заблокирован {% endif %}
+          </label>
+        </div>
+        <a href="{% url 'records:user_pass_or_active' prof %}" onclick="return confirm('Вы уверены что хотите заблокировать пользователя?')">
+          <p>{% if status %} Заблокировать {% else %} Разблокировать {% endif %} пользователя </p>
+        </a>
+        <a href="{% url 'records:user_delete' prof %}" onclick="return confirm('Вы уверены что хотите удалить пользователя?')">
          <p> Хотите удалить пользователя ? </p>
         </a>
       </div>

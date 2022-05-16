@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block tittle %}
+Обратитесь к администратору
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center lol_width">
+  <div class="col-md-8 p-5">
+    <div class="card">
+      <div class="card-body" style="margin-left: 30%">
+        <a href="{% url 'users:users_help' %}">Ваш аккаунт заблокирован обратитесь к администратору</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

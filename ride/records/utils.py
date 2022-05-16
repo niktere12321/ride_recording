@@ -1,4 +1,5 @@
 import datetime
+import logging
 from calendar import HTMLCalendar
 
 import telegram
@@ -16,7 +17,11 @@ bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
 def send_message(message):
     text = message
-    bot.send_message(CHAT_ID, text)
+    try:
+        bot.send_message(CHAT_ID, text)
+    except Exception as e:
+        logging.error(e, exc_info=True)
+        return HttpResponse('Произошла ошибка повторите позже.')
 
 
 def send_email(to_email, name_project, first_name, last_name, date, start_time, end_time):
@@ -26,8 +31,14 @@ def send_email(to_email, name_project, first_name, last_name, date, start_time, 
     message = f'{first_name} {last_name} вы записались на {name_project} {date} с {start_time} по {end_time}'
     try:
         send_mail(subject, message, email_from, email)
-    except BadHeaderError:
-        return HttpResponse('Ошибка в теме письма.')
+    except Exception as e:
+        return HttpResponse('Произошла ошибка.')
+
+
+def convert_time(time):
+    time_str = str(time).split(':')
+    time_all = int(time_str[0])*3600 + int(time_str[1])*60 + int(time_str[2])
+    return time_all
 
 
 class Calendar(HTMLCalendar):
@@ -76,7 +87,7 @@ class Calendar(HTMLCalendar):
 
     def formatmonth(self, withyear=True):
         events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month, project=self.project)
-        week_day = f'<tr><th> Пон </th><th> Вто </th><th> Сре </th><th> Чет </th><th> Пят </th><th> Суб </th><th> Вос </th></tr>'
+        week_day = f'<tr><th> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th> Вс </th></tr>'
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{week_day}\n'

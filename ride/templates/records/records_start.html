@@ -82,18 +82,62 @@
     </div>
   </div>
 {{calendar}}
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
 <script>
+  function time_hour(val){
+    if (val < 120){
+      return '0' + (val - val % 12) / 12;
+    }
+    else{
+      return (val - val % 12) / 12;
+    }
+}
+  function time_minute(val){
+    if ((val % 12) == (0) || (val % 12) == (1)) {
+      return '0' + (val % 12) * 5;
+    }
+    else{
+      return (val % 12) * 5;
+    }
+}
   $(document).ready(function(){
     $( "#slider-range" ).slider({
         range: true,
-        min: {{services.low_time}},
-        max: {{services.high_time}},
-        values: [ 6, 10 ],
+        min: 0,
+        max: 288,
+        values: [ 120, 216 ],
         slide: function( event, ui ) {
-          $( "#id_start_time" ).val(  ui.values[ 0 ] );
-          $( "#id_end_time" ).val(  ui.values[ 1 ] );
+          $("#id_start_time").val(time_hour(ui.values[0])+":"+time_minute(ui.values[0]));
+          $("#id_end_time").val(time_hour(ui.values[1])+":"+time_minute(ui.values[1]));
         }
       });
+});
+$.timepicker.regional['ru'] = {
+	timeOnlyTitle: 'Выберите время',
+	timeText: 'Время',
+	hourText: 'Часы',
+	minuteText: 'Минуты',
+	secondText: 'Секунды',
+	millisecText: 'Миллисекунды',
+	timezoneText: 'Часовой пояс',
+	currentText: 'Сейчас',
+	closeText: 'Закрыть',
+	timeFormat: 'HH:mm',
+	amNames: ['AM', 'A'],
+	pmNames: ['PM', 'P'],
+	isRTL: false
+};
+$.timepicker.setDefaults($.timepicker.regional['ru']);
+
+$(function(){
+	$("#id_start_time").timepicker({
+    "stepMinute" : 5
+  });
+  $("#id_end_time").timepicker({
+    "stepMinute" : 5
+  });
 });
 </script>
 {% endblock %} 

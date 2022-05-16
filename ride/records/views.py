@@ -8,13 +8,15 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views import generic
 
+from .decorathion import active
 from .forms import RecordsForm, ServicesForm
 from .models import Records, Services
-from .utils import Calendar, send_email, send_message
+from .utils import Calendar, convert_time, send_email, send_message
 
 User = get_user_model()
 
 
+@active
 @login_required
 def index_services(request):
     all_services = Services.objects.all()
@@ -64,6 +66,7 @@ def next_month(d):
     return month
 
 
+@active
 @login_required
 def records_start(request, date, project):
     new_date = date[:4] + '-' + date[4:6] + '-' + date[6:]
@@ -146,35 +149,16 @@ def records_start(request, date, project):
                        "date": date,
                        "project": project}
             return render(request, 'records/records_start.html', context)
-        if datetime.strptime((end_ti.timestamp() - start_ti.timestamp()), "%H:%M:%S") > datetime.strptime(f'{services.high_duration}:00:00', "%H:%M:%S"):
+        if convert_time(end_ti) - convert_time(start_ti) > convert_time(f'{services.high_duration}:00:00'):
             context = {"error": f"Нельзя кататься больше {services.high_duration} часов",
                        "date": date,
                        "project": project}
             return render(request, 'records/records_start.html', context)
-        if (end_ti - start_ti) <= services.low_duration:
+        if (convert_time(end_ti) - convert_time(start_ti)) <= convert_time(f'{services.low_duration}:00:00'):
             context = {"error": f"Нельзя кататься меньше {services.low_duration} часов",
                        "date": date,
                        "project": project}
             return render(request, 'records/records_start.html', context)
-        record_st_p = []
-        record_en_p = []
-        for i in range(0, len(record_list_p)):
-            record_st_p.append(record_list_p[i].start_time)
-            record_en_p.append(record_list_p[i].end_time)
-        for i in record_st_p:
-            for p in record_en_p:
-                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
-                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
-                elif start_ti < i and end_ti <= i:
-                    break
-                elif start_ti < i and end_ti < p:
-                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
         record_st = []
         record_en = []
         for i in range(0, len(record_list)):
@@ -191,6 +175,25 @@ def records_start(request, date, project):
                     break
                 elif start_ti < i and end_ti <= p:
                     context = {"error": "Это время уже занято!",
+                               "date": date,
+                               "project": project}
+                    return render(request, 'records/records_start.html', context)
+        record_st_p = []
+        record_en_p = []
+        for i in range(0, len(record_list_p)):
+            record_st_p.append(record_list_p[i].start_time)
+            record_en_p.append(record_list_p[i].end_time)
+        for i in record_st_p:
+            for p in record_en_p:
+                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
+                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
+                               "date": date,
+                               "project": project}
+                    return render(request, 'records/records_start.html', context)
+                elif start_ti < i and end_ti <= i:
+                    break
+                elif start_ti < i and end_ti < p:
+                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
                                "date": date,
                                "project": project}
                     return render(request, 'records/records_start.html', context)
@@ -211,6 +214,7 @@ def records_start(request, date, project):
     return render(request, 'records/records_start.html', context)
 
 
+@active
 @login_required
 def profiles(request):
     user = User.objects.get(username=request.user.username)
@@ -234,6 +238,7 @@ def profiles(request):
     return render(request, 'records/profiles.html', context)
 
 
+@active
 @login_required
 def records_delete(request, rec_pk):
     records_del = get_object_or_404(Records, pk=rec_pk)
@@ -245,6 +250,7 @@ def records_delete(request, rec_pk):
     return render(request, 'records/index.html', context)
 
 
+@active
 @login_required
 def admining(request):
     if request.user.is_superuser:
@@ -253,6 +259,7 @@ def admining(request):
         return render(request, 'records/admining.html', context)
 
 
+@active
 @login_required
 def admining_users(request):
     if request.user.is_superuser:
@@ -261,6 +268,7 @@ def admining_users(request):
         return render(request, 'records/admining_users.html', context)
 
 
+@active
 @login_required
 def admining_services(request, service_id):
     if request.user.is_superuser:
@@ -269,6 +277,7 @@ def admining_services(request, service_id):
         return render(request, 'records/admining_services.html', context)
 
 
+@active
 @login_required
 def admining_services_edit(request, services_id):
     if request.user.is_superuser:
@@ -287,6 +296,7 @@ def admining_services_edit(request, services_id):
         return redirect(reverse('records:admining_services', args=[services_id]))
 
 
+@active
 @login_required
 def admining_services_create(request):
     if request.user.is_superuser:
@@ -306,6 +316,7 @@ def admining_services_create(request):
         return redirect(reverse('records:admining'))
 
 
+@active
 @login_required
 def admining_services_del(request, services_id):
     if request.user.is_superuser:
@@ -317,6 +328,7 @@ def admining_services_del(request, services_id):
     return render(request, 'records/index.html', context)
 
 
+@active
 @login_required
 def admining_statistics(request):
     if request.user.is_superuser:
@@ -324,6 +336,7 @@ def admining_statistics(request):
         return render(request, 'records/admining_statistics.html', context)
 
 
+@active
 @login_required
 def admining_pk(request, username):
     if request.user.is_superuser:
@@ -342,12 +355,22 @@ def admining_pk(request, username):
             html_rec_old += f"<h4>{all_services[p].name_project}<h4>"
             for i in range(0, len(rec_old)):
                 html_rec_old += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}:{rec_old[i].date_start}:{rec_old[i].start_time}-{rec_old[i].end_time}</span><br>"
+        active = ""
+        if user.active == True:
+            status = True
+            active = "<div id='active'></div>"
+        else:
+            status = None
+            active = "<div id='pass' style='display: table-sell;'></div>"
         context = {'html_rec_old': html_rec_old,
                    'html_rec_new': html_rec_new,
-                   'prof': user}
+                   'prof': user,
+                   'status': status,
+                   'active': active}
         return render(request, 'records/admining_pk.html', context)
 
 
+@active
 @login_required
 def user_delete(request, username):
     if request.user.is_superuser:
@@ -355,5 +378,24 @@ def user_delete(request, username):
         user.delete()
         context = {'messages': 'Вы успешно удалили пользоваеля'}
         return render(request, 'records/delete.html', context)
+    context = {'messages': 'У вас нету прав'}
+    return render(request, 'records/records_admining_pk.html', context)
+
+
+@active
+@login_required
+def user_pass_or_active(request, username):
+    if request.user.is_superuser:
+        user = get_object_or_404(User, username=username)
+        if user.active == True:
+            user.active = False
+            user.save()
+            context = {'messages': 'Вы успешно заблокировали пользоваеля', 'pass': 'pass'}
+            return render(request, 'records/delete.html', context)
+        elif user.active == False:
+            user.active = True
+            user.save()
+            context = {'messages': 'Вы успешно разблокировали пользоваеля', 'active': 'active'}
+            return render(request, 'records/delete.html', context)
     context = {'messages': 'У вас нету прав'}
     return render(request, 'records/records_admining_pk.html', context)

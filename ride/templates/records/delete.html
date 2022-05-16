@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block tittle %}
+{% if active %}
+Пользователь разблокирован
+{% elif pass %}
+Пользователь заблокирован
+{% else %}
 Удаление
+{% endif %}
 {% endblock %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}

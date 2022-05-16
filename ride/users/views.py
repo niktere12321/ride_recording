@@ -5,12 +5,15 @@ from django.core.mail import BadHeaderError, send_mail
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from records.decorathion import active
 
-from users.forms import Add_new_userForm, CreationForm
+from users.forms import Add_new_userForm, CreationForm, HelpForm
 
 User = get_user_model()
 
 
+@active
+@login_required
 def SignUp(request, new_email):
     form = CreationForm(request.POST or None, initial={'email': new_email})
     if request.POST and form.is_valid():
@@ -23,6 +26,7 @@ def SignUp(request, new_email):
         return render(request, 'users/signup.html', context)
 
 
+@active
 @login_required
 def add_new_user(request):
     if request.user.is_superuser:
@@ -44,12 +48,35 @@ def add_new_user(request):
                 email = [to_email]
                 email_from = settings.EMAIL_HOST_USER
                 subject = 'Приглашение на регистрацию'
-                message = f'Приглашаем пройти регистрацию на http://127.0.0.1:8000/users/signup/{email}/'
+                message = f'Приглашаем пройти регистрацию на http://127.0.0.1:8000/users/signup/{email[0]}/'
                 try:
                     send_mail(subject, message, email_from, email)
-                except BadHeaderError:
-                    return HttpResponse('Ошибка в теме письма.')
+                except Exception as e:
+                    return HttpResponse('Произошла ошибка.')
             return redirect(reverse('records:index_services'))
     else:
         return HttpResponse('Неверный запрос.')
     return render(request, "email/email.html", {'form': form})
+
+
+def help_active(request):
+    if request.user.active == False:
+        return render(request, 'users/help_active.html')
+    return redirect(reverse('records:index_services'))
+
+
+def users_help(request):
+    if request.user.is_authenticated:
+        form = HelpForm(request.POST or None)
+        if request.POST and form.is_valid():
+            subject = 'Сообщение об ошибке'
+            message = form.cleaned_data['message']
+            email_from = request.user.email
+            email = [settings.EMAIL_HOST_USER]
+            try:
+                send_mail(subject, message, email_from, email)
+            except Exception as e:
+                print(e)
+                return HttpResponse('Произошла ошибка.')
+            return redirect(reverse('records:index_services'))
+        return render(request, "users/users_help.html", {'form': form})

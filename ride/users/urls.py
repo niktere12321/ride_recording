@@ -13,6 +13,8 @@ from . import views
 app_name = 'users'
 
 urlpatterns = [
+    path('users_help', views.users_help, name='users_help'),
+    path('help_active', views.help_active, name='help_active'),
     path('add_new_user', views.add_new_user, name='add_new_user'),
     path('logout/',
          LogoutView.as_view(template_name='users/logged_out.html'),

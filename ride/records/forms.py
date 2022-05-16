@@ -18,8 +18,8 @@ class RecordsForm(forms.ModelForm):
             'end_time': _('Время конца поездки'),
         }
         widgets = {
-            'start_time': TimeInput(attrs={'type': 'time'}),
-            'end_time': TimeInput(attrs={'type': 'time'}),
+            'start_time': TimeInput(attrs={'type': 'text', 'value': '10:00'}),
+            'end_time': TimeInput(attrs={'type': 'text', 'value': '18:00'}),
         }
 
 
