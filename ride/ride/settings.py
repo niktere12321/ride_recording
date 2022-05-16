@@ -94,9 +94,9 @@ AUTH_USER_MODEL = 'users.User'
 
 STATIC_URL = '/staticfiles/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
 
 MEDIA_URL = '/media/'
 
@@ -120,7 +120,7 @@ EMAIL_PORT = 587
 
 EMAIL_HOST_USER = 'nikterekhoff42@gmail.com'
 
-EMAIL_HOST_PASSWORD = os.getenv('Password_email', default='')
+EMAIL_HOST_PASSWORD = 'Ter12321nik'
 
 #RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
 
