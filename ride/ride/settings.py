@@ -2,7 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = '*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul'
+SECRET_KEY = os.getenv('secret_key', default='')
 
 DEBUG = True
 
@@ -120,7 +120,7 @@ EMAIL_PORT = 587
 
 EMAIL_HOST_USER = 'nikterekhoff42@gmail.com'
 
-EMAIL_HOST_PASSWORD = 'Ter12321nik'
+EMAIL_HOST_PASSWORD = os.getenv('Password_email', default='')
 
 #RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
 
