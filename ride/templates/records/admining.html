@@ -13,7 +13,7 @@
         <ol>
           {% for services in all_services %}
             <a href="{% url 'records:admining_services' services.pk %}">
-              <li> {{services.name_project}} {{services.contact}} </li>
+              <li> {{services.name_project}}</li>
             </a>
           {% endfor %}
         </ol>

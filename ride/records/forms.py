@@ -36,7 +36,7 @@ class ServicesForm(forms.ModelForm):
             'low_duration': _('Минимальная длительность поездки'),
             'high_duration': _('Максимальная длительность поездки'),
             'image': _('Изображение'),
-            'contact': _('Человек ответственный за т.с.'),
+            'contact': _('Помощь человеку в поездке.'),
         }
 
     def clean(self):

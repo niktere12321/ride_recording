@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views import generic
 
-from .decorathion import active
+from .decorathion import active, admin
 from .forms import RecordsForm, ServicesForm
 from .models import Records, Services
 from .utils import Calendar, convert_time, send_email, send_message
@@ -16,14 +16,14 @@ from .utils import Calendar, convert_time, send_email, send_message
 User = get_user_model()
 
 
-@active
 @login_required
 def index_services(request):
-    all_services = Services.objects.all()
-    context = {
-        'all_services': all_services,
-    }
-    return render(request, 'records/index_services.html', context)
+    if request.user.is_authenticated and request.user.active == True:
+        all_services = Services.objects.all()
+        context = {
+            'all_services': all_services,
+        }
+        return render(request, 'records/index_services.html', context)
 
 
 class CalendarView(generic.ListView):
@@ -96,12 +96,12 @@ def records_start(request, date, project):
     for i in range(0, len(record_list)):
         del_rec = f" <a href='../../../records/records/{record_list[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
         if (i % 3) == 0 and i != 0:
-            if request.user.is_superuser:
+            if request.user.role == 'admin':
                 ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span><br>"
             else:
                 ride_rec += f"<span>{record_list[i].driver}:Время с {record_list[i].start_time} до {record_list[i].end_time}</span><br>"
         else:
-            if request.user.is_superuser:
+            if request.user.role == 'admin':
                 ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span>"
             else:
                 ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time};  </span>"
@@ -242,7 +242,7 @@ def profiles(request):
 @login_required
 def records_delete(request, rec_pk):
     records_del = get_object_or_404(Records, pk=rec_pk)
-    if request.user == records_del.driver or request.user.is_superuser:
+    if request.user == records_del.driver:
         records_del.delete()
         context = {'messages': 'Вы успешно удалили запись'}
         return render(request, 'records/delete.html', context)
@@ -250,152 +250,155 @@ def records_delete(request, rec_pk):
     return render(request, 'records/index.html', context)
 
 
+@admin
 @active
 @login_required
 def admining(request):
-    if request.user.is_superuser:
-        all_services = Services.objects.all()
-        context = {'all_services': all_services}
-        return render(request, 'records/admining.html', context)
+    all_services = Services.objects.all()
+    context = {'all_services': all_services}
+    return render(request, 'records/admining.html', context)
 
 
+@admin
 @active
 @login_required
 def admining_users(request):
-    if request.user.is_superuser:
-        all_users = User.objects.all()
-        context = {'all_users': all_users}
-        return render(request, 'records/admining_users.html', context)
+    all_users = User.objects.all()
+    context = {'all_users': all_users}
+    return render(request, 'records/admining_users.html', context)
 
 
+@admin
 @active
 @login_required
 def admining_services(request, service_id):
-    if request.user.is_superuser:
-        services = Services.objects.get(pk=service_id)
-        context = {'services': services}
-        return render(request, 'records/admining_services.html', context)
+    services = Services.objects.get(pk=service_id)
+    context = {'services': services}
+    return render(request, 'records/admining_services.html', context)
 
 
+@admin
 @active
 @login_required
 def admining_services_edit(request, services_id):
-    if request.user.is_superuser:
-        services = get_object_or_404(Services, pk=services_id)
-        form = ServicesForm(
-            request.POST or None,
-            files=request.FILES or None,
-            instance=services
-        )
-        if request.POST and form.is_valid():
-            form.save()
-        else:
-            context = {'form': form,
-                       'services': services}
-            return render(request, 'records/create_services.html', context)
-        return redirect(reverse('records:admining_services', args=[services_id]))
+    services = get_object_or_404(Services, pk=services_id)
+    form = ServicesForm(
+        request.POST or None,
+        files=request.FILES or None,
+        instance=services
+    )
+    if request.POST and form.is_valid():
+        form.save()
+    else:
+        context = {'form': form,
+                   'services': services}
+        return render(request, 'records/create_services.html', context)
+    return redirect(reverse('records:admining_services', args=[services_id]))
 
 
+@admin
 @active
 @login_required
 def admining_services_create(request):
-    if request.user.is_superuser:
-        form = ServicesForm(request.POST or None)
-        if request.POST and form.is_valid():
-            name_project = form.cleaned_data['name_project']
-            name_exists = name_project is not None and Services.objects.filter(name_project=name_project).exists()
-            if name_exists:
-                context = {'form': form,
-                           'error': 'Это транспортное средство уже существует.'}
-                return render(request, 'records/create_services.html', context)
-            form.name_project = name_project
-            form.save()
-        else:
-            context =  {'form': form}
+    form = ServicesForm(request.POST or None)
+    if request.POST and form.is_valid():
+        name_project = form.cleaned_data['name_project']
+        name_exists = name_project is not None and Services.objects.filter(name_project=name_project).exists()
+        if name_exists:
+            context = {'form': form,
+                       'error': 'Это транспортное средство уже существует.'}
             return render(request, 'records/create_services.html', context)
-        return redirect(reverse('records:admining'))
+        form.name_project = name_project
+        form.save()
+    else:
+        context =  {'form': form}
+        return render(request, 'records/create_services.html', context)
+    return redirect(reverse('records:admining'))
 
 
+@admin
 @active
 @login_required
 def admining_services_del(request, services_id):
-    if request.user.is_superuser:
-        services = get_object_or_404(Services, pk=services_id)
-        services.delete()
-        context = {'messages': 'Вы успешно удалили Транспортное средство'}
-        return render(request, 'records/delete.html', context)
-    context = {'messages': 'У вас нету прав'}
-    return render(request, 'records/index.html', context)
+    if request.user.role == 'user':
+        context = {'messages': 'У вас нету прав'}
+        return render(request, 'records/index.html', context)
+    services = get_object_or_404(Services, pk=services_id)
+    services.delete()
+    context = {'messages': 'Вы успешно удалили Транспортное средство'}
+    return render(request, 'records/delete.html', context)
 
 
+@admin
 @active
 @login_required
 def admining_statistics(request):
-    if request.user.is_superuser:
-        context = {'1': 1}
-        return render(request, 'records/admining_statistics.html', context)
+    context = {'1': 1}
+    return render(request, 'records/admining_statistics.html', context)
 
 
+@admin
 @active
 @login_required
 def admining_pk(request, username):
-    if request.user.is_superuser:
-        user = get_object_or_404(User, username=username)
-        all_services = list(Services.objects.filter(pk__gt=0))
-        html_rec_new = f""
-        for p in range(len(all_services)):
-            rec_new = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__gt=datetime.now()))
-            html_rec_new += f"<h4>{all_services[p].name_project}<h4>"
-            for i in range(0, len(rec_new)):
-                del_rec = f"<a href='../records/{rec_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-                html_rec_new += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}: {rec_new[i].date_start}:{rec_new[i].start_time}-{rec_new[i].end_time}{del_rec}</span><br>"
-        html_rec_old = f""
-        for p in range(len(all_services)):
-            rec_old = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__lte=datetime.now()))
-            html_rec_old += f"<h4>{all_services[p].name_project}<h4>"
-            for i in range(0, len(rec_old)):
-                html_rec_old += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}:{rec_old[i].date_start}:{rec_old[i].start_time}-{rec_old[i].end_time}</span><br>"
-        active = ""
-        if user.active == True:
-            status = True
-            active = "<div id='active'></div>"
-        else:
-            status = None
-            active = "<div id='pass' style='display: table-sell;'></div>"
-        context = {'html_rec_old': html_rec_old,
-                   'html_rec_new': html_rec_new,
-                   'prof': user,
-                   'status': status,
-                   'active': active}
-        return render(request, 'records/admining_pk.html', context)
+    user = get_object_or_404(User, username=username)
+    all_services = list(Services.objects.filter(pk__gt=0))
+    html_rec_new = f""
+    for p in range(len(all_services)):
+        rec_new = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__gt=datetime.now()))
+        html_rec_new += f"<h4>{all_services[p].name_project}<h4>"
+        for i in range(0, len(rec_new)):
+            del_rec = f"<a href='../records/{rec_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            html_rec_new += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}: {rec_new[i].date_start}:{rec_new[i].start_time}-{rec_new[i].end_time}{del_rec}</span><br>"
+    html_rec_old = f""
+    for p in range(len(all_services)):
+        rec_old = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__lte=datetime.now()))
+        html_rec_old += f"<h4>{all_services[p].name_project}<h4>"
+        for i in range(0, len(rec_old)):
+            html_rec_old += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}:{rec_old[i].date_start}:{rec_old[i].start_time}-{rec_old[i].end_time}</span><br>"
+    active = ""
+    if user.active == True:
+        status = True
+        active = "<div id='active'></div>"
+    else:
+        status = None
+        active = "<div id='pass' style='display: table-sell;'></div>"
+    context = {'html_rec_old': html_rec_old,
+               'html_rec_new': html_rec_new,
+               'prof': user,
+               'status': status,
+               'active': active}
+    return render(request, 'records/admining_pk.html', context)
 
 
+@admin
 @active
 @login_required
 def user_delete(request, username):
-    if request.user.is_superuser:
-        user = get_object_or_404(User, username=username)
-        user.delete()
-        context = {'messages': 'Вы успешно удалили пользоваеля'}
-        return render(request, 'records/delete.html', context)
-    context = {'messages': 'У вас нету прав'}
-    return render(request, 'records/records_admining_pk.html', context)
+    if request.user.role == 'user':
+        context = {'messages': 'У вас нету прав'}
+        return render(request, 'records/records_admining_pk.html', context)
+    user = get_object_or_404(User, username=username)
+    user.delete()
+    context = {'messages': 'Вы успешно удалили пользоваеля'}
+    return render(request, 'records/delete.html', context)
 
 
+@admin
 @active
 @login_required
 def user_pass_or_active(request, username):
-    if request.user.is_superuser:
-        user = get_object_or_404(User, username=username)
-        if user.active == True:
-            user.active = False
-            user.save()
-            context = {'messages': 'Вы успешно заблокировали пользоваеля', 'pass': 'pass'}
-            return render(request, 'records/delete.html', context)
-        elif user.active == False:
-            user.active = True
-            user.save()
-            context = {'messages': 'Вы успешно разблокировали пользоваеля', 'active': 'active'}
-            return render(request, 'records/delete.html', context)
-    context = {'messages': 'У вас нету прав'}
-    return render(request, 'records/records_admining_pk.html', context)
+    if request.user.role == 'user':
+        context = {'messages': 'У вас нету прав'}
+        return render(request, 'records/records_admining_pk.html', context)
+    user = get_object_or_404(User, username=username)
+    if user.active == True:
+        user.active = False
+        user.save()
+        context = {'messages': 'Вы успешно заблокировали пользоваеля', 'pass': 'pass'}
+        return render(request, 'records/delete.html', context)
+    elif user.active == False:
+        user.active = True
+        user.save()
+        context = {'messages': 'Вы успешно разблокировали пользоваеля', 'active': 'active'}
+        return render(request, 'records/delete.html', context)

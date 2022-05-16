@@ -14,7 +14,7 @@
           Ваш профиль
         </a>
       </li>
-      {% if user.is_authenticated and user.is_superuser %}
+      {% if user.is_authenticated and user.role == 'admin' %}
       <li class="nav-item">
         <a href="{% url 'records:admining' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
           Управление
