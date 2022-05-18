@@ -4,7 +4,7 @@ from calendar import HTMLCalendar
 
 import telegram
 from django.conf import settings
-from django.core.mail import BadHeaderError, send_mail
+from django.core.mail import send_mail
 from django.http import HttpResponse
 
 from .models import Records, Services
@@ -69,14 +69,23 @@ class Calendar(HTMLCalendar):
         for i in range(len(col)):
             line_1 += col[i]
         color_table = f"<div>{line_1}</div>"
+        day_color = ''
+        date_now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d")
+        if day != 0:
+            if datetime.datetime.strptime(f"{self.year}-{self.month}-{day}", "%Y-%m-%d") == date_now:
+                day_color = "now_day_color"
+            elif datetime.datetime.strptime(f"{self.year}-{self.month}-{day}", "%Y-%m-%d") <= date_now:
+                day_color = "pass_day_color"
+            else:
+                day_color = "future_day_color"
         if day != 0 and day < 10 and self.month < 10:
-            return f"<td><a href='{self.project}/records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day >= 10 and self.month < 10:
-            return f"<td><a href='{self.project}/records/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day < 10 and self.month >= 10:
-            return f"<td><a href='{self.project}/records/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day >= 10 and self.month >= 10:
-            return f"<td><a href='{self.project}/records/{ self.year }{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
         return f"<td></td>"
 
     def formatweek(self, theweek, events):

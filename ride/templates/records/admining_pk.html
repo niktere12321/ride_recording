@@ -11,6 +11,9 @@
       {% include 'records/includes/admin_switcher.html' %}
       <div class="card-body">
         <h1>Профиль {{prof}} {{ active|safe }}</h1>
+        <a href="{% url 'users:edd_user' prof %}">
+          <p>Редактировать данные пользователя</p>
+        </a>
         <p>{{prof}}</p>
         <div data-v-cd6a838e="" class="label-row">
           <label data-v-cd6a838e="">

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.forms import NumberInput, TimeInput
+from django.forms import EmailInput, NumberInput, TextInput, TimeInput
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Records, Services

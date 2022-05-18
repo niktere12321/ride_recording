@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block tittle %}
+Редактировать пользователя
+{% endblock %}
+{% load static %}
+{% block content %}
+{% include 'records/includes/switcher.html' %}
+<div class="row justify-content-center lol_width">
+  <div class="col-md-8 p-5">
+    <div class="card">
+      {% include 'records/includes/admin_switcher.html' %}
+      <div class="card-header">
+          Редактировать пользователя
+      </div>
+      <div class="card-body">
+        {% if error %}
+          {{ error }}
+        {% endif %}
+        {% if form.errors %}
+            {% for field in form %}
+              {% for error in field.errors %}            
+                <div class="alert alert-danger">
+                  {{ error|escape }}
+                </div>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ error|escape }}
+              </div>
+            {% endfor %}
+            {% endif %}
+        <form method="post" action="{% url 'users:edd_user' username %}">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="form-group row" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+            <label for="{{ field.id_for_label }}" class="col-md-4 col-form-label text-md-right">
+              {{ field.label }}
+              {% if field.field.required %}
+              <span class="required">
+                *
+              </span>
+              {% endif %}
+            </label>
+            <div class="col-md-6">
+              {{ field }}
+              {{ field.errors }}
+              {% if field.help_text %}
+              <small id="{{ field.id_for_label }}-help" class="form-text text-muted">
+                {{ field.help_text|safe }}
+              </small>
+              {% endif %}
+            </div>
+          </div>
+            {% endfor %}
+          <div class="col-md-6 offset-md-4">
+            <button type="submit" class="btn btn-primary">
+                Сохранить изменения
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

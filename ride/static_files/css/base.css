@@ -27,6 +27,18 @@ footer {
   background: rgb(66, 170, 255);
 }
 
+#pass_day_color{
+  background-color: rgb(199, 189, 189);
+}
+
+#now_day_color{
+  background-color: rgb(247, 237, 97);
+}
+
+#future_day_color{
+  background-color: rgb(255, 255, 255);
+}
+
 #active {
   position: relative;
   display: inline-block;

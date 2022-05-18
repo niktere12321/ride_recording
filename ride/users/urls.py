@@ -13,6 +13,7 @@ from . import views
 app_name = 'users'
 
 urlpatterns = [
+    path('edd_user/<str:username>', views.edd_user, name='edd_user'),
     path('users_help', views.users_help, name='users_help'),
     path('help_active', views.help_active, name='help_active'),
     path('add_new_user', views.add_new_user, name='add_new_user'),

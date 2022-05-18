@@ -3,11 +3,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.mail import BadHeaderError, send_mail
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from records.decorathion import active
 
-from users.forms import Add_new_userForm, CreationForm, HelpForm
+from users.forms import Add_new_userForm, CreationForm, EditUserForm, HelpForm
 
 User = get_user_model()
 
@@ -24,6 +24,20 @@ def SignUp(request, new_email):
         context = {'form': form,
                    'new_email': new_email}
         return render(request, 'users/signup.html', context)
+
+
+@active
+@login_required
+def edd_user(request, username):
+    user = get_object_or_404(User, username=username)
+    form = EditUserForm(request.POST or None, instance=user)
+    if request.POST and form.is_valid():
+        form.save()
+        return redirect(reverse('records:index_services'))
+    else:
+        context = {'form': form,
+                   'username': username}
+        return render(request, 'users/edd_user.html', context)
 
 
 @active
