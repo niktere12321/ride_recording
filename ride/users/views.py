@@ -12,8 +12,6 @@ from users.forms import Add_new_userForm, CreationForm, EditUserForm, HelpForm
 User = get_user_model()
 
 
-@active
-@login_required
 def SignUp(request, new_email):
     form = CreationForm(request.POST or None, initial={'email': new_email})
     if request.POST and form.is_valid():
