@@ -136,7 +136,7 @@ def records_start(request, date, project):
     #     del_rec = f" <a href='../../../records/records/{record_list[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
     #     if request.user.role == 'admin':
     #         ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span><br>"
-    #     else:
+    #     else: 
     #         ride_rec += f"<span>{record_list[i].driver}:Время с {record_list[i].start_time} до {record_list[i].end_time}</span><br>"
     month_ride = int(date[4:6])
     d = get_date(request.GET.get('month', None))
