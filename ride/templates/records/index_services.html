@@ -6,7 +6,7 @@
 {% block content %}
 {% load thumbnail %}
 {% include 'records/includes/switcher.html' %}
-  <h1 >Выбор транспортного средства:</h1>
+  <h1 class="text-center">Выбор транспортного средства:</h1>
   {% for project in all_services %}
     <div style="position: relative; margin: 20px; padding: 20px; border: 1px solid #2a52be; display: inline-block; border-radius: 20px; height: 30%; width: 45%; text-align: center">
       <div>
@@ -14,7 +14,7 @@
       </div>
       <div>
         {% thumbnail project.image "600x300" crop="center" upscale=True as im %}
-          <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету">
+          <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету" style="border-radius: 20px;">
         {% endthumbnail %}
       </div>
       <div style="word-wrap: break-word;">

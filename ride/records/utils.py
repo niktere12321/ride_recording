@@ -1,4 +1,5 @@
 import datetime
+import locale
 import logging
 from calendar import HTMLCalendar
 
@@ -41,6 +42,23 @@ def convert_time(time):
     return time_all
 
 
+def get_time(num, time_min):
+    hours = (num + time_min) // 12 
+    minuts = (num + time_min) % 12 * 5
+    if minuts == '0':
+        minuts = '00'
+    if minuts == '5':
+        minuts = '05'
+    return f"{hours}:{minuts}:00"
+
+
+def time_step(time):
+    time_hours = int(str(time)[0:2])
+    time_minuts = int(str(time)[3:5])
+    int_time = time_hours * 12 + time_minuts // 5
+    return int_time
+
+
 class Calendar(HTMLCalendar):
     def __init__(self, year=None, month=None, project=None):
         self.year = year
@@ -51,15 +69,26 @@ class Calendar(HTMLCalendar):
     def formatday(self, day, events):
         events_per_day = events.filter(date_start__day=day)
         services = Services.objects.get(pk=self.project)
+        if day != 0:
+            date_day = datetime.datetime.strptime(f"{self.year}-{self.month}-{day}", "%Y-%m-%d").date()
         lol_red = f"<div style='height: 30px; width: 10px; background: red; display: table-cell;'> </div>"
         lol_green = f"<div style='height: 30px; width: 10px; background: green; display: table-cell;'> </div>"
+        lol_brown = f"<div style='height: 30px; width: 50px; background: #808080; display: table-cell;'> </div>"
         col = []
-        for i in range(services.low_time, services.high_time):
-            col.append(lol_green)
+        for i in range(time_step(services.low_time), time_step(services.high_time)):
+            if day != 0 and date_day < datetime.datetime.now().date():
+                col.append(lol_brown)
+            elif day != 0 and date_day == datetime.datetime.now().date():
+                if time_step(datetime.datetime.now().time()) <= i:
+                    col.append(lol_green)
+                else:
+                    col.append(lol_brown)
+            else:
+                col.append(lol_green)
         for p in events_per_day:
             counter = 0
-            for i in range(services.low_time, services.high_time):
-                time_i = datetime.datetime.strptime(f"{i}:00:00", "%H:%M:%S")
+            for i in range(len(col)):
+                time_i = datetime.datetime.strptime(get_time(i, time_step(services.low_time)), "%H:%M:%S")
                 time_start = datetime.datetime.strptime(str(p.start_time), "%H:%M:%S")
                 time_end = datetime.datetime.strptime(str(p.end_time), "%H:%M:%S")
                 if time_i >= time_start and time_i < time_end:
@@ -70,22 +99,25 @@ class Calendar(HTMLCalendar):
             line_1 += col[i]
         color_table = f"<div>{line_1}</div>"
         day_color = ''
-        date_now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d")
+        date_now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d").date()
         if day != 0:
-            if datetime.datetime.strptime(f"{self.year}-{self.month}-{day}", "%Y-%m-%d") == date_now:
+            if date_day == date_now:
                 day_color = "now_day_color"
-            elif datetime.datetime.strptime(f"{self.year}-{self.month}-{day}", "%Y-%m-%d") <= date_now:
+                day_yes_or_no = f'<p>Записи с {str(datetime.datetime.now().time())[0:5]} до {str(services.high_time)[0:5]}</p>'
+            elif date_day <= date_now:
                 day_color = "pass_day_color"
+                day_yes_or_no = f'<p>Запись недоступна</p>'
             else:
                 day_color = "future_day_color"
+                day_yes_or_no = f'<p>Записи с {str(services.low_time)[0:5]} до {str(services.high_time)[0:5]}</p>'
         if day != 0 and day < 10 and self.month < 10:
-            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span>{day_yes_or_no }<div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day >= 10 and self.month < 10:
-            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span>{day_yes_or_no }<div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day < 10 and self.month >= 10:
-            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span>{day_yes_or_no }<div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day >= 10 and self.month >= 10:
-            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span><p>Записи с {services.low_time} до {services.high_time}</p><div style='height: 100px;'>{color_table}</div></a></td>"
+            return f"<td id={day_color}><a href='{self.project}/records/{ self.year }{ self.month }{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span>{day_yes_or_no }<div style='height: 100px;'>{color_table}</div></a></td>"
         return f"<td></td>"
 
     def formatweek(self, theweek, events):
@@ -96,9 +128,41 @@ class Calendar(HTMLCalendar):
 
     def formatmonth(self, withyear=True):
         events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month, project=self.project)
-        week_day = f'<tr><th> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th> Вс </th></tr>'
-        cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
-        cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
+        locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+        week_day = f'<tr><th id="border-left"> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th id="border-right"> Вс </th></tr>'
+        cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
+        cal += f'{week_day}\n'
+        for week in self.monthdays2calendar(self.year, self.month):
+            cal += f'{self.formatweek(week, events)}\n'
+        return cal
+
+
+class Calendar_for_profile(HTMLCalendar):
+    def __init__(self, year=None, month=None):
+        self.year = year
+        self.month = month
+        super(Calendar_for_profile, self).__init__()
+
+    def formatday(self, day, events):
+        events_per_day = events.filter(date_start__day=day)
+        d = ''
+        for event in events_per_day:
+            d += f'<li> {event.project.name_project} </li>'
+        if day != 0:
+            return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
+        return '<td></td>'
+
+    def formatweek(self, theweek, events):
+        week = ''
+        for d, weekday in theweek:
+            week += self.formatday(d, events)
+        return f'<tr> {week} </tr>'
+
+    def formatmonth(self, withyear=True):
+        events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month)
+        locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+        week_day = f'<tr><th id="border-left_prof"> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th id="border-right_prof"> Вс </th></tr>'
+        cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{week_day}\n'
         for week in self.monthdays2calendar(self.year, self.month):
             cal += f'{self.formatweek(week, events)}\n'

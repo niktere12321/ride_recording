@@ -1,13 +1,11 @@
 {% if user.is_authenticated %}
-  <div  style="background-color: rgb(66, 170, 255); margin-top: 0px">
+  <div class="switch_main">
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <a class="nav-link {% if index %}active{% endif %}"
           href="{% url 'records:index_services' %}"  style='color: rgb(0, 0, 255)'>
           Транспортные средства
         </a>
-      </li>
-      <li class="nav-item">
       </li>
       <li class="nav-item">
         <a href="{% url 'records:profiles' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>

@@ -12,6 +12,8 @@
     <a class="btn btn-info left" href="{% url 'users:login' %}"> Войти </a>
     {% endif %}
   </div>
-  <h1>Календарик покатушек на {{project_name}}</h1>
-  {{ calendar }}
+  <h1  class="text-center">Календарик покатушек на {{project_name}}</h1>
+  <table border="0" cellpadding="0" cellspacing="0" class="calendar">
+    {{calendar}}
+  </table>
 {% endblock %} 

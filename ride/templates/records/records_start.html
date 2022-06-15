@@ -5,83 +5,74 @@
 {% load static %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}
-<h1 style="margin-left: 42%">Запись</h1>
+  <h1 class="text-center">Запись</h1>
   <div class="row justify-content-center lol_width">
     <div class="col-md-8 p-5">
       <div class="card">
-        <div class="card-body" style="margin-left: 25%">
-          <h3 style="margin-left: 17%">
-            {{date_str}}
-          </h3>
+        <div class="card-body text-center">
           {% if not error and not old_date and not many_rec %}
-          <h6 style="margin-left: 6%">
-          Запись доступна с {{services.low_time}} до {{services.high_time}}
-          </h6>
+          <h3 class="text-center">{{date_str}}</h3>
+          <h6 class="text-center">Запись доступна с {{time_now_to_rec}} до {{services.high_time}}</h6>
           {% endif %}
-          {% if old_date or many_rec%}
-          <h3>
+          {% if error or old_date or many_rec %}
+          <h2 class="text-center">
+            {{error}}
             {{old_date}}
             {{many_rec}}
-          </h3>
-          {% endif %}
-          {% if error %}
-          <h2>
-            {{error}}
           </h2>
-          <a href="{% url 'records:records_start' project date %}" class="btn btn-primary" style="margin-left: 14%">
+          {% if not old_date %}
+          <a href="{% url 'records:records_start' project date %}" class="btn btn-primary">
             Начать заново
           </a>
           {% endif %}
-          {% if form.errors %}
-            {% for field in form %}
-              {% for error in field.errors %}            
-                <div class="alert alert-danger">
-                  {{ error|escape }}
-                </div>
-              {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-              <div class="alert alert-danger">
-                {{ error|escape }}
-              </div>
-            {% endfor %}
-            {% endif %}
-            <form method="post" style="margin: 20px 0 0 0 !important;">
-              {% csrf_token %}
-              {{ form.as_p }}
-              <div style="margin-left: 15%">
-                {% if error or old_date or many_rec %}
-                <a href="{% url 'records:index_records' project %}" class="btn btn-primary">
-                  На главную
-                </a>
-                {% endif %}
-                {% if not error and not old_date and not many_rec %}
-                <button type="submit" class="btn btn-primary">
-                  Записаться
-                </button>
-                {% endif %}
-              </div>
-            </form>
-          </div>
-          {% if not error and not old_date and not many_rec %}
-          <div id="slider-range"></div>
-          {{color_table|safe}}
+          <a href="{% url 'records:index_records' project %}" class="btn btn-primary">
+            На главную
+          </a>
           {% endif %}
+          {% if form.errors %}
+          {% for field in form %}
+          {% for error in field.errors %}            
+          <div class="alert alert-danger">
+            {{ error|escape }}
+          </div>
+          {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ error|escape }}
+          </div>
+          {% endfor %}
+          {% endif %}
+          <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <div>
+            {% if not error and not old_date and not many_rec %}
+              <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+                Записаться
+              </button>
+            {% endif %}
+            </div>
+          </form>
+        </div>
+        {% if not error and not old_date and not many_rec %}
+        <div id="slider-range"></div>
+        {% endif %}
+        {{color_table|safe}}
         <div class="card-header">
           Записи
         </div>
-        <div style='height: 230px'>
-          {{ride_rec|safe}}
-          {% if ride_rec_empty %}
-          <div style='text-align: center; position: relative; top: 40%;'>
-            <h1>{{ride_rec_empty}}</h1>
-          </div>
-          {% endif %}
+        <div style='min-height: 230px; max-height: 500px'>
+          <table border="0" cellpadding="0" cellspacing="0" class="table_record">
+          {{ ride_rec|safe }}
+          </table>
         </div>
       </div>
     </div>
   </div>
-{{calendar}}
+<table border="0" cellpadding="0" cellspacing="0" class="calendar">
+  {{calendar}}
+</table>
 <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
@@ -105,16 +96,29 @@
   $(document).ready(function(){
     $( "#slider-range" ).slider({
         range: true,
-        min: 0,
-        max: 288,
-        values: [ 120, 216 ],
+        min: {{get_int_low_time}},
+        max: {{get_int_high_time}},
+        values: [ {{get_int_low_time}}, {{get_int_high_time}} ],
         slide: function( event, ui ) {
           $("#id_start_time").val(time_hour(ui.values[0])+":"+time_minute(ui.values[0]));
           $("#id_end_time").val(time_hour(ui.values[1])+":"+time_minute(ui.values[1]));
         }
       });
 });
-$.timepicker.regional['ru'] = {
+document.getElementById('id_start_time').value = time_hour({{get_int_low_time}})+":"+time_minute({{get_int_low_time}});
+document.getElementById('id_end_time').value = time_hour({{get_int_high_time}})+":"+time_minute({{get_int_high_time}});
+{% comment %} function chek_time(){
+  var time_start = Number(document.getElementById('id_start_time'));
+  var time_end = Number(document.getElementById('id_end_time'));
+  var low_duration = Number({{time_now_to_rec}});
+  var high_duration = Number({{services.high_duration}});
+  if (time_start < low_duration) {
+    document.getElementById("id_start_time").style.display = "block";
+  } else {
+    document.getElementById("id_start_time").style.display = "none";
+  }
+} {% endcomment %}
+{% comment %} $.timepicker.regional['ru'] = {
 	timeOnlyTitle: 'Выберите время',
 	timeText: 'Время',
 	hourText: 'Часы',
@@ -138,6 +142,6 @@ $(function(){
   $("#id_end_time").timepicker({
     "stepMinute" : 5
   });
-});
+}); {% endcomment %}
 </script>
 {% endblock %} 

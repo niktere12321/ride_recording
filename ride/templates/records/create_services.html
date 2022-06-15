@@ -75,4 +75,40 @@
     </div>
   </div>
 </div>
+<script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
+<script>
+  $.timepicker.regional['ru'] = {
+    timeOnlyTitle: 'Выберите время',
+    timeText: 'Время',
+    hourText: 'Часы',
+    minuteText: 'Минуты',
+    secondText: 'Секунды',
+    millisecText: 'Миллисекунды',
+    timezoneText: 'Часовой пояс',
+    currentText: 'Сейчас',
+    closeText: 'Закрыть',
+    timeFormat: 'HH:mm',
+    amNames: ['AM', 'A'],
+    pmNames: ['PM', 'P'],
+    isRTL: false
+  };
+  $.timepicker.setDefaults($.timepicker.regional['ru']);
+  
+  $(function(){
+    $("#id_low_time").timepicker({
+      "stepMinute" : 5
+    });
+    $("#id_high_time").timepicker({
+      "stepMinute" : 5
+    });
+    $("#id_low_duration").timepicker({
+      "stepMinute" : 5
+    });
+    $("#id_high_duration").timepicker({
+      "stepMinute" : 5
+    });
+  });
+</script>
 {% endblock %}

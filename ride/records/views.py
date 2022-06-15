@@ -11,20 +11,22 @@ from django.views import generic
 from .decorathion import active, admin
 from .forms import RecordsForm, ServicesForm
 from .models import Records, Services
-from .utils import Calendar, convert_time, send_email, send_message
+from .utils import (Calendar, Calendar_for_profile, convert_time, get_time,
+                    send_email, send_message, time_step)
 
 User = get_user_model()
 
 
-@login_required
 def index_services(request):
-    if request.user.is_authenticated and request.user.active == True:
-        all_services = Services.objects.all()
-        context = {
-            'all_services': all_services,
-        }
-        return render(request, 'records/index_services.html', context)
-
+    if request.user.is_authenticated:
+        if request.user.active == True:
+            all_services = Services.objects.all()
+            context = {
+                'all_services': all_services,
+            }
+            return render(request, 'records/index_services.html', context)
+        return redirect(reverse('users:help_active'))
+    return redirect(reverse('users:login'))
 
 class CalendarView(generic.ListView):
     model = Records
@@ -39,6 +41,21 @@ class CalendarView(generic.ListView):
         context['calendar'] = mark_safe(html_cal)
         context['project'] = project
         context['project_name'] = Services.objects.get(pk=project).name_project
+        context['prev_month'] = prev_month(d)
+        context['next_month'] = next_month(d)
+        return context
+
+
+class Calendar_for_profileView(generic.ListView):
+    model = Records
+    template_name = 'records/profiles.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        d = get_date(self.request.GET.get('month', None))
+        cal = Calendar_for_profile(d.year, d.month)
+        html_cal = cal.formatmonth(withyear=True)
+        context['calendar'] = mark_safe(html_cal)
         context['prev_month'] = prev_month(d)
         context['next_month'] = next_month(d)
         return context
@@ -71,18 +88,33 @@ def next_month(d):
 def records_start(request, date, project):
     new_date = date[:4] + '-' + date[4:6] + '-' + date[6:]
     new_date_str = date[6:] + '.' + date[4:6] + '.' + date[:4]
+    date_record = datetime.strptime(new_date, '%Y-%m-%d').date()
     services = Services.objects.get(pk=project)
+    time_now_to_rec = services.low_time
+    if date_record == datetime.now().date():
+        time_now_to_rec = datetime.now().time()
     record_list = list(Records.objects.filter(date_start=new_date, project=project))
     record_list_p = list(Records.objects.filter(date_start=new_date))
     lol_red = f"<div style='height: 30px; width: 50px; background: red; display: table-cell;'> </div>"
     lol_green = f"<div style='height: 30px; width: 50px; background: green; display: table-cell;'> </div>"
+    lol_brown = f"<div style='height: 30px; width: 50px; background: #808080; display: table-cell;'> </div>"
     col = []
-    for i in range(services.low_time, services.high_time):
-        col.append(lol_green)
+    get_int_low_time = time_step(services.low_time)
+    get_int_high_time = time_step(services.high_time)
+    for i in range(get_int_low_time, get_int_high_time):
+        if date_record < datetime.now().date():
+            col.append(lol_brown)
+        elif date_record == datetime.now().date():
+            if time_step(datetime.now().time()) <= i:
+                col.append(lol_green)
+            else:
+                col.append(lol_brown)
+        else:
+            col.append(lol_green)
     for p in record_list:
         counter = 0
-        for i in range(services.low_time, services.high_time):
-            time_i = datetime.strptime(f"{i}:00:00", "%H:%M:%S")
+        for i in range(len(col)):
+            time_i = datetime.strptime(get_time(i, time_step(services.low_time)), "%H:%M:%S")
             time_start = datetime.strptime(str(p.start_time), "%H:%M:%S")
             time_end = datetime.strptime(str(p.end_time), "%H:%M:%S")
             if time_i >= time_start and time_i < time_end:
@@ -92,39 +124,34 @@ def records_start(request, date, project):
     for i in range(len(col)):
         line_1 += col[i]
     color_table = f"<div style='max-width: 100%; height: 30px; margin: 5px 5px 0px 5px;'>{line_1}</div>"
-    ride_rec = ''
-    for i in range(0, len(record_list)):
-        del_rec = f" <a href='../../../records/records/{record_list[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-        if (i % 3) == 0 and i != 0:
-            if request.user.role == 'admin':
-                ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span><br>"
-            else:
-                ride_rec += f"<span>{record_list[i].driver}:Время с {record_list[i].start_time} до {record_list[i].end_time}</span><br>"
-        else:
-            if request.user.role == 'admin':
-                ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span>"
-            else:
-                ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time};  </span>"
-    ride_rec_empty = None
-    if ride_rec == "":
-        ride_rec_empty = "День полностью пустой"
+    ride_rec = f'<th></th><th>0-1</th><th>6-12</th><th>12-18</th><th>18-24</th></tr>'
+    user_list = list(User.objects.filter(active=True))
+    for i in range(0, len(user_list)):
+        records_to_user = list(Records.objects.filter(date_start=new_date, project=project, driver=user_list[i].pk))
+        ride_rec += f'<tr><td>{user_list[i].username}</td>'
+        for j in range(0, len(records_to_user)):
+            ride_rec += f'<td>{j}</td>'
+        ride_rec += f'</tr>'
+    # for i in range(0, len(record_list)):
+    #     del_rec = f" <a href='../../../records/records/{record_list[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+    #     if request.user.role == 'admin':
+    #         ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span><br>"
+    #     else:
+    #         ride_rec += f"<span>{record_list[i].driver}:Время с {record_list[i].start_time} до {record_list[i].end_time}</span><br>"
     month_ride = int(date[4:6])
     d = get_date(request.GET.get('month', None))
     cal = Calendar(d.year, month_ride, project)
     html_cal = cal.formatmonth(withyear=True)
-    if datetime.strptime(new_date, '%Y-%m-%d') <= datetime.now():
-        context = {'ride_rec': ride_rec,
-                   'color_table': color_table,
-                   'calendar': mark_safe(html_cal),
-                   'date_str': new_date_str,
-                   'date': date,
-                   'project': project,
-                   'services': services,
-                   'ride_rec_empty': ride_rec_empty,
-                   'old_date': "Доступна только история дней минувших"}
-        return render(request, 'records/records_start.html', context)
     pk_user = User.objects.get(username=request.user.username).id
     about_count = Records.objects.filter(driver=pk_user, project=project, date_start__gt=datetime.now()).count()
+    if date_record < datetime.now().date():
+        context = {"old_date": "Запись недоступна",
+                   "ride_rec": ride_rec,
+                   "color_table": color_table,
+                   "calendar": mark_safe(html_cal),
+                   "date": date,
+                   "project": project}
+        return render(request, 'records/records_start.html', context)
     if about_count == 10:
         context = {'ride_rec': ride_rec,
                    'color_table': color_table,
@@ -133,28 +160,35 @@ def records_start(request, date, project):
                    'date': date,
                    'project': project,
                    'services': services,
-                   'ride_rec_empty': ride_rec_empty,
-                   'many_rec': "Максимум записей 10"}
+                   "error": "Максимум записей 10"}
         return render(request, 'records/records_start.html', context)
     form = RecordsForm(request.POST or None)
-    if request.POST and form.is_valid() and (datetime.strptime(new_date, '%Y-%m-%d') > datetime.now()):
+    if request.POST and form.is_valid() and (date_record >= datetime.now().date()):
         records = form.save(commit=False)
         records.date_start = new_date
         records.driver = request.user
         records.project = services
         start_ti = form.cleaned_data['start_time']
         end_ti = form.cleaned_data['end_time']
+        convert_end_time = convert_time(end_ti)
+        convert_start_time = convert_time(start_ti)
+        if date_record == datetime.now().date():
+            if datetime.strptime(f"{start_ti}", "%H:%M:%S").time() < datetime.now().time():
+                context = {"error": f"Нельзя записаться в прошлом.",
+                        "date": date,
+                        "project": project}
+                return render(request, 'records/records_start.html', context)
         if start_ti > end_ti:
             context = {"error": f"Введите корректное время поездки.",
                        "date": date,
                        "project": project}
             return render(request, 'records/records_start.html', context)
-        if convert_time(end_ti) - convert_time(start_ti) > convert_time(f'{services.high_duration}:00:00'):
+        if convert_end_time - convert_start_time > convert_time(f'{services.high_duration}:00:00'):
             context = {"error": f"Нельзя кататься больше {services.high_duration} часов",
                        "date": date,
                        "project": project}
             return render(request, 'records/records_start.html', context)
-        if (convert_time(end_ti) - convert_time(start_ti)) <= convert_time(f'{services.low_duration}:00:00'):
+        if (convert_end_time - convert_start_time) <= convert_time(f'{services.low_duration}:00:00'):
             context = {"error": f"Нельзя кататься меньше {services.low_duration} часов",
                        "date": date,
                        "project": project}
@@ -208,8 +242,10 @@ def records_start(request, date, project):
                'form': form,
                'calendar': mark_safe(html_cal),
                'date_str': new_date_str,
+               'get_int_low_time': get_int_low_time,
+               'get_int_high_time': get_int_high_time,
                'services': services,
-               'ride_rec_empty': ride_rec_empty,
+               'time_now_to_rec': time_now_to_rec,
                'date': date}
     return render(request, 'records/records_start.html', context)
 
@@ -218,22 +254,10 @@ def records_start(request, date, project):
 @login_required
 def profiles(request):
     user = User.objects.get(username=request.user.username)
-    all_services = list(Services.objects.filter(pk__gt=0))
-    html_rec_new = f""
-    for p in range(len(all_services)):
-        rec_new = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__gt=datetime.now()))
-        html_rec_new += f"<h4>{all_services[p].name_project}<h4>"
-        for i in range(0, len(rec_new)):
-            del_rec = f"<a href='records/{rec_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-            html_rec_new += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}: {rec_new[i].date_start}:{rec_new[i].start_time}-{rec_new[i].end_time}{del_rec}</span><br>"
-    html_rec_old = f""
-    for p in range(len(all_services)):
-        rec_old = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__lte=datetime.now()))
-        html_rec_old += f"<h4>{all_services[p].name_project}<h4>"
-        for i in range(0, len(rec_old)):
-            html_rec_old += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}: {rec_old[i].date_start}:{rec_old[i].start_time}-{rec_old[i].end_time}</span><br>"
-    context = {'html_rec_old': html_rec_old,
-               'html_rec_new': html_rec_new,
+    d = get_date(request.GET.get('month', None))
+    cal = Calendar_for_profile(d.year, d.month)
+    html_cal = cal.formatmonth(withyear=True)
+    context = {'calendar': mark_safe(html_cal), 
                'prof': user}
     return render(request, 'records/profiles.html', context)
 

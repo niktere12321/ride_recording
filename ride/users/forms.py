@@ -22,7 +22,7 @@ class CreationForm(UserCreationForm):
         widgets = {
             'first_name': TextInput(attrs={'type': 'text', 'required': True,}),
             'last_name': TextInput(attrs={'type': 'text', 'required': True}),
-            'email': EmailInput(attrs={'type': 'email', 'required': True}),
+            'email': EmailInput(attrs={'type': 'email', 'required': True, 'readonly': 'readonly'}),
         }
 
 
