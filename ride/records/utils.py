@@ -166,7 +166,13 @@ class Calendar_for_profile(HTMLCalendar):
 
     def formatmonth(self, withyear=True):
         events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month)
-        locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+        try:
+            locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+        except Exception:
+            try:
+                pass
+            except Exception as e:
+                pass
         week_day = f'<tr><th id="border-left_prof"> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th id="border-right_prof"> Вс </th></tr>'
         cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{week_day}\n'
