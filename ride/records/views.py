@@ -316,7 +316,7 @@ def profiles(request):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
             del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-            ride_rec += f'<tr if="count_new"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
+            ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у вас нету записей в будующем</th></tr>'
     """Таблица записей пользователя в прошлом"""
