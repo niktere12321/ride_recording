@@ -135,12 +135,12 @@ class Calendar(HTMLCalendar):
     def formatmonth(self, withyear=True):
         events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month, project=self.project)
         try:
-            locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+            locale.setlocale(locale, 'ru_RU.UTF-8')
         except Exception:
             try:
-                locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+                locale.setlocale(locale, 'ru_RU.UTF-8')
             except Exception as e:
-                locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
+                locale.setlocale(locale, 'ru_RU.UTF-8')
         week_day = f'<tr><th id="border-left"> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th id="border-right"> Вс </th></tr>'
         cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{week_day}\n'
