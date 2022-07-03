@@ -64,4 +64,75 @@
     {{ ride_rec_old|safe }}
   </table>
 </div>
+<script>
+  function pagination (pages, status, table, getIdToButton, getOldOrNewToClass) {
+    if (table.length >= 5 && status == false) {
+      let num_pages = Math.ceil(table.length / 5)
+      for (let i = pages; i < num_pages-1; i++) {
+        for (let j = 5; j < 10; j++) {
+          if ([].indexOf.call(table, table[(i*5)+j]) !== -1) {
+            table[(i*5)+j].style.display = 'none'
+          }
+        }
+      }
+      for (let i = pages; i < num_pages; i++) {
+        let button_pagination = document.createElement('button')
+        button_pagination.appendChild(document.createTextNode(i+1))
+        button_pagination.className = 'btn btn-primary pagination_button_' + getOldOrNewToClass
+        button_pagination.id = 'pagination_button'
+        document.getElementById(getIdToButton).appendChild(button_pagination)
+      }
+    }
+    else if (table.length >= 5 && status == true) {
+      let num_pages = Math.ceil(table.length / 5)
+      for (let i = pages-1; i < pages; i++) {
+        for (let j = 0; j < 5; j++) {
+          if ([].indexOf.call(table, table[(i*5)+j]) !== -1) {
+            table[(i*5)+j].style.display = 'table-row'
+          }
+        }
+      }
+      for (let i = 1; i < pages; i++) {
+        for (let j = 5; j > 0 ; j--) {
+          table[(i*5)-j].style.display = 'none'
+        }
+      }
+      for (let i = pages; i < num_pages; i++) {
+        for (let j = 0; j < 5 ; j++) {
+          if ([].indexOf.call(table, table[(i*5)+j]) !== -1) {
+            table[(i*5)+j].style.display = 'none'
+          }
+        }
+      }
+    }
+  }
+
+  let records_count_new = document.querySelectorAll('tr#count_new')
+  let records_count_old = document.querySelectorAll('tr#count_old')
+
+  if (records_count_new.length >= 5) {
+    pagination(0, false, records_count_new, 'new_rec', 'new')
+  }
+  if (records_count_old.length >= 5) {
+    pagination(0, false, records_count_old, 'old_rec', 'old')
+  }
+
+  let num_of_button_old = document.getElementsByClassName('btn btn-primary pagination_button_old')
+  let num_of_button_new = document.getElementsByClassName('btn btn-primary pagination_button_new')
+  function get_click_to_button() {
+    let records_count_new = document.querySelectorAll('tr#count_new')
+    for (let i = 0; i < num_of_button_new.length; i++) {
+      num_of_button_new[i].addEventListener("click", function(e) {
+        pagination(num_of_button_new[i].textContent, true, records_count_new);
+      }, false);
+    }
+    let records_count_old = document.querySelectorAll('tr#count_old')
+    for (let i = 0; i < num_of_button_old.length; i++) {
+      num_of_button_old[i].addEventListener("click", function(e) {
+        pagination(num_of_button_old[i].textContent, true, records_count_old);
+      }, false);
+    }
+  }
+  get_click_to_button()
+</script>
 {% endblock %}

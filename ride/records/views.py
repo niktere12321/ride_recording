@@ -310,26 +310,24 @@ def profiles(request):
     user = User.objects.get(username=request.user.username)
     records_to_user_new = list(Records.objects.filter(date_start__gte=datetime.now().date(), driver=user).order_by('date_start','start_time'))
     if len(records_to_user_new) > 0:
-        ride_rec = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        ride_rec = f'<tr><th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(records_to_user_new)):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
             del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-            ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td>'
-        ride_rec += f'</tr>'
+            ride_rec += f'<tr if="count_new"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у вас нету записей в будующем</th></tr>'
     """Таблица записей пользователя в прошлом"""
     records_to_user_old = list(Records.objects.filter(date_start__lt=datetime.now().date(), driver=user).order_by('-date_start','-start_time'))
     if len(records_to_user_old) > 0:
-        ride_rec_old = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        ride_rec_old = f'<tr><th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(records_to_user_old)):
             services = get_object_or_404(Services, pk=int(records_to_user_old[i].project.pk))
             count_rec += 1
-            ride_rec_old += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td>'
-        ride_rec_old += f'</tr>'
+            ride_rec_old += f'<tr id="count_old"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td></tr>'
     else:
         ride_rec_old = f'<tr><th style="text-align: center">На сегоднишний день у вас нету записей в прошлом</th></tr>'
     context = {'ride_rec_old': ride_rec_old,
@@ -499,14 +497,13 @@ def admining_statistics(request, pass_date, future_date):
     else:
         records_to_user_new = []
     if len(records_to_user_new) > 0:
-        ride_rec = f'<th></th><th>Пользователь</th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        ride_rec = f'<tr><th></th><th>Пользователь</th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(records_to_user_new)):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
             del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-            ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{records_to_user_new[i].driver.first_name} {records_to_user_new[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td>'
-        ride_rec += f'</tr>'
+            ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{records_to_user_new[i].driver.first_name} {records_to_user_new[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">С {pass_date} до {future_date} нету новых записей</th></tr>'
     """Таблица прошлых записей всех пользователей"""
@@ -517,13 +514,12 @@ def admining_statistics(request, pass_date, future_date):
     else:
         records_to_user_old = []
     if len(records_to_user_old) > 0:
-        ride_rec_old = f'<th></th><th>Пользователь</th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        ride_rec_old = f'<tr><th></th><th>Пользователь</th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(records_to_user_old)):
             services = get_object_or_404(Services, pk=int(records_to_user_old[i].project.pk))
             count_rec += 1
-            ride_rec_old += f'<tr id="count_old"><td>{count_rec}</td><td>{records_to_user_old[i].driver.first_name} {records_to_user_old[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td>'
-        ride_rec_old += f'</tr>'
+            ride_rec_old += f'<tr id="count_old"><td>{count_rec}</td><td>{records_to_user_old[i].driver.first_name} {records_to_user_old[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td></tr>'
     else:
         ride_rec_old = f'<tr><th style="text-align: center">С {pass_date} до {future_date} нету прошедших записей</th></tr>'
     """Диаграмма самых активных пользователей"""
@@ -661,26 +657,24 @@ def admining_pk(request, username):
     user = get_object_or_404(User, username=username)
     records_to_user_new = list(Records.objects.filter(date_start__gte=datetime.now().date(), driver=user).order_by('date_start','start_time'))
     if len(records_to_user_new) > 0:
-        ride_rec = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        ride_rec = f'<tr><th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(records_to_user_new)):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
             del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-            ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td>'
-        ride_rec += f'</tr>'
+            ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у пользователя нету записей в будующем</th></tr>'
     """Таблица всех записей пользователя в прошлом"""
     records_to_user_old = list(Records.objects.filter(date_start__lt=datetime.now().date(), driver=user).order_by('-date_start','-start_time'))
     if len(records_to_user_old) > 0:
-        ride_rec_old = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        ride_rec_old = f'<tr><th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(records_to_user_old)):
             services = get_object_or_404(Services, pk=int(records_to_user_old[i].project.pk))
             count_rec += 1
-            ride_rec_old += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td>'
-        ride_rec_old += f'</tr>'
+            ride_rec_old += f'<tr id="count_old"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td></tr>'
     else:
         ride_rec_old = f'<tr><th style="text-align: center">На сегоднишний день у пользователя нету записей в прошлом</th></tr>'
     active = ""
