@@ -272,3 +272,10 @@ body {font-family: Arial;}
   from {opacity: 0;}
   to {opacity: 1;}
 }
+
+@media screen and (min-device-width: 1080px) {
+  .minimumiPadWidth {
+    height: 565px;
+    width: 400px;
+  }
+}
