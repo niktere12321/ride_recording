@@ -10,26 +10,22 @@ body {
 }
 
 header {
-  background: rgb(35,60,175); /* Old browsers */
-  background: -moz-linear-gradient(top, rgba(35,60,175,1) 1%, rgba(43,119,226,1) 35%, rgba(37,193,237,1) 70%, rgba(37,232,225,1) 91%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(top, rgba(35,60,175,1) 1%,rgba(43,119,226,1) 35%,rgba(37,193,237,1) 70%,rgba(37,232,225,1) 91%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom, rgba(35,60,175,1) 1%,rgba(43,119,226,1) 35%,rgba(37,193,237,1) 70%,rgba(37,232,225,1) 91%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#233caf', endColorstr='#25e8e1',GradientType=0 );
+  background: #3c8dbc;
   height: 130px;
   padding: 0px 0px 0px 0px;
 }
 
 .switch_main {
-  background: rgb(37,232,225); /* Old browsers */
-  background: -moz-linear-gradient(top, rgba(37,232,225,1) 0%, rgba(38,242,225,1) 27%, rgba(37,232,183,1) 52%, rgba(36,229,145,1) 83%, rgba(37,232,134,1) 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(top, rgba(37,232,225,1) 0%,rgba(38,242,225,1) 27%,rgba(37,232,183,1) 52%,rgba(36,229,145,1) 83%,rgba(37,232,134,1) 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom, rgba(37,232,225,1) 0%,rgba(38,242,225,1) 27%,rgba(37,232,183,1) 52%,rgba(36,229,145,1) 83%,rgba(37,232,134,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#25e8e1', endColorstr='#25e886',GradientType=0 );
+  background: #3c8dbc;
 }
 
 main {
   padding-bottom: 30px;
   background: rgb(255, 255, 255);
+}
+
+.tabs-menu.desktop {
+  overflow: hidden;
 }
 
 footer {
@@ -38,11 +34,7 @@ footer {
   width: 100%;
   height: 48px;
   margin-bottom: 0px;
-  background: rgb(37,231,136); /* Old browsers */
-  background: -moz-linear-gradient(top, rgba(37,231,136,1) 0%, rgba(226,239,45,1) 46%, rgba(242,174,48,1) 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(top, rgba(37,231,136,1) 0%,rgba(226,239,45,1) 46%,rgba(242,174,48,1) 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom, rgba(37,231,136,1) 0%,rgba(226,239,45,1) 46%,rgba(242,174,48,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#25e788', endColorstr='#f2ae30',GradientType=0 );
+  background: #3c8dbc;
 }
 
 #pass_day_color{
@@ -51,6 +43,12 @@ footer {
 
 #now_day_color{
   background-color: rgba(247, 237, 97, 0.3);
+}
+
+.form-inline .form-control {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
 }
 
 #future_day_color{
@@ -85,6 +83,11 @@ footer {
 	padding: 5px;
 }
 
+.error {
+  background-color: rgb(226, 180, 28);
+  color: red;
+}
+
 .lol_width{
   max-width: 100%;
 }
@@ -115,38 +118,20 @@ footer {
   margin: 10px;
 }
 
-.table_record {
-  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-  font-size: 14px;
-  border-collapse: collapse;
-  text-align: center;
+.piechart {
+  display: inline-block;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
 }
 
-.table_record th, .table_record td:first-child {
-  background: #AFCDE7;
-  color: white;
-  padding: 10px 20px;
-}
-
-.table_record th, .table_record td {
-  border-style: solid;
-  border-width: 0 1px 1px 0;
-  border-color: white;
-  }
-
-.table_record td {
-  background: #D8E6F3;
-  }
-
-.table_record th:first-child, .table_record td:first-child {
-  text-align: left;
-}
 
 .calendar {
   border-collapse: separate;
   border: solid black 3px;
   border-radius: 30px;
-  width: 90%;
+  width: 80%;
   margin: auto;
   font-size: 13px;
   margin-bottom: 30px;
@@ -174,57 +159,6 @@ footer {
 
 .calendar tr:last-of-type td:last-of-type {
   border-bottom-right-radius: 27px;
-}
-
-.calendar_profile {
-  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-  font-size: 14px;
-  border-radius: 10px;
-  border-spacing: 0;
-  text-align: center;
-  width: 500px;
-}
-.calendar_profile th {
-  background: #BCEBDD;
-  color: white;
-  text-shadow: 0 1px 1px #2D2020;
-  padding: 10px 20px;
-}
-.calendar_profile th, .calendar_profile td {
-  border-style: solid;
-  border-width: 0 1px 1px 0;
-  border-color: white;
-}
-.calendar_profile th:first-child, .calendar_profile td:first-child {
-  text-align: left;
-}
-.calendar_profile th:first-child {
-  border-top-left-radius: 10px;
-}
-.calendar_profile th:last-child {
-  border-top-right-radius: 10px;
-  border-right: none;
-}
-.calendar_profile td {
-  padding: 10px 20px;
-  background: #F8E391;
-}
-.calendar_profile tr:last-child td:first-child {
-  border-radius: 0 0 0 10px;
-}
-.calendar_profile tr:last-child td:last-child {
-  border-radius: 0 0 10px 0;
-}
-.calendar_profile tr td:last-child {
-  border-right: none;
-}
-
-#border-right_prof{
-  border-top-right-radius: 0px;
-}
-
-#border-left_prof{
-  border-top-left-radius: 0px;
 }
 
 .month {
@@ -275,4 +209,66 @@ h3 {
 
 #clickme {
   color: rgb(255, 255, 255);
+}
+
+/* for admining_statistics */
+
+.disp_none {
+  display: none;
+}
+
+.disp_table {
+  display: table-row;
+}
+
+body {font-family: Arial;}
+  
+/* Style the tab */
+.tab {
+  margin-top: 20px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  width: 50%;
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  -webkit-animation: fadeEffect 1s;
+  animation: fadeEffect 2s;
+}
+@-webkit-keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
 }

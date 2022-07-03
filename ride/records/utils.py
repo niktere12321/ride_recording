@@ -17,6 +17,7 @@ bot = telegram.Bot(token=TELEGRAM_TOKEN)
 
 
 def send_message(message):
+    """Отправка сообщение администратору в телеграмм"""
     text = message
     try:
         bot.send_message(CHAT_ID, text)
@@ -26,6 +27,7 @@ def send_message(message):
 
 
 def send_email(to_email, name_project, first_name, last_name, date, start_time, end_time):
+    """Отравка сообщения на почту"""
     email = [to_email]
     email_from = settings.EMAIL_HOST_USER
     subject = f'Вы записались на {name_project}'
@@ -60,6 +62,7 @@ def time_step(time):
 
 
 class Calendar(HTMLCalendar):
+    """Создание основного календаря"""
     def __init__(self, year=None, month=None, project=None):
         self.year = year
         self.month = month
@@ -71,6 +74,7 @@ class Calendar(HTMLCalendar):
         services = Services.objects.get(pk=self.project)
         if day != 0:
             date_day = datetime.datetime.strptime(f"{self.year}-{self.month}-{day}", "%Y-%m-%d").date()
+        """Получение полоски показывающей загруженость дня"""
         lol_red = f"<div style='height: 30px; width: 10px; background: red; display: table-cell;'> </div>"
         lol_green = f"<div style='height: 30px; width: 10px; background: green; display: table-cell;'> </div>"
         lol_brown = f"<div style='height: 30px; width: 50px; background: #808080; display: table-cell;'> </div>"
@@ -98,6 +102,7 @@ class Calendar(HTMLCalendar):
         for i in range(len(col)):
             line_1 += col[i]
         color_table = f"<div>{line_1}</div>"
+        """Создание Id для дня с изменением цвета"""
         day_color = ''
         date_now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d").date()
         if day != 0:
@@ -110,6 +115,7 @@ class Calendar(HTMLCalendar):
             else:
                 day_color = "future_day_color"
                 day_yes_or_no = f'<p>Записи с {str(services.low_time)[0:5]} до {str(services.high_time)[0:5]}</p>'
+        """Создание ячейки дня с ссылкой"""
         if day != 0 and day < 10 and self.month < 10:
             return f"<td id={day_color}><a href='{self.project}/records/{ self.year }0{ self.month }0{ day }/'> <span class='date' style='position: relative; bottom: 20px;'>{day}</span>{day_yes_or_no }<div style='height: 100px;'>{color_table}</div></a></td>"
         elif day != 0 and day >= 10 and self.month < 10:
@@ -132,48 +138,10 @@ class Calendar(HTMLCalendar):
             locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
         except Exception:
             try:
-                pass
+                locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
             except Exception as e:
-                pass
+                locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
         week_day = f'<tr><th id="border-left"> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th id="border-right"> Вс </th></tr>'
-        cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
-        cal += f'{week_day}\n'
-        for week in self.monthdays2calendar(self.year, self.month):
-            cal += f'{self.formatweek(week, events)}\n'
-        return cal
-
-
-class Calendar_for_profile(HTMLCalendar):
-    def __init__(self, year=None, month=None):
-        self.year = year
-        self.month = month
-        super(Calendar_for_profile, self).__init__()
-
-    def formatday(self, day, events):
-        events_per_day = events.filter(date_start__day=day)
-        d = ''
-        for event in events_per_day:
-            d += f'<li> {event.project.name_project} </li>'
-        if day != 0:
-            return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
-        return '<td></td>'
-
-    def formatweek(self, theweek, events):
-        week = ''
-        for d, weekday in theweek:
-            week += self.formatday(d, events)
-        return f'<tr> {week} </tr>'
-
-    def formatmonth(self, withyear=True):
-        events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month)
-        try:
-            locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
-        except Exception:
-            try:
-                pass
-            except Exception as e:
-                pass
-        week_day = f'<tr><th id="border-left_prof"> Пн </th><th> Вт </th><th> Ср </th><th> Чт </th><th> Пт </th><th> Сб </th><th id="border-right_prof"> Вс </th></tr>'
         cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{week_day}\n'
         for week in self.monthdays2calendar(self.year, self.month):

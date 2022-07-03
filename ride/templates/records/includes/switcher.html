@@ -2,25 +2,25 @@
   <div class="switch_main">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link {% if index %}active{% endif %}"
-          href="{% url 'records:index_services' %}"  style='color: rgb(0, 0, 255)'>
+        <a class="nav-link" {% if index %}active{% endif %}
+          href="{% url 'records:index_services' %}"  style='color: rgb(255, 255, 255)'>
           Транспортные средства
         </a>
       </li>
       <li class="nav-item">
-        <a href="{% url 'records:profiles' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
+        <a href="{% url 'records:profiles' %}" class="nav-link"  style='color: rgb(255, 255, 255)'>
           Ваш профиль
         </a>
       </li>
       {% if user.is_authenticated and user.role == 'admin' %}
       <li class="nav-item">
-        <a href="{% url 'records:admining' %}" class="nav-link"  style='color: rgb(0, 0, 255)'>
+        <a href="{% url 'records:admining' %}" class="nav-link"  style='color: rgb(255, 255, 255)'>
           Управление
         </a>
       </li>
       {% endif %}
       <li class="nav-item">
-        <a href="{% url 'users:logout'%}" class="nav-link" style='color: rgb(0, 0, 255)'>
+        <a href="{% url 'users:logout'%}" class="nav-link" style='color: rgb(255, 255, 255)'>
           Выйти
         </a>
       </li>

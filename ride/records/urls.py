@@ -20,6 +20,6 @@ urlpatterns = [
     path('records/admining/<str:username>', views.admining_pk, name='admining_pk'),
     path('records/admining/delete/<str:username>', views.user_delete, name='user_delete'),
     path('records/admining/services/<int:services_id>', views.admining_services_del, name='admining_services_del'),
-    path('records/admining_statistics', views.admining_statistics, name='admining_statistics'),
+    path('records/admining_statistics/<str:pass_date>/<str:future_date>', views.admining_statistics, name='admining_statistics'),
     path('records/admining/user_pass_or_active/<str:username>', views.user_pass_or_active, name='user_pass_or_active'),
 ]

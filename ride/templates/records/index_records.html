@@ -6,14 +6,18 @@
 {% block content %}
 {% include 'records/includes/switcher.html' %}
   <div class="clearfix">
-    <a class="btn btn-info right" href="{% url 'records:index_records' project %}?{{ next_month }}"> Следующий месяц </a>
-    <a class="btn btn-info left" href="{% url 'records:index_records' project %}?{{prev_month}}"> Предыдущий месяц </a>
     {% if not user.is_authenticated %}
     <a class="btn btn-info left" href="{% url 'users:login' %}"> Войти </a>
     {% endif %}
   </div>
-  <h1  class="text-center">Календарик покатушек на {{project_name}}</h1>
-  <table border="0" cellpadding="0" cellspacing="0" class="calendar">
+  <h1 class="text-center">Календарик покатушек на {{project_name}}</h1>
+  <a class="left" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{prev_month}}">
+    <img class="card-img my-2" style="filter: blur(1.2px);" src="{% static 'img/past_cal.png' %}" width="48px" height="981px" alt="Предыдущий месяц">
+  </a>
+  <a class="right" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{ next_month }}">
+    <img class="card-img my-2" style="filter: blur(1.2px);" src="{% static 'img/future_cal.png' %}" width="48px" height="981px" alt="Следующий месяц">
+  </a>
+  <table border="0" cellpadding="0" cellspacing="0" class="calendar" style="position: relative; display: inline-block">
     {{calendar}}
   </table>
 {% endblock %} 

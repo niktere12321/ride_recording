@@ -8,25 +8,33 @@
 {% include 'records/includes/switcher.html' %}
   <h1 class="text-center">Выбор транспортного средства:</h1>
   {% for project in all_services %}
-    <div style="position: relative; margin: 20px; padding: 20px; border: 1px solid #2a52be; display: inline-block; border-radius: 20px; height: 30%; width: 45%; text-align: center">
+    <div style="position: relative; margin: 20px; padding: 20px; margin-bottom: 40px; border: 1px solid #2a52be; display: inline-block; border-radius: 20px; min-height: 690px; max-height: 690px; width: 45%; text-align: center">
       <div>
         <h2>{{ project.name_project }}</h2>
       </div>
       <div>
-        {% thumbnail project.image "600x300" crop="center" upscale=True as im %}
+        {% thumbnail project.image "600x300" upscale=True as im %}
           <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету" style="border-radius: 20px;">
         {% endthumbnail %}
       </div>
       <div style="word-wrap: break-word;">
+        {% if project.description %}
         {{ project.description }}
+        {% else %}
+        <br>
+        {% endif %}
       </div>
       <br>
       <div>
-        Контакты: {{ project.contact }}
+      {% if project.contact %}
+        Помощь в дороге: {{ project.contact }}
+        {%else %}
+        <br>
+      {% endif %}
       </div>
       <br>
       <a href="{% url 'records:index_records' project.pk %}">
-        <div class="btn btn-primary" style="width: 50%; font-size: 2.5vw; white-space: nowrap;">
+        <div class="btn btn-primary" style="width: 50%; font-size: 2.5vw; white-space: nowrap; border-radius: 15px;">
           Расписание
         </div>
       </a>

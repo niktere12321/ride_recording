@@ -12,7 +12,7 @@
         <div class="card-body text-center">
           {% if not error and not old_date and not many_rec %}
           <h3 class="text-center">{{date_str}}</h3>
-          <h6 class="text-center">Запись доступна с {{time_now_to_rec}} до {{services.high_time}}</h6>
+          <h6 class="text-center" style="margin: 10px 0px 40px">Запись доступна с {{time_now_to_rec}} до {{services.high_time}}</h6>
           {% endif %}
           {% if error or old_date or many_rec %}
           <h2 class="text-center">
@@ -21,9 +21,11 @@
             {{many_rec}}
           </h2>
           {% if not old_date %}
+          {% if not many_rec %}
           <a href="{% url 'records:records_start' project date %}" class="btn btn-primary">
             Начать заново
           </a>
+          {% endif %}
           {% endif %}
           <a href="{% url 'records:index_records' project %}" class="btn btn-primary">
             На главную
@@ -48,7 +50,7 @@
             {{ form }}
             <div>
             {% if not error and not old_date and not many_rec %}
-              <button type="submit" class="btn btn-primary" style="margin-top: 20px;">
+              <button type="submit" class="btn btn-primary" style="margin: 30px 0px 20px;">
                 Записаться
               </button>
             {% endif %}
@@ -63,20 +65,75 @@
           Записи
         </div>
         <div style='min-height: 230px; max-height: 500px'>
-          <table border="0" cellpadding="0" cellspacing="0" class="table_record">
+          {% if ride_rec %}
+          <table border="0" cellpadding="0" cellspacing="0" class="table table-hover">
           {{ ride_rec|safe }}
           </table>
+          {% else %}
+          {{ ride_rec_empty|safe }}
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-<table border="0" cellpadding="0" cellspacing="0" class="calendar">
+<div class="left" style="width: 9%; margin-top: 245.5px; position: relative; display: inline-block">
+  <img id="prev_img" class="card-img my-2" style="transform: rotate(180deg);" src="{% static 'img/arrow-point.png' %}" width="48px" height="490px" alt="Предыдущий месяц">
+</div>
+<div class="right" style="width: 9%; margin-top: 245.5px; position: relative; display: inline-block">
+  <img id="next_img"  class="card-img my-2" src="{% static 'img/arrow-point.png' %}" width="48px" height="490px" alt="Следующий месяц">
+</div>
+<table border="0" cellpadding="0" cellspacing="0" class="calendar" id='now' style="position: relative; display: inline-block">
   {{calendar}}
+</table>
+<table border="0" cellpadding="0" cellspacing="0" class="calendar" id='next' style="position: relative; display: none">
+  {{calendar_next}}
+</table>
+<table border="0" cellpadding="0" cellspacing="0" class="calendar" id='prev' style="position: relative; display: none">
+  {{calendar_prev}}
 </table>
 <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
 <script>
+  function clickScroller() {
+    if (document.getElementById('now').style.display == 'inline-block') {
+      document.getElementById('next_img').addEventListener("click", function() {
+        document.getElementById('now').style.display = 'none';
+        document.getElementById('next_img').style.display = 'none';
+        document.getElementById('next').style.display = 'inline-block';
+        clickScroller()
+      });
+    };
+    if (document.getElementById('now').style.display == 'none' && document.getElementById('next').style.display == 'inline-block') {
+      document.getElementById('prev_img').addEventListener("click", function() {
+        document.getElementById('next').style.display = 'none';
+        document.getElementById('prev').style.display = 'none';
+        document.getElementById('now').style.display = 'inline-block';
+        document.getElementById('next_img').style.display = 'inline';
+        document.getElementById('prev_img').style.display = 'inline';
+        clickScroller()
+      });
+    };
+    if (document.getElementById('now').style.display == 'inline-block') {
+      document.getElementById('prev_img').addEventListener("click", function() {
+        document.getElementById('now').style.display = 'none';
+        document.getElementById('prev_img').style.display = 'none';
+        document.getElementById('prev').style.display = 'inline-block';
+        clickScroller()
+      });
+    };
+    if (document.getElementById('now').style.display == 'none' && document.getElementById('prev').style.display == 'inline-block') {
+      document.getElementById('next_img').addEventListener("click", function() {
+        document.getElementById('prev').style.display = 'none';
+        document.getElementById('next').style.display = 'none';
+        document.getElementById('now').style.display = 'inline-block';
+        document.getElementById('next_img').style.display = 'inline';
+        document.getElementById('prev_img').style.display = 'inline';
+        clickScroller()
+      });
+    };
+};
+  clickScroller()
   function time_hour(val){
     if (val < 120){
       return '0' + (val - val % 12) / 12;
@@ -107,41 +164,5 @@
 });
 document.getElementById('id_start_time').value = time_hour({{get_int_low_time}})+":"+time_minute({{get_int_low_time}});
 document.getElementById('id_end_time').value = time_hour({{get_int_high_time}})+":"+time_minute({{get_int_high_time}});
-{% comment %} function chek_time(){
-  var time_start = Number(document.getElementById('id_start_time'));
-  var time_end = Number(document.getElementById('id_end_time'));
-  var low_duration = Number({{time_now_to_rec}});
-  var high_duration = Number({{services.high_duration}});
-  if (time_start < low_duration) {
-    document.getElementById("id_start_time").style.display = "block";
-  } else {
-    document.getElementById("id_start_time").style.display = "none";
-  }
-} {% endcomment %}
-{% comment %} $.timepicker.regional['ru'] = {
-	timeOnlyTitle: 'Выберите время',
-	timeText: 'Время',
-	hourText: 'Часы',
-	minuteText: 'Минуты',
-	secondText: 'Секунды',
-	millisecText: 'Миллисекунды',
-	timezoneText: 'Часовой пояс',
-	currentText: 'Сейчас',
-	closeText: 'Закрыть',
-	timeFormat: 'HH:mm',
-	amNames: ['AM', 'A'],
-	pmNames: ['PM', 'P'],
-	isRTL: false
-};
-$.timepicker.setDefaults($.timepicker.regional['ru']);
-
-$(function(){
-	$("#id_start_time").timepicker({
-    "stepMinute" : 5
-  });
-  $("#id_end_time").timepicker({
-    "stepMinute" : 5
-  });
-}); {% endcomment %}
 </script>
 {% endblock %} 

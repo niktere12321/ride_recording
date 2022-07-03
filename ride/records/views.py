@@ -11,13 +11,14 @@ from django.views import generic
 from .decorathion import active, admin
 from .forms import RecordsForm, ServicesForm
 from .models import Records, Services
-from .utils import (Calendar, Calendar_for_profile, convert_time, get_time,
-                    send_email, send_message, time_step)
+from .utils import (Calendar, convert_time, get_time, send_email, send_message,
+                    time_step)
 
 User = get_user_model()
 
 
 def index_services(request):
+    """Выбор странички с транспортным средством"""
     if request.user.is_authenticated:
         if request.user.active == True:
             all_services = Services.objects.all()
@@ -28,11 +29,14 @@ def index_services(request):
         return redirect(reverse('users:help_active'))
     return redirect(reverse('users:login'))
 
+
 class CalendarView(generic.ListView):
+    """Основной календарь"""
     model = Records
     template_name = 'records/index_records.html'
 
     def get_context_data(self, **kwargs):
+        """Основной календарь"""
         context = super().get_context_data(**kwargs)
         d = get_date(self.request.GET.get('month', None))
         project = self.kwargs['project']
@@ -46,22 +50,8 @@ class CalendarView(generic.ListView):
         return context
 
 
-class Calendar_for_profileView(generic.ListView):
-    model = Records
-    template_name = 'records/profiles.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        d = get_date(self.request.GET.get('month', None))
-        cal = Calendar_for_profile(d.year, d.month)
-        html_cal = cal.formatmonth(withyear=True)
-        context['calendar'] = mark_safe(html_cal)
-        context['prev_month'] = prev_month(d)
-        context['next_month'] = next_month(d)
-        return context
-
-
 def get_date(req_month):
+    """Для основного календаря"""
     if req_month:
         year, month = (int(x) for x in req_month.split('-'))
         return date(year, month, day=1)
@@ -69,6 +59,7 @@ def get_date(req_month):
 
 
 def prev_month(d):
+    """Для основного календаря"""
     first = d.replace(day=1)
     prev_month = first - timedelta(days=1)
     month = 'month=' + str(prev_month.year) + '-' + str(prev_month.month)
@@ -76,6 +67,7 @@ def prev_month(d):
 
 
 def next_month(d):
+    """Для основного календаря"""
     days_in_month = calendar.monthrange(d.year, d.month)[1]
     last = d.replace(day=days_in_month)
     next_month = last + timedelta(days=1)
@@ -83,9 +75,27 @@ def next_month(d):
     return month
 
 
+def prev_month_new(d):
+    """Для странички с записью"""
+    first = d.replace(day=1)
+    prev_month = first - timedelta(days=1)
+    month = str(prev_month.year) + '-' + str(prev_month.month)
+    return month
+
+
+def next_month_new(d):
+    """Для странички с записью"""
+    days_in_month = calendar.monthrange(d.year, d.month)[1]
+    last = d.replace(day=days_in_month)
+    next_month = last + timedelta(days=1)
+    month = str(next_month.year) + '-' + str(next_month.month)
+    return month
+
+
 @active
 @login_required
 def records_start(request, date, project):
+    """Создание записи для пользователя"""
     new_date = date[:4] + '-' + date[4:6] + '-' + date[6:]
     new_date_str = date[6:] + '.' + date[4:6] + '.' + date[:4]
     date_record = datetime.strptime(new_date, '%Y-%m-%d').date()
@@ -95,6 +105,7 @@ def records_start(request, date, project):
         time_now_to_rec = datetime.now().time()
     record_list = list(Records.objects.filter(date_start=new_date, project=project))
     record_list_p = list(Records.objects.filter(date_start=new_date))
+    """Получение полоски показывающей загруженость дня"""
     lol_red = f"<div style='height: 30px; width: 50px; background: red; display: table-cell;'> </div>"
     lol_green = f"<div style='height: 30px; width: 50px; background: green; display: table-cell;'> </div>"
     lol_brown = f"<div style='height: 30px; width: 50px; background: #808080; display: table-cell;'> </div>"
@@ -124,45 +135,71 @@ def records_start(request, date, project):
     for i in range(len(col)):
         line_1 += col[i]
     color_table = f"<div style='max-width: 100%; height: 30px; margin: 5px 5px 0px 5px;'>{line_1}</div>"
-    ride_rec = f'<th></th><th>0-1</th><th>6-12</th><th>12-18</th><th>18-24</th></tr>'
-    user_list = list(User.objects.filter(active=True))
-    for i in range(0, len(user_list)):
-        records_to_user = list(Records.objects.filter(date_start=new_date, project=project, driver=user_list[i].pk))
-        ride_rec += f'<tr><td>{user_list[i].username}</td>'
-        for j in range(0, len(records_to_user)):
-            ride_rec += f'<td>{j}</td>'
-        ride_rec += f'</tr>'
-    # for i in range(0, len(record_list)):
-    #     del_rec = f" <a href='../../../records/records/{record_list[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-    #     if request.user.role == 'admin':
-    #         ride_rec += f"<span>{record_list[i].driver}: Время с {record_list[i].start_time} до {record_list[i].end_time} {del_rec}</span><br>"
-    #     else: 
-    #         ride_rec += f"<span>{record_list[i].driver}:Время с {record_list[i].start_time} до {record_list[i].end_time}</span><br>"
-    month_ride = int(date[4:6])
-    d = get_date(request.GET.get('month', None))
-    cal = Calendar(d.year, month_ride, project)
+    """Создание таблицы показывающей записи в этот день"""
+    if len(record_list) > 0:
+        ride_rec_empty = None
+        user_list = list(User.objects.filter(active=True))
+        ride_rec = f'<th></th><th>Транспортное средство</th><th>Имя пользователя</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(user_list)):
+            records_to_user = list(Records.objects.filter(date_start=new_date, project=project, driver=user_list[i].pk).order_by('start_time'))
+            for j in range(0, len(records_to_user)):
+                count_rec += 1
+                if request.user.role == 'admin' or request.user.pk == user_list[i].pk:
+                    del_rec = f" <a href='../../../records/records/{records_to_user[j].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+                    ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name} {user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time} {del_rec}</td>'
+                else:
+                    ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name} {user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time}</td>'
+            ride_rec += f'</tr>'
+    else:
+        ride_rec = None
+        ride_rec_empty = f"<h1 style='text-align: center; margin-top: 10%;'>День полностью пуст</h1>"
+    """Получение правильных данных о месяце"""
+    if new_date[5:7] == '10' or new_date[5:7] == '11' or new_date[5:7] == '12':
+        date_to_ride = str(new_date[:4]) + '-' + str(new_date[5:7])
+    else:
+        date_to_ride = str(new_date[:4]) + '-' + str(new_date[6:7])
+    """календарь на этот месяц"""
+    d = get_date(date_to_ride)
+    cal = Calendar(d.year, d.month, project)
     html_cal = cal.formatmonth(withyear=True)
-    pk_user = User.objects.get(username=request.user.username).id
-    about_count = Records.objects.filter(driver=pk_user, project=project, date_start__gt=datetime.now()).count()
+    """календарь на след месяц"""
+    d_next = get_date(next_month_new(get_date(date_to_ride)))
+    cal_next = Calendar(d_next.year, d_next.month, project)
+    html_cal_next = cal_next.formatmonth(withyear=True)
+    """календарь на предыдущий месяц"""
+    d_prev = get_date(prev_month_new(get_date(date_to_ride)))
+    cal_prev = Calendar(d_prev.year, d_prev.month, project)
+    html_cal_prev = cal_prev.formatmonth(withyear=True)
+    """Пповерка если выбранный день в прошлом"""
     if date_record < datetime.now().date():
         context = {"old_date": "Запись недоступна",
                    "ride_rec": ride_rec,
+                   "ride_rec_empty": ride_rec_empty,
                    "color_table": color_table,
                    "calendar": mark_safe(html_cal),
+                   "calendar_next": mark_safe(html_cal_next),
+                   "calendar_prev": mark_safe(html_cal_prev),
                    "date": date,
                    "project": project}
         return render(request, 'records/records_start.html', context)
-    if about_count == 10:
+    """Проверка усли у пользователя меньше 10 записей на это транспортное средство"""
+    about_count = Records.objects.filter(driver=request.user.pk, project=project, date_start__gte=datetime.now()).count()
+    if about_count >= 10:
         context = {'ride_rec': ride_rec,
+                   'ride_rec_empty': ride_rec_empty,
                    'color_table': color_table,
                    'calendar': mark_safe(html_cal),
+                   'calendar_next': mark_safe(html_cal_next),
+                   'calendar_prev': mark_safe(html_cal_prev),
                    'date_str': new_date_str,
                    'date': date,
                    'project': project,
                    'services': services,
-                   "error": "Максимум записей 10"}
+                   'many_rec': 'Максимум записей 10'}
         return render(request, 'records/records_start.html', context)
-    form = RecordsForm(request.POST or None)
+    """Создание формы"""
+    form = RecordsForm(request.POST or None, project_to_validate = project, date_to_validate = new_date)
     if request.POST and form.is_valid() and (date_record >= datetime.now().date()):
         records = form.save(commit=False)
         records.date_start = new_date
@@ -170,13 +207,14 @@ def records_start(request, date, project):
         records.project = services
         start_ti = form.cleaned_data['start_time']
         end_ti = form.cleaned_data['end_time']
+        """Проверки на валидность новой записи с данными из бд"""
         convert_end_time = convert_time(end_ti)
         convert_start_time = convert_time(start_ti)
         if date_record == datetime.now().date():
             if datetime.strptime(f"{start_ti}", "%H:%M:%S").time() < datetime.now().time():
                 context = {"error": f"Нельзя записаться в прошлом.",
-                        "date": date,
-                        "project": project}
+                           "date": date,
+                           "project": project}
                 return render(request, 'records/records_start.html', context)
         if start_ti > end_ti:
             context = {"error": f"Введите корректное время поездки.",
@@ -205,6 +243,11 @@ def records_start(request, date, project):
                                "date": date,
                                "project": project}
                     return render(request, 'records/records_start.html', context)
+                elif start_ti <= i and end_ti >=p:
+                    context = {"error": "Это время уже занято!",
+                               "date": date,
+                               "project": project}
+                    return render(request, 'records/records_start.html', context)
                 elif start_ti < i and end_ti <= i:
                     break
                 elif start_ti < i and end_ti <= p:
@@ -224,6 +267,11 @@ def records_start(request, date, project):
                                "date": date,
                                "project": project}
                     return render(request, 'records/records_start.html', context)
+                elif start_ti <= i and end_ti >=p:
+                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
+                               "date": date,
+                               "project": project}
+                    return render(request, 'records/records_start.html', context)
                 elif start_ti < i and end_ti <= i:
                     break
                 elif start_ti < i and end_ti < p:
@@ -234,13 +282,17 @@ def records_start(request, date, project):
         records.start_time = start_ti
         records.end_time = end_ti
         records.save()
+        """Отправка сообщения на почту пользователя и администратору на телеграмм"""
         send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
         send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
         return redirect(reverse('records:index_records', args=[project]))
     context = {'ride_rec': ride_rec,
+               'ride_rec_empty': ride_rec_empty,
                'color_table': color_table,
                'form': form,
                'calendar': mark_safe(html_cal),
+               'calendar_next': mark_safe(html_cal_next),
+               'calendar_prev': mark_safe(html_cal_prev),
                'date_str': new_date_str,
                'get_int_low_time': get_int_low_time,
                'get_int_high_time': get_int_high_time,
@@ -253,11 +305,35 @@ def records_start(request, date, project):
 @active
 @login_required
 def profiles(request):
+    """Профиль"""
+    """Таблица записей пользователя в будующем"""
     user = User.objects.get(username=request.user.username)
-    d = get_date(request.GET.get('month', None))
-    cal = Calendar_for_profile(d.year, d.month)
-    html_cal = cal.formatmonth(withyear=True)
-    context = {'calendar': mark_safe(html_cal), 
+    records_to_user_new = list(Records.objects.filter(date_start__gte=datetime.now().date(), driver=user).order_by('date_start','start_time'))
+    if len(records_to_user_new) > 0:
+        ride_rec = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(records_to_user_new)):
+            services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
+            count_rec += 1
+            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td>'
+        ride_rec += f'</tr>'
+    else:
+        ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у вас нету записей в будующем</th></tr>'
+    """Таблица записей пользователя в прошлом"""
+    records_to_user_old = list(Records.objects.filter(date_start__lt=datetime.now().date(), driver=user).order_by('-date_start','-start_time'))
+    if len(records_to_user_old) > 0:
+        ride_rec_old = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(records_to_user_old)):
+            services = get_object_or_404(Services, pk=int(records_to_user_old[i].project.pk))
+            count_rec += 1
+            ride_rec_old += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td>'
+        ride_rec_old += f'</tr>'
+    else:
+        ride_rec_old = f'<tr><th style="text-align: center">На сегоднишний день у вас нету записей в прошлом</th></tr>'
+    context = {'ride_rec_old': ride_rec_old,
+               'ride_rec': ride_rec,
                'prof': user}
     return render(request, 'records/profiles.html', context)
 
@@ -265,8 +341,9 @@ def profiles(request):
 @active
 @login_required
 def records_delete(request, rec_pk):
+    """Удаление записи"""
     records_del = get_object_or_404(Records, pk=rec_pk)
-    if request.user == records_del.driver:
+    if request.user == records_del.driver or request.user.role == 'admin':
         records_del.delete()
         context = {'messages': 'Вы успешно удалили запись'}
         return render(request, 'records/delete.html', context)
@@ -278,6 +355,7 @@ def records_delete(request, rec_pk):
 @active
 @login_required
 def admining(request):
+    """Все транспортные средства"""
     all_services = Services.objects.all()
     context = {'all_services': all_services}
     return render(request, 'records/admining.html', context)
@@ -287,6 +365,7 @@ def admining(request):
 @active
 @login_required
 def admining_users(request):
+    """Все пользователи"""
     all_users = User.objects.all()
     context = {'all_users': all_users}
     return render(request, 'records/admining_users.html', context)
@@ -296,7 +375,8 @@ def admining_users(request):
 @active
 @login_required
 def admining_services(request, service_id):
-    services = Services.objects.get(pk=service_id)
+    """Информация транспортного средства"""
+    services = get_object_or_404(Services, pk=service_id)
     context = {'services': services}
     return render(request, 'records/admining_services.html', context)
 
@@ -305,6 +385,7 @@ def admining_services(request, service_id):
 @active
 @login_required
 def admining_services_edit(request, services_id):
+    """Измение данных транспортного средства"""
     services = get_object_or_404(Services, pk=services_id)
     form = ServicesForm(
         request.POST or None,
@@ -324,6 +405,7 @@ def admining_services_edit(request, services_id):
 @active
 @login_required
 def admining_services_create(request):
+    """Создание транспортного средства"""
     form = ServicesForm(request.POST or None)
     if request.POST and form.is_valid():
         name_project = form.cleaned_data['name_project']
@@ -344,6 +426,7 @@ def admining_services_create(request):
 @active
 @login_required
 def admining_services_del(request, services_id):
+    """Удаление транспортоного средства"""
     if request.user.role == 'user':
         context = {'messages': 'У вас нету прав'}
         return render(request, 'records/index.html', context)
@@ -356,8 +439,216 @@ def admining_services_del(request, services_id):
 @admin
 @active
 @login_required
-def admining_statistics(request):
-    context = {'1': 1}
+def admining_statistics(request, pass_date, future_date):
+    """Статистика проекта для администратора"""
+    if pass_date == 'default' and future_date == 'default':
+        pass_date = date.today().replace(day=1)
+        if date.month == 12:
+            future_date = date.replace(day=31)
+        else:
+            future_date = datetime.now().date().replace(month=datetime.now().month+1, day=1) - timedelta(days=1)
+    """Общая статистика записей пользователей"""
+    table_for_all_records = "<thead><tr><th>Пользователь</th>"
+    all_services = list(Services.objects.all())
+    for service in all_services:
+        table_for_all_records += f"<th>Количество поездок на {service.name_project}</th>"
+    table_for_all_records += "<th>Всего поездок</th></tr></thead><tbody>"
+    all_user = list(User.objects.filter(active=True))
+    counter_all_services_records = 0
+    list_count = []
+    for user in range(len(all_user)):
+        table_for_all_records += f"<tr><td><a href='../../../records/admining/{all_user[user].username}'>{all_user[user].first_name} {all_user[user].last_name}</a></td>"
+        counter_all_services = 0
+        for service in range(len(all_services)):
+            records_for_user = Records.objects.filter(driver=all_user[user], project=all_services[service].pk, date_start__gte=pass_date, date_start__lte=future_date)
+            counter_records_to_service = 0
+            for records in range(len(records_for_user)):
+                counter_records_to_service += 1
+                counter_all_services += 1
+                counter_all_services_records += 1
+            list_count.append(counter_records_to_service)
+            table_for_all_records += f"<td>{counter_records_to_service}</td>"
+        table_for_all_records += f"<td>{counter_all_services}</td></tr>"
+    table_for_all_records += f"<tr><td>Итого</td>"
+    for service in range(len(all_services)):
+        all_records_for_service  = Records.objects.filter(project=all_services[service].pk, date_start__gte=pass_date, date_start__lte=future_date)
+        count_rec = 0
+        for records in range(len(all_records_for_service)):
+            count_rec += 1
+        table_for_all_records += f"<td>{count_rec}</td>"
+    table_for_all_records += f"<td>{counter_all_services_records}</td></tr>"
+    table_for_all_records += "</tbody>"
+    # """Создание выпадающих списков"""
+    # select_user = """<label for="select_user_input">Выбор пользователей:</label>
+    # <input type='text' id='select_user_input' name='select_user' list='select_user'>
+    # <datalist id='select_user'>"""
+    # for i in all_user:
+    #     select_user += f"<option class='label' value='{i.first_name} {i.last_name}'>"
+    # select_user += "</datalist>"
+    # select_services = """<label for="select_services_input">Выбор транспортого средства:</label>
+    # <input type='text' id='select_services_input' name='select_services' list='select_services'>
+    # <datalist id='select_services'>"""
+    # for i in all_services:
+    #     select_services += f"<option class='label' value='{i.name_project}'>"
+    # select_services += "</datalist>"
+    """Таблица будующих записей всех пользователей"""
+    if str(pass_date) >= str(date.today()) and str(future_date) >= str(date.today()):
+        records_to_user_new = list(Records.objects.filter(date_start__gte=pass_date, date_start__lte=future_date).order_by('date_start','start_time'))
+    elif str(pass_date) <= str(date.today()) and str(future_date) >= str(date.today()):
+        records_to_user_new = list(Records.objects.filter(date_start__gte=date.today(), date_start__lte=future_date).order_by('date_start','start_time'))
+    else:
+        records_to_user_new = []
+    if len(records_to_user_new) > 0:
+        ride_rec = f'<th></th><th>Пользователь</th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(records_to_user_new)):
+            services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
+            count_rec += 1
+            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{records_to_user_new[i].driver.first_name} {records_to_user_new[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td>'
+        ride_rec += f'</tr>'
+    else:
+        ride_rec = f'<tr><th style="text-align: center">С {pass_date} до {future_date} нету новых записей</th></tr>'
+    """Таблица прошлых записей всех пользователей"""
+    if str(pass_date) <= str(date.today()) and str(future_date) <= str(date.today()):
+        records_to_user_old = list(Records.objects.filter(date_start__gte=pass_date, date_start__lte=future_date).order_by('-date_start','-start_time'))
+    elif str(pass_date) <= str(date.today()) and str(future_date) >= str(date.today()):
+        records_to_user_old = list(Records.objects.filter(date_start__gte=pass_date, date_start__lte=date.today()).order_by('-date_start','-start_time'))
+    else:
+        records_to_user_old = []
+    if len(records_to_user_old) > 0:
+        ride_rec_old = f'<th></th><th>Пользователь</th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(records_to_user_old)):
+            services = get_object_or_404(Services, pk=int(records_to_user_old[i].project.pk))
+            count_rec += 1
+            ride_rec_old += f'<tr id="count_old"><td>{count_rec}</td><td>{records_to_user_old[i].driver.first_name} {records_to_user_old[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td>'
+        ride_rec_old += f'</tr>'
+    else:
+        ride_rec_old = f'<tr><th style="text-align: center">С {pass_date} до {future_date} нету прошедших записей</th></tr>'
+    """Диаграмма самых активных пользователей"""
+    all_active_records = {}
+    list_active_records = []
+    all_procent_records = 0
+    for user in range(len(all_user)):
+        count_records = 0
+        all_records_for_user = Records.objects.filter(driver=all_user[user], date_start__gte=pass_date, date_start__lte=future_date)
+        for record in range(len(all_records_for_user)):
+            count_records += 1
+            all_procent_records += 1
+        all_active_records[count_records] = all_user[user]
+        list_active_records.append(count_records)
+    list_active_records.sort(reverse=True)
+    list_active_records_to_read = ''
+    first_piechart = 0
+    second_piechart = 0
+    third_piechart = 0
+    no_other_records = 0
+    for i in range(len(list_active_records)):
+        if i == 0:
+            user = get_object_or_404(User, username=str(all_active_records[list_active_records[i]]))
+            text_user = user.first_name + ' ' + user.last_name
+            text_user_records = str(list_active_records[i]) + ' записей'
+            list_active_records_to_read += f"<p>{text_user_records}: {text_user}</p>"
+            if all_procent_records != 0:
+                first_piechart = list_active_records[i] / all_procent_records * 360
+            else:
+                first_piechart = 0
+            no_other_records += list_active_records[i]
+            other_piechart = 360 - first_piechart
+        elif i == 1:
+            user = get_object_or_404(User, username=str(all_active_records[list_active_records[i]]))
+            text_user = user.first_name + ' ' + user.last_name
+            text_user_records = str(list_active_records[i]) + ' записей'
+            list_active_records_to_read += f"<p>{text_user_records}: {text_user}</p>"
+            if all_procent_records != 0:
+                second_piechart = first_piechart + list_active_records[i] /all_procent_records * 360
+            else:
+                second_piechart = 0
+            no_other_records += list_active_records[i]
+            other_piechart = 360 - second_piechart
+        elif i == 2:
+            user = get_object_or_404(User, username=str(all_active_records[list_active_records[i]]))
+            text_user = user.first_name + ' ' + user.last_name
+            text_user_records = str(list_active_records[i]) + ' записей'
+            list_active_records_to_read += f"<p>{text_user_records}: {text_user}</p>"
+            if all_procent_records != 0:
+                third_piechart = second_piechart + list_active_records[i] /all_procent_records * 360
+            else:
+                third_piechart = 0
+            no_other_records += list_active_records[i]
+            other_piechart = 360 - third_piechart
+        else:
+            no_other_records += list_active_records[i]
+    other_records = str(all_procent_records - no_other_records) + ' записей'
+    piechart_for_all_records = f"background-image: conic-gradient(pink {first_piechart}deg, lightblue 0 {second_piechart}deg, orange 0 {third_piechart}deg, gray 0 {other_piechart}deg);"
+    list_active_records_to_read += f"<p>Остальные: {other_records}</p>"
+    """Диаграмма популярности транспортых средств"""
+    list_services = []
+    list_dict = {}
+    count_all_services = 0
+    for service in all_services:
+        count_services = 0
+        all_records_for_service = Records.objects.filter(project=service.pk, date_start__gte=pass_date, date_start__lte=future_date)
+        for record in all_records_for_service:
+            count_services += 1
+            count_all_services += 1
+        list_services.append(count_services)
+        list_dict[count_services] = service.name_project
+    list_services.sort(reverse=True)
+    list_services_text = ''
+    for i in range(len(list_services)):
+        if i == 0:
+            first_services = get_object_or_404(Services, name_project=str(list_dict[list_services[i]])).name_project
+            first_services_records = str(list_services[i]) + ' записей'
+            list_services_text += f"<p>{first_services}: {first_services_records}</p>"
+            if all_procent_records != 0:
+                first_piechart = list_services[i] /all_procent_records * 360
+            else:
+                first_piechart = 0
+            other_piechart = 360 - second_piechart
+        elif i == 1:
+            second_services = get_object_or_404(Services, name_project=str(list_dict[list_services[i]])).name_project
+            second_services_records = str(list_services[i]) + ' записей'
+            list_services_text += f"<p>{second_services}: {second_services_records}</p>"
+            if all_procent_records != 0:
+                second_piechart = first_piechart + list_services[i] /all_procent_records * 360
+            else:
+                second_piechart = 0
+            other_piechart = 360 - second_piechart
+    piechart_for_services = f"background-image: conic-gradient(blue {first_piechart}deg, red 0 {second_piechart}deg, gray 0 {other_piechart}deg);"
+    """Даты для выбора ссылок"""
+    all_year_pass = datetime.now().date().replace(day=1, month=1)
+    all_year_future = datetime.now().date().replace(day=31, month=12)
+    on_month_pass = datetime.now().date()
+    on_month_future = datetime.now().date().replace(month=datetime.now().month+2, day=1) - timedelta(days=1)
+    on_month_pass_old = (datetime.now().date() - timedelta(days=31))
+    on_month_future_old = datetime.now().date().replace(month=datetime.now().month+2, day=1) - timedelta(days=1)
+    on_half_year_pass = (datetime.now().date() - timedelta(days=183))
+    on_half_year_future = datetime.now().date()
+    on_half_year_pass_new = datetime.now().date
+    on_half_year_future_new = (datetime.now().date() + timedelta(days=183))
+    context = {'pass_date': pass_date,
+               'future_date': future_date,
+               'table_for_all_records': table_for_all_records,
+            #    'select_user': select_user,
+            #    'select_services': select_services,
+               'ride_rec': ride_rec,
+               'ride_rec_old': ride_rec_old,
+               'piechart_for_all_records': piechart_for_all_records,
+               'list_active_records_to_read': list_active_records_to_read,
+               'piechart_for_services': piechart_for_services,
+               'list_services': list_services_text,
+               'all_year_pass': all_year_pass,
+               'all_year_future': all_year_future,
+               'on_month_pass': on_month_pass,
+               'on_month_future': on_month_future,
+               'on_month_pass_old': on_month_pass_old,
+               'on_month_future_old': on_month_future_old,
+               'on_half_year_pass': on_half_year_pass,
+               'on_half_year_future': on_half_year_future,
+               'on_half_year_pass_new': on_half_year_pass_new,
+               'on_half_year_future_new': on_half_year_future_new}
     return render(request, 'records/admining_statistics.html', context)
 
 
@@ -365,30 +656,43 @@ def admining_statistics(request):
 @active
 @login_required
 def admining_pk(request, username):
+    """"Аккаунты пользователей для администратора"""
+    """Таблица всех записей пользователя в будующем"""
     user = get_object_or_404(User, username=username)
-    all_services = list(Services.objects.filter(pk__gt=0))
-    html_rec_new = f""
-    for p in range(len(all_services)):
-        rec_new = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__gt=datetime.now()))
-        html_rec_new += f"<h4>{all_services[p].name_project}<h4>"
-        for i in range(0, len(rec_new)):
-            del_rec = f"<a href='../records/{rec_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-            html_rec_new += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}: {rec_new[i].date_start}:{rec_new[i].start_time}-{rec_new[i].end_time}{del_rec}</span><br>"
-    html_rec_old = f""
-    for p in range(len(all_services)):
-        rec_old = list(Records.objects.filter(driver=user.pk, project=all_services[p].pk, date_start__lte=datetime.now()))
-        html_rec_old += f"<h4>{all_services[p].name_project}<h4>"
-        for i in range(0, len(rec_old)):
-            html_rec_old += f"<span style='font-size: 18px;'>{user.last_name} {user.first_name}:{rec_old[i].date_start}:{rec_old[i].start_time}-{rec_old[i].end_time}</span><br>"
+    records_to_user_new = list(Records.objects.filter(date_start__gte=datetime.now().date(), driver=user).order_by('date_start','start_time'))
+    if len(records_to_user_new) > 0:
+        ride_rec = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(records_to_user_new)):
+            services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
+            count_rec += 1
+            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td>'
+        ride_rec += f'</tr>'
+    else:
+        ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у пользователя нету записей в будующем</th></tr>'
+    """Таблица всех записей пользователя в прошлом"""
+    records_to_user_old = list(Records.objects.filter(date_start__lt=datetime.now().date(), driver=user).order_by('-date_start','-start_time'))
+    if len(records_to_user_old) > 0:
+        ride_rec_old = f'<th></th><th>Транспортное средство</th><th>Дата</th><th>Запись</th></tr>'
+        count_rec = 0
+        for i in range(0, len(records_to_user_old)):
+            services = get_object_or_404(Services, pk=int(records_to_user_old[i].project.pk))
+            count_rec += 1
+            ride_rec_old += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_old[i].date_start}</td><td>С {records_to_user_old[i].start_time} до {records_to_user_old[i].end_time}</td>'
+        ride_rec_old += f'</tr>'
+    else:
+        ride_rec_old = f'<tr><th style="text-align: center">На сегоднишний день у пользователя нету записей в прошлом</th></tr>'
     active = ""
+    """Кружочек определения статуса аккаунта пользователей"""
     if user.active == True:
         status = True
         active = "<div id='active'></div>"
     else:
         status = None
         active = "<div id='pass' style='display: table-sell;'></div>"
-    context = {'html_rec_old': html_rec_old,
-               'html_rec_new': html_rec_new,
+    context = {'ride_rec_old': ride_rec_old,
+               'ride_rec': ride_rec,
                'prof': user,
                'status': status,
                'active': active}
@@ -399,6 +703,7 @@ def admining_pk(request, username):
 @active
 @login_required
 def user_delete(request, username):
+    """Удаление пользователя"""
     if request.user.role == 'user':
         context = {'messages': 'У вас нету прав'}
         return render(request, 'records/records_admining_pk.html', context)
@@ -412,6 +717,7 @@ def user_delete(request, username):
 @active
 @login_required
 def user_pass_or_active(request, username):
+    """Изменение статуса аккаунта пользователя"""
     if request.user.role == 'user':
         context = {'messages': 'У вас нету прав'}
         return render(request, 'records/records_admining_pk.html', context)

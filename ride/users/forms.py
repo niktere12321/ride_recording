@@ -30,13 +30,14 @@ class EditUserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'phone',)
+        fields = ('username', 'first_name', 'last_name', 'email', 'phone', 'role')
         labels = {
             'first_name': _('Имя'),
             'last_name': _('Фамилия'),
             'email': _('Email адрес'),
             'username': _('Имя пользователя'),
-            'phone': _('Телефон')
+            'phone': _('Телефон'),
+            'role': _('Статус пользователя')
         }
         widgets = {
             'first_name': TextInput(attrs={'type': 'text', 'required': True,}),

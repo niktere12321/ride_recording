@@ -7,13 +7,13 @@ User = get_user_model()
 
 class Services(models.Model):
     name_project = models.CharField(max_length=100, unique=True)
-    description = models.TextField(max_length=200)
+    description = models.TextField(max_length=200, blank=True, null=True)
     low_time = models.TimeField()
     high_time = models.TimeField()
     low_duration = models.TimeField()
     high_duration = models.TimeField()
     image = models.ImageField(upload_to='images/', blank=True, null=True)
-    contact = models.TextField(max_length=200)
+    contact = models.TextField(max_length=200, blank=True, null=True)
 
 
 class Records(models.Model):

@@ -12,15 +12,15 @@
       {% include 'records/includes/admin_switcher.html' %}
       <div class="card-body">
         <h1 style="text-align: center">{{ services.name_project }}</h1>
-        <p style="text-align: center"> {{ services.description }}</p>
+        <p style="text-align: center">{{ services.description }}</p>
         <p style="text-align: center">разрешенное время:{{ services.low_time }}-{{ services.high_time }}</p>
         <p style="text-align: center">Минимальная и максимальная длительность поездки:{{ services.low_duration }}-{{ services.high_duration }}</p>
         <div>
-          {% thumbnail services.image "600x300" crop="center" upscale=True as im %}
+          {% thumbnail services.image "600x300" upscale=True as im %}
             <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету">
           {% endthumbnail %}
         </div>
-        <h4 style="text-align: center"> Контакты {{ services.contact }}</h4>
+        <h4 style="text-align: center"> Помощь в дороге {{ services.contact }}</h4>
         <a href="{% url 'records:admining_services_edit' services.pk %}">
           <div class="btn btn-primary">
             Изменить

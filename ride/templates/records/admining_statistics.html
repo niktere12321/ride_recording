@@ -6,13 +6,259 @@
 {% block content %}
 {% include 'records/includes/switcher.html' %}
 <div class="row justify-content-center lol_width">
-  <div class="col-md-8 p-5"> 
+  <div class="p-5"> 
     <div class="card">
       {% include 'records/includes/admin_switcher.html' %}
       <div class="card-body">
-        контент не подвезли {{1}}
+        <h1>Статистика</h1>
+        <h3 style='display: inline-block; position: relative;'>За период с {{pass_date}} по {{future_date}}</h3>
+        <br />
+        <h3 style='display: inline-block; position: relative;'>Выбор даты</h3>
+        <input id="daterange" type="text" style='display: inline-block;  position: relative;' value="{{pass_date}} - {{future_date}}" placeholder="Выберите дату">
+        <button id="lol" type="submit" class="btn btn-outline-danger" style="display: none; position: relative;"></button>
+        <br/>
+        <div style="margin-top: 10px;">
+          <a href="{% url 'records:admining_statistics' all_year_pass all_year_future %}">
+            <button class="btn btn-primary" style="color: #fff; font-size:15px">
+              Статистика за весь год
+            </button>
+          </a>
+          <a href="{% url 'records:admining_statistics' on_month_pass on_month_future %}">
+            <button class="btn btn-primary" style="color: #fff; font-size:15px">
+              Статистика на месяц вперед
+            </button>
+          </a>
+          <a href="{% url 'records:admining_statistics' on_month_pass_old on_month_future_old %}">
+            <button class="btn btn-primary" style="color: #fff; font-size:15px">
+              Статистика на месяц вперед и назад
+            </button>
+          </a>
+          <a href="{% url 'records:admining_statistics' on_half_year_pass on_half_year_future %}">
+            <button class="btn btn-primary" style="color: #fff; font-size:15px">
+              Статистика на полгода назад
+            </button>
+          </a>
+          <a href="{% url 'records:admining_statistics' on_half_year_pass_new on_half_year_future_new %}">
+            <button class="btn btn-primary" style="color: #fff; font-size:15px">
+              Статистика на полгода вперед
+            </button>
+          </a>
+        </div>
+        <div class="tab">
+          <button class="tablinks" onclick="openCity(event, 'table_for_all_records')" id="defaultOpen">Общая статистика записей пользователей за текущий период</button>
+          <button class="tablinks" id='open_table' onclick="openCity(event, 'all_records_for_users')">Все записи пользователей</button>
+        </div>
+        <div id="table_for_all_records" class="tabcontent">
+          <table class="table table-hover">
+            {{table_for_all_records|safe}}
+          </table>
+        </div>
+        <div id="all_records_for_users" class="tabcontent">
+          <div style="padding: 0px 150px 50px 150px;" id="new_rec">
+            {% comment %} <div class="text-center">
+              {{ select_services|safe }}
+              <button type="button" id="reset_for_services">Очистить поле</button>
+              <br/>
+              {{ select_user|safe }}
+              <button type="button" id="reset_for_user">Очистить поле</button>
+              <br/>
+              <a id="get_sort"><button type="button">Сортировать</button></a>
+            </div> {% endcomment %}
+            <h1 class="text-center">
+              Будующие записи
+            </h1>
+            <table border="0" cellpadding="0" cellspacing="0" class="table table-hover">
+              {{ ride_rec|safe }}
+              </table>
+          </div>
+          <div style="padding: 0px 150px 100px 150px;" id="old_rec">
+            <h1 class="text-center">
+              Прошлые записи
+            </h1>
+            <table border="0" cellpadding="0" cellspacing="0" class="table table-hover">
+              {{ ride_rec_old|safe }}
+            </table>
+          </div>
+        </div>
+        <h2>Самые активные пользователи</h2>
+        <div class="piechart" style="{{piechart_for_all_records}}"></div>
+        <div style="position: relative; display: inline-block; margin: 0 0 0 500px; bottom: 100px;">
+          {{ list_active_records_to_read|safe }}
+        </div>
+        <h2>Популярность транспортых средств</h2>
+        <div class="piechart" style="{{piechart_for_services}}"></div>
+        <div style="position: relative; display: inline-block; margin: 0 0 0 500px; bottom: 100px;">
+          {{ list_services|safe }}
+        </div>
       </div>
     </div>
   </div>
 </div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script>
+  function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+  document.getElementById("defaultOpen").click();
+  $('#daterange').attr('placeholder', 'Выберите дату')
+  $('#daterange').daterangepicker({
+      startDate: String('').length > 0 ? moment(String(String('').split('-')[0].trim()), 'YYYY-MM-DD').toDate() : moment().startOf('month'),
+      endDate: String('').length > 0 ? moment(String(String('').split('-')[1].trim()), 'YYYY-MM-DD').toDate() : moment(),
+      autoApply: false,
+      autoUpdateInput: false,
+      locale: {
+        "applyLabel": "Сохранить",
+        "cancelLabel": "Назад",
+        "daysOfWeek": [
+            "Вс",
+            "Пн",
+            "Вт",
+            "Ср",
+            "Чт",
+            "Пт",
+            "Сб"
+        ],
+        "monthNames": [
+            "Январь",
+            "Февраль",
+            "Март",
+            "Апрель",
+            "Май",
+            "Июнь",
+            "Июль",
+            "Август",
+            "Сентябрь",
+            "Октябрь",
+            "Ноябрь",
+            "Декабрь"
+        ],}
+  });
+
+  $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+  });
+  $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+      function postDateToA () {
+      if ( document.getElementById("lolTrue") ) {
+        let pass_date = document.getElementById('daterange').value.split(' - ')[0];
+        let future_date = document.getElementById('daterange').value.split(' - ')[1];
+        document.getElementById("lolTrue").href = "../../../records/admining_statistics/" + pass_date + "/" + future_date;
+      }
+      else {
+        let pass_date = document.getElementById('daterange').value.split(' - ')[0];
+        let future_date = document.getElementById('daterange').value.split(' - ')[1];
+        let c = document.createElement('a');
+        let linkText = document.createTextNode('Выбор даты');
+        c.appendChild(linkText);
+        c.id = "lolTrue";
+        c.href = "../../../records/admining_statistics/" + pass_date + "/" + future_date;
+        c.style.display = 'inline-block'
+        document.getElementById('lol').style.display = "inline-block"
+        document.getElementById('lol').appendChild(c);
+      };
+    };
+    postDateToA()
+  });
+  function pagination (pages, status, table, getIdToButton, getOldOrNewToClass) {
+    if (table.length >= 5 && status == false) {
+      let num_pages = Math.ceil(table.length / 5)
+      for (let i = pages; i < num_pages-1; i++) {
+        for (let j = 5; j < 10; j++) {
+          if ([].indexOf.call(table, table[(i*5)+j]) !== -1) {
+            table[(i*5)+j].style.display = 'none'
+          }
+        }
+      }
+      for (let i = pages; i < num_pages; i++) {
+        let button_pagination = document.createElement('button')
+        button_pagination.appendChild(document.createTextNode(i+1))
+        button_pagination.className = 'btn btn-primary pagination_button_' + getOldOrNewToClass
+        button_pagination.id = 'pagination_button'
+        document.getElementById(getIdToButton).appendChild(button_pagination)
+      }
+    }
+    else if (table.length >= 5 && status == true) {
+      let num_pages = Math.ceil(table.length / 5)
+      for (let i = pages-1; i < pages; i++) {
+        for (let j = 0; j < 5; j++) {
+          if ([].indexOf.call(table, table[(i*5)+j]) !== -1) {
+            table[(i*5)+j].style.display = 'table-row'
+          }
+        }
+      }
+      for (let i = 1; i < pages; i++) {
+        for (let j = 5; j > 0 ; j--) {
+          table[(i*5)-j].style.display = 'none'
+        }
+      }
+      for (let i = pages; i < num_pages; i++) {
+        for (let j = 0; j < 5 ; j++) {
+          if ([].indexOf.call(table, table[(i*5)+j]) !== -1) {
+            table[(i*5)+j].style.display = 'none'
+          }
+        }
+      }
+    }
+  }
+
+  let records_count_new = document.querySelectorAll('tr#count_new')
+  let records_count_old = document.querySelectorAll('tr#count_old')
+
+  if (records_count_new.length >= 5) {
+    pagination(0, false, records_count_new, 'new_rec', 'new')
+  }
+  if (records_count_old.length >= 5) {
+    pagination(0, false, records_count_old, 'old_rec', 'old')
+  }
+
+  let num_of_button_old = document.getElementsByClassName('btn btn-primary pagination_button_old')
+  let num_of_button_new = document.getElementsByClassName('btn btn-primary pagination_button_new')
+  function get_click_to_button() {
+    document.getElementById('open_table').addEventListener("click", function(e) {
+      let records_count_new = document.querySelectorAll('tr#count_new')
+      for (let i = 0; i < num_of_button_new.length; i++) {
+        num_of_button_new[i].addEventListener("click", function(e) {
+          pagination(num_of_button_new[i].textContent, true, records_count_new);
+        }, false);
+      }
+      let records_count_old = document.querySelectorAll('tr#count_old')
+      for (let i = 0; i < num_of_button_old.length; i++) {
+        num_of_button_old[i].addEventListener("click", function(e) {
+          pagination(num_of_button_old[i].textContent, true, records_count_old);
+        }, false);
+      }
+    }, false)
+  }
+  get_click_to_button()
+{% comment %} 
+  let reset_to_servives = document.querySelector('button#reset_for_services')
+  reset_to_servives.addEventListener("click", function(e) {
+    document.querySelector('input#select_services_input').value = '';
+  }, false)
+
+  let reset_for_user = document.querySelector('button#reset_for_user')
+  reset_for_user.addEventListener("click", function(e) {
+    document.querySelector('input#select_user_input').value = '';
+  }, false)
+
+  let post_sort = document.querySelector('a#get_sort')
+  post_sort.href = "../../../records/admining_statistics/" + '{{pass_date}}' + "/" + '{{future_date}}'
+  post_sort.addEventListener("click", function(e) {
+    sort_value_user(document.querySelector('input#select_services_input').value,
+    document.querySelector('input#select_user_input').value,)
+  }) {% endcomment %}
+</script>
 {% endblock %}

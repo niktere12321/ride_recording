@@ -96,7 +96,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'
 
@@ -120,7 +120,7 @@ EMAIL_PORT = 587
 
 EMAIL_HOST_USER = 'nikterekhoff42@gmail.com'
 
-EMAIL_HOST_PASSWORD = 'Ter12321nik'
+EMAIL_HOST_PASSWORD = 'rstsvmrocospiram'
 
 #RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
 

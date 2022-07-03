@@ -13,6 +13,7 @@ User = get_user_model()
 
 
 def SignUp(request, new_email):
+    """Регистрация"""
     form = CreationForm(request.POST or None, initial={'email': new_email})
     if request.POST and form.is_valid():
         form.email = new_email
@@ -27,6 +28,7 @@ def SignUp(request, new_email):
 @active
 @login_required
 def edd_user(request, username):
+    """Изменение данных пользователя"""
     user = get_object_or_404(User, username=username)
     form = EditUserForm(request.POST or None, instance=user)
     if request.POST and form.is_valid():
@@ -41,6 +43,7 @@ def edd_user(request, username):
 @active
 @login_required
 def add_new_user(request):
+    """Приглашение на регистрацию"""
     if request.user.is_superuser:
         form = Add_new_userForm(request.POST or None)
         if request.POST and form.is_valid():
@@ -72,12 +75,14 @@ def add_new_user(request):
 
 
 def help_active(request):
+    """Страничка для заблокированных пользователей"""
     if request.user.active == False:
         return render(request, 'users/help_active.html')
     return redirect(reverse('records:index_services'))
 
 
 def users_help(request):
+    """Сообщение от пользователя"""
     if request.user.is_authenticated:
         form = HelpForm(request.POST or None)
         if request.POST and form.is_valid():
