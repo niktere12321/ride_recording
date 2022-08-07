@@ -5,19 +5,68 @@
 {% endblock %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}
-  <div class="clearfix">
-    {% if not user.is_authenticated %}
-    <a class="btn btn-info left" href="{% url 'users:login' %}"> Войти </a>
-    {% endif %}
-  </div>
-  <h1 class="text-center">Календарик покатушек на {{project_name}}</h1>
-  <a class="left" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{prev_month}}">
-    <img class="card-img my-2" style="filter: blur(1.2px);" src="{% static 'img/past_cal.png' %}" width="48px" height="981px" alt="Предыдущий месяц">
+  {% comment %} <h1 class="text-center">Календарик покатушек на {{project_name}}</h1> {% endcomment %}
+  {% comment %} <a class="left" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{prev_month}}">
   </a>
   <a class="right" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{ next_month }}">
-    <img class="card-img my-2" style="filter: blur(1.2px);" src="{% static 'img/future_cal.png' %}" width="48px" height="981px" alt="Следующий месяц">
-  </a>
-  <table border="0" cellpadding="0" cellspacing="0" class="calendar" style="position: relative; display: inline-block">
+  </a> {% endcomment %}
+  <table border="0" cellpadding="0" cellspacing="0" class="calendar">
     {{calendar}}
   </table>
-{% endblock %} 
+{% endblock %}
+{% block script %}
+<script>
+  const arr_month = {
+    'January': 'Январь',
+    'February': 'Февраль',
+    'March': 'Март',
+    'April': 'Апрель',
+    'May': 'Май',
+    'June': 'Июнь',
+    'July': 'Июль',
+    'August': 'Август',
+    'September': 'Сентябрь',
+    'October': 'Октябрь',
+    'November': 'Ноябрь',
+    'December': 'Декабрь',
+  };
+  let th = document.querySelector('th')
+
+  let name_calendar = document.createElement("span")
+  let new_text_th = `Календарь эксплатации транспортного средства "${{project_name}}" на `
+  new_text_th = new_text_th.replace('$', '')
+  let name_month = th.textContent.split(' ')[0]
+  let prev_text_th = arr_month[name_month] + ' ' + th.textContent.split(' ')[1]
+  name_calendar.textContent = new_text_th + prev_text_th
+  name_calendar.classList.add('head_calendar_text')
+  th.textContent = ''
+
+  let = div_in_th = document.createElement('div')
+  div_in_th.classList.add('head_calendar')
+
+  let arroy_left =  document.createElement("img")
+  arroy_left.setAttribute("src", "{% static 'img/arroy-left.png' %}");
+  arroy_left.setAttribute("height", "35");
+  arroy_left.setAttribute("width", "35");
+  arroy_left.setAttribute("alt", "Предыдущий месяц");
+
+  let a_prev = document.createElement("a");
+  a_prev.setAttribute("href", "{% url 'records:index_records' project %}?{{prev_month}}");
+  a_prev.appendChild(arroy_left);
+
+  let arroy_right =  document.createElement("img")
+  arroy_right.setAttribute("src", "{% static 'img/arroy-right.png' %}");
+  arroy_right.setAttribute("height", "35");
+  arroy_right.setAttribute("width", "35");
+  arroy_right.setAttribute("alt", "Следующий месяц");
+
+  let a_next = document.createElement("a");
+  a_next.setAttribute("href", "{% url 'records:index_records' project %}?{{ next_month }}");
+  a_next.appendChild(arroy_right);
+
+  div_in_th.appendChild(a_prev)
+  div_in_th.appendChild(name_calendar)
+  div_in_th.appendChild(a_next)
+  th.appendChild(div_in_th)
+</script>
+{% endblock %}

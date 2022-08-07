@@ -5,135 +5,211 @@
 {% load static %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}
-  <h1 class="text-center">Запись</h1>
-  <div class="row justify-content-center lol_width">
-    <div class="col-md-8 p-5">
-      <div class="card">
-        <div class="card-body text-center">
-          {% if not error and not old_date and not many_rec %}
-          <h3 class="text-center">{{date_str}}</h3>
-          <h6 class="text-center" style="margin: 10px 0px 40px">Запись доступна с {{time_now_to_rec}} до {{services.high_time}}</h6>
-          {% endif %}
-          {% if error or old_date or many_rec %}
-          <h2 class="text-center">
-            {{error}}
-            {{old_date}}
-            {{many_rec}}
-          </h2>
-          {% if not old_date %}
-          {% if not many_rec %}
-          <a href="{% url 'records:records_start' project date %}" class="btn btn-primary">
-            Начать заново
-          </a>
-          {% endif %}
-          {% endif %}
-          <a href="{% url 'records:index_records' project %}" class="btn btn-primary">
-            На главную
-          </a>
-          {% endif %}
-          {% if form.errors %}
-          {% for field in form %}
-          {% for error in field.errors %}            
-          <div class="alert alert-danger">
-            {{ error|escape }}
-          </div>
-          {% endfor %}
-          {% endfor %}
-          {% for error in form.non_field_errors %}
-          <div class="alert alert-danger">
-            {{ error|escape }}
-          </div>
-          {% endfor %}
-          {% endif %}
-          <form method="post">
-            {% csrf_token %}
-            {{ form }}
-            <div>
-            {% if not error and not old_date and not many_rec %}
-              <button type="submit" class="btn btn-primary" style="margin: 30px 0px 20px;">
-                Записаться
-              </button>
-            {% endif %}
-            </div>
-          </form>
-        </div>
-        {% if not error and not old_date and not many_rec %}
-        <div id="slider-range"></div>
-        {% endif %}
-        {{color_table|safe}}
-        <div class="card-header">
-          Записи
-        </div>
-        <div style='min-height: 230px; max-height: 500px'>
-          {% if ride_rec %}
-          <table border="0" cellpadding="0" cellspacing="0" class="table table-hover">
-          {{ ride_rec|safe }}
-          </table>
-          {% else %}
-          {{ ride_rec_empty|safe }}
-          {% endif %}
-        </div>
-      </div>
+<div class="container_for_record">
+  <div class="flex_record">
+    <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{prev_month}}">
+      <img src="{% static 'img/arroy-left.png' %}" height="35" width="35" alt="Предыдущий месяц">
+    </a>
+    <span class="text-center text_for_record_head">Запись на транспортное средство {{services.name_project}}</span>
+    <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{ next_month }}">
+      <img src="{% static 'img/arroy-right.png' %}" height="35" width="35" alt="Следующий месяц">
+    </a>
+  </div>
+  <div class="week_name">
+    <span class="week_name_text"> пн </span>
+    <span class="week_name_text"> вт </span>
+    <span class="week_name_text"> ср </span>
+    <span class="week_name_text"> чт </span>
+    <span class="week_name_text"> пт </span>
+    <span class="week_name_text"> сб </span>
+    <span class="week_name_text"> вс </span>
+  </div>
+  <div class="week_day">
+    <div class="left">
+      <img id="prev_img" class="card-img my-2" style="transform: rotate(180deg);" src="{% static 'img/arrow-point.png' %}" width="75px" height="75px" alt="Предыдущая неделя">
+    </div>
+    <div class="flex_week">
+      {% for day_cart in week_line %}
+        {{day_cart|safe}}
+      {% endfor %}
+    </div>
+    <div class="right">
+      <img id="next_img"  class="card-img my-2" src="{% static 'img/arrow-point.png' %}" width="75px" height="75px" alt="Следующая неделя">
     </div>
   </div>
-<div class="left" style="width: 9%; margin-top: 245.5px; position: relative; display: inline-block">
-  <img id="prev_img" class="card-img my-2" style="transform: rotate(180deg);" src="{% static 'img/arrow-point.png' %}" width="48px" height="490px" alt="Предыдущий месяц">
+  <span class="records_start_text">Запись</span>
+  <div class="card_to_main_form">
+    {% if not error and not old_date and not many_rec %}
+      <span class="text_free_time_to_record">
+        Запись доступна с {{time_now_to_rec}} до {{services.high_time}}
+      </span>
+    {% endif %}
+    {% if error or old_date or many_rec %}
+    <h2 class="text-center">
+      {{error}}
+      {{old_date}}
+      {{many_rec}}
+    </h2>
+    {% if not old_date %}
+    {% if not many_rec %}
+    <div class="form_main">
+      <a href="{% url 'records:records_start' project date %}" class="btn btn-primary">
+        Начать заново
+      </a>
+    </div>
+    {% endif %}
+    {% endif %}
+    <div class="form_main">
+      <a href="{% url 'records:index_records' project %}" class="btn btn-primary">
+        На главную
+      </a>
+    </div>
+    {% endif %}
+    {% if form.errors %}
+    {% for field in form %}
+    {% for error in field.errors %}            
+    <div class="alert alert-danger">
+      {{ error|escape }}
+    </div>
+    {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ error|escape }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="form_main">
+        {% for field in form %}
+          {{ field.errors }}
+          <div>
+            {{ field.label_tag }} {{ field }}
+          </div>
+        {% endfor %}
+      </div>
+      {% if not error and not old_date and not many_rec %}
+      <div class="form_main">
+        <button type="submit" class="button_for_main_form">
+          <span class="text_button">Записаться</span>
+        </button>
+      </div>
+      {% endif %}
+    </form>
+    {% if not error and not old_date and not many_rec %}
+    <div id="slider-range"></div>
+    {% endif %}
+    {{color_table|safe}}
+    <div class="card_record">
+      <span class="card_record_text">Записи</span>
+    </div>
+    <div class="record_card_yes_or_not">
+      {% if ride_rec %}
+      <table border="0" cellpadding="0" cellspacing="0" class="table table-hover" style="border-color: #000">
+      {{ ride_rec|safe }}
+      </table>
+      {% else %}
+      {{ ride_rec_empty|safe }}
+      {% endif %}
+    </div>
+  </div>
 </div>
-<div class="right" style="width: 9%; margin-top: 245.5px; position: relative; display: inline-block">
-  <img id="next_img"  class="card-img my-2" src="{% static 'img/arrow-point.png' %}" width="48px" height="490px" alt="Следующий месяц">
-</div>
-<table border="0" cellpadding="0" cellspacing="0" class="calendar" id='now' style="position: relative; display: inline-block">
-  {{calendar}}
-</table>
-<table border="0" cellpadding="0" cellspacing="0" class="calendar" id='next' style="position: relative; display: none">
-  {{calendar_next}}
-</table>
-<table border="0" cellpadding="0" cellspacing="0" class="calendar" id='prev' style="position: relative; display: none">
-  {{calendar_prev}}
-</table>
+{% endblock %} 
+{% block script %}
 <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
 <script>
-  function clickScroller() {
-    if (document.getElementById('now').style.display == 'inline-block') {
-      document.getElementById('next_img').addEventListener("click", function() {
-        document.getElementById('now').style.display = 'none';
-        document.getElementById('next_img').style.display = 'none';
-        document.getElementById('next').style.display = 'inline-block';
-        clickScroller()
-      });
-    };
-    if (document.getElementById('now').style.display == 'none' && document.getElementById('next').style.display == 'inline-block') {
-      document.getElementById('prev_img').addEventListener("click", function() {
-        document.getElementById('next').style.display = 'none';
-        document.getElementById('prev').style.display = 'none';
-        document.getElementById('now').style.display = 'inline-block';
-        document.getElementById('next_img').style.display = 'inline';
-        document.getElementById('prev_img').style.display = 'inline';
-        clickScroller()
-      });
-    };
-    if (document.getElementById('now').style.display == 'inline-block') {
-      document.getElementById('prev_img').addEventListener("click", function() {
-        document.getElementById('now').style.display = 'none';
-        document.getElementById('prev_img').style.display = 'none';
-        document.getElementById('prev').style.display = 'inline-block';
-        clickScroller()
-      });
-    };
-    if (document.getElementById('now').style.display == 'none' && document.getElementById('prev').style.display == 'inline-block') {
-      document.getElementById('next_img').addEventListener("click", function() {
-        document.getElementById('prev').style.display = 'none';
-        document.getElementById('next').style.display = 'none';
-        document.getElementById('now').style.display = 'inline-block';
-        document.getElementById('next_img').style.display = 'inline';
-        document.getElementById('prev_img').style.display = 'inline';
-        clickScroller()
-      });
-    };
-};
-  clickScroller()
+  const project = {{project}}
+  let date_str = new String ({{date}})
+  let dateNow = date_str.slice(0,4) + '-' + date_str.slice(4,6) + '-' + date_str.slice(6,8);
+  console.log(dateNow)
+  function addDays() {
+    var result = new Date(dateNow);
+    result.setDate(result.getDate() + 7);
+    dateNow = result;
+  }
+  function remDays() {
+    var result = new Date(dateNow);
+    result.setDate(result.getDate() - 7);
+    dateNow = result;
+  }
+
+  function nextWeek () {
+    addDays()
+    let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
+    const yourUrl = `http://127.0.0.1:8000/api/next_week/${date_future}/${project}`
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", yourUrl);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState != 4) {
+        return
+      }
+      if (xhr.status === 200) {
+        let week_line_pass = document.querySelector(".flex_week")
+        let del_el = document.querySelectorAll('.flex_week a');
+        for (let element of del_el) {
+          element.remove();
+        }
+
+        let json_week = JSON.parse(xhr.responseText).week_line
+        let array_day_in_week = json_week.replace('[', '').replace(']', '').replace("'", '').split(', ')
+
+        for (let i=0; i < 7; i++) {
+          var wrapper = document.createElement('div');
+          wrapper.innerHTML= array_day_in_week[i].replace("'", "").replace(">'", "");
+          var div = wrapper.firstChild;
+          week_line_pass.appendChild(wrapper);
+        }
+
+      } else {
+        {% comment %} console.log('err', xhr.responseText) {% endcomment %}
+      }
+    }
+  }
+
+  function prevWeek () {
+    remDays()
+    let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
+    const yourUrl = `http://127.0.0.1:8000/api/prev_week/${date_future}/${project}`
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", yourUrl);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState != 4) {
+        return
+      }
+      if (xhr.status === 200) {
+        let week_line_pass = document.querySelector(".flex_week")
+        let del_el = document.querySelectorAll('.flex_week a');
+        for (let element of del_el) {
+          element.remove();
+        }
+
+        let json_week = JSON.parse(xhr.responseText).week_line
+        let array_day_in_week = json_week.replace('[', '').replace(']', '').replace("'", '').split(', ')
+
+        for (let i=0; i < 7; i++) {
+          var wrapper = document.createElement('div');
+          wrapper.innerHTML= array_day_in_week[i].replace("'", "").replace(">'", "");
+          var div = wrapper.firstChild;
+          week_line_pass.appendChild(wrapper);
+        }
+
+      } else {
+        {% comment %} console.log('err', xhr.responseText) {% endcomment %}
+      }
+    }
+  }
+
+  let next_week = document.querySelector('#next_img');
+  let prev_week = document.querySelector('#prev_img');
+  next_week.addEventListener('click', nextWeek)
+  prev_week.addEventListener('click', prevWeek)
   function time_hour(val){
     if (val < 120){
       return '0' + (val - val % 12) / 12;
@@ -165,4 +241,4 @@
 document.getElementById('id_start_time').value = time_hour({{get_int_low_time}})+":"+time_minute({{get_int_low_time}});
 document.getElementById('id_end_time').value = time_hour({{get_int_high_time}})+":"+time_minute({{get_int_high_time}});
 </script>
-{% endblock %} 
+{% endblock %}

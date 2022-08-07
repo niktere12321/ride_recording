@@ -1,5 +1,6 @@
 import calendar
 from datetime import date, datetime, timedelta
+from re import S
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -11,8 +12,8 @@ from django.views import generic
 from .decorathion import active, admin
 from .forms import RecordsForm, ServicesForm
 from .models import Records, Services
-from .utils import (Calendar, convert_time, get_time, send_email, send_message,
-                    time_step)
+from .utils import (Calendar, get_week_card, line_day, send_email,
+                    send_message, time_step)
 
 User = get_user_model()
 
@@ -75,71 +76,30 @@ def next_month(d):
     return month
 
 
-def prev_month_new(d):
-    """Для странички с записью"""
-    first = d.replace(day=1)
-    prev_month = first - timedelta(days=1)
-    month = str(prev_month.year) + '-' + str(prev_month.month)
-    return month
-
-
-def next_month_new(d):
-    """Для странички с записью"""
-    days_in_month = calendar.monthrange(d.year, d.month)[1]
-    last = d.replace(day=days_in_month)
-    next_month = last + timedelta(days=1)
-    month = str(next_month.year) + '-' + str(next_month.month)
-    return month
-
-
 @active
 @login_required
 def records_start(request, date, project):
     """Создание записи для пользователя"""
     new_date = date[:4] + '-' + date[4:6] + '-' + date[6:]
-    new_date_str = date[6:] + '.' + date[4:6] + '.' + date[:4]
     date_record = datetime.strptime(new_date, '%Y-%m-%d').date()
     services = Services.objects.get(pk=project)
     time_now_to_rec = services.low_time
     if date_record == datetime.now().date():
         time_now_to_rec = datetime.now().time()
     record_list = list(Records.objects.filter(date_start=new_date, project=project))
-    record_list_p = list(Records.objects.filter(date_start=new_date))
+    """получение полоски недели"""
+    week_line = get_week_card(date_record, services, new_date, project)
     """Получение полоски показывающей загруженость дня"""
-    lol_red = f"<div style='height: 30px; width: 50px; background: red; display: table-cell;'> </div>"
-    lol_green = f"<div style='height: 30px; width: 50px; background: green; display: table-cell;'> </div>"
-    lol_brown = f"<div style='height: 30px; width: 50px; background: #808080; display: table-cell;'> </div>"
-    col = []
     get_int_low_time = time_step(services.low_time)
     get_int_high_time = time_step(services.high_time)
-    for i in range(get_int_low_time, get_int_high_time):
-        if date_record < datetime.now().date():
-            col.append(lol_brown)
-        elif date_record == datetime.now().date():
-            if time_step(datetime.now().time()) <= i:
-                col.append(lol_green)
-            else:
-                col.append(lol_brown)
-        else:
-            col.append(lol_green)
-    for p in record_list:
-        counter = 0
-        for i in range(len(col)):
-            time_i = datetime.strptime(get_time(i, time_step(services.low_time)), "%H:%M:%S")
-            time_start = datetime.strptime(str(p.start_time), "%H:%M:%S")
-            time_end = datetime.strptime(str(p.end_time), "%H:%M:%S")
-            if time_i >= time_start and time_i < time_end:
-                col[counter] = lol_red
-            counter += 1
-    line_1 = f""
-    for i in range(len(col)):
-        line_1 += col[i]
-    color_table = f"<div style='max-width: 100%; height: 30px; margin: 5px 5px 0px 5px;'>{line_1}</div>"
+    record_list_for_line = Records.objects.filter(date_start=new_date, project=project).order_by('start_time')
+    line = line_day(record_list_for_line, date_record, services)
+    color_table = f"<div class='line_for_form'>{line}</div>"
     """Создание таблицы показывающей записи в этот день"""
     if len(record_list) > 0:
         ride_rec_empty = None
         user_list = list(User.objects.filter(active=True))
-        ride_rec = f'<th></th><th>Транспортное средство</th><th>Имя пользователя</th><th>Запись</th></tr>'
+        ride_rec = f'<th></th><th>Транспортное средство</th><th>Пользователя</th><th>Запись</th></tr>'
         count_rec = 0
         for i in range(0, len(user_list)):
             records_to_user = list(Records.objects.filter(date_start=new_date, project=project, driver=user_list[i].pk).order_by('start_time'))
@@ -154,34 +114,18 @@ def records_start(request, date, project):
     else:
         ride_rec = None
         ride_rec_empty = f"<h1 style='text-align: center; margin-top: 10%;'>День полностью пуст</h1>"
-    """Получение правильных данных о месяце"""
-    if new_date[5:7] == '10' or new_date[5:7] == '11' or new_date[5:7] == '12':
-        date_to_ride = str(new_date[:4]) + '-' + str(new_date[5:7])
-    else:
-        date_to_ride = str(new_date[:4]) + '-' + str(new_date[6:7])
-    """календарь на этот месяц"""
-    d = get_date(date_to_ride)
-    cal = Calendar(d.year, d.month, project)
-    html_cal = cal.formatmonth(withyear=True)
-    """календарь на след месяц"""
-    d_next = get_date(next_month_new(get_date(date_to_ride)))
-    cal_next = Calendar(d_next.year, d_next.month, project)
-    html_cal_next = cal_next.formatmonth(withyear=True)
-    """календарь на предыдущий месяц"""
-    d_prev = get_date(prev_month_new(get_date(date_to_ride)))
-    cal_prev = Calendar(d_prev.year, d_prev.month, project)
-    html_cal_prev = cal_prev.formatmonth(withyear=True)
     """Пповерка если выбранный день в прошлом"""
     if date_record < datetime.now().date():
         context = {"old_date": "Запись недоступна",
                    "ride_rec": ride_rec,
                    "ride_rec_empty": ride_rec_empty,
                    "color_table": color_table,
-                   "calendar": mark_safe(html_cal),
-                   "calendar_next": mark_safe(html_cal_next),
-                   "calendar_prev": mark_safe(html_cal_prev),
+                   "new_date": new_date,
+                   "get_int_low_time": get_int_low_time,
+                   "get_int_high_time": get_int_high_time,
                    "date": date,
-                   "project": project}
+                   "project": project,
+                   "week_line": week_line}
         return render(request, 'records/records_start.html', context)
     """Проверка усли у пользователя меньше 10 записей на это транспортное средство"""
     about_count = Records.objects.filter(driver=request.user.pk, project=project, date_start__gte=datetime.now()).count()
@@ -189,14 +133,14 @@ def records_start(request, date, project):
         context = {'ride_rec': ride_rec,
                    'ride_rec_empty': ride_rec_empty,
                    'color_table': color_table,
-                   'calendar': mark_safe(html_cal),
-                   'calendar_next': mark_safe(html_cal_next),
-                   'calendar_prev': mark_safe(html_cal_prev),
-                   'date_str': new_date_str,
+                   'new_date': new_date,
+                   'get_int_low_time': get_int_low_time,
+                   'get_int_high_time': get_int_high_time,
                    'date': date,
                    'project': project,
                    'services': services,
-                   'many_rec': 'Максимум записей 10'}
+                   'many_rec': 'Максимум записей 10',
+                   'week_line': week_line}
         return render(request, 'records/records_start.html', context)
     """Создание формы"""
     form = RecordsForm(request.POST or None, project_to_validate = project, date_to_validate = new_date)
@@ -207,78 +151,6 @@ def records_start(request, date, project):
         records.project = services
         start_ti = form.cleaned_data['start_time']
         end_ti = form.cleaned_data['end_time']
-        """Проверки на валидность новой записи с данными из бд"""
-        convert_end_time = convert_time(end_ti)
-        convert_start_time = convert_time(start_ti)
-        if date_record == datetime.now().date():
-            if datetime.strptime(f"{start_ti}", "%H:%M:%S").time() < datetime.now().time():
-                context = {"error": f"Нельзя записаться в прошлом.",
-                           "date": date,
-                           "project": project}
-                return render(request, 'records/records_start.html', context)
-        if start_ti > end_ti:
-            context = {"error": f"Введите корректное время поездки.",
-                       "date": date,
-                       "project": project}
-            return render(request, 'records/records_start.html', context)
-        if convert_end_time - convert_start_time > convert_time(f'{services.high_duration}:00:00'):
-            context = {"error": f"Нельзя кататься больше {services.high_duration} часов",
-                       "date": date,
-                       "project": project}
-            return render(request, 'records/records_start.html', context)
-        if (convert_end_time - convert_start_time) <= convert_time(f'{services.low_duration}:00:00'):
-            context = {"error": f"Нельзя кататься меньше {services.low_duration} часов",
-                       "date": date,
-                       "project": project}
-            return render(request, 'records/records_start.html', context)
-        record_st = []
-        record_en = []
-        for i in range(0, len(record_list)):
-            record_st.append(record_list[i].start_time)
-            record_en.append(record_list[i].end_time)
-        for i in record_st:
-            for p in record_en:
-                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
-                    context = {"error": "Это время уже занято!",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
-                elif start_ti <= i and end_ti >=p:
-                    context = {"error": "Это время уже занято!",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
-                elif start_ti < i and end_ti <= i:
-                    break
-                elif start_ti < i and end_ti <= p:
-                    context = {"error": "Это время уже занято!",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
-        record_st_p = []
-        record_en_p = []
-        for i in range(0, len(record_list_p)):
-            record_st_p.append(record_list_p[i].start_time)
-            record_en_p.append(record_list_p[i].end_time)
-        for i in record_st_p:
-            for p in record_en_p:
-                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
-                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
-                elif start_ti <= i and end_ti >=p:
-                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
-                elif start_ti < i and end_ti <= i:
-                    break
-                elif start_ti < i and end_ti < p:
-                    context = {"error": f"В это время вы уже катаетесь на другом т.с.",
-                               "date": date,
-                               "project": project}
-                    return render(request, 'records/records_start.html', context)
         records.start_time = start_ti
         records.end_time = end_ti
         records.save()
@@ -290,15 +162,14 @@ def records_start(request, date, project):
                'ride_rec_empty': ride_rec_empty,
                'color_table': color_table,
                'form': form,
-               'calendar': mark_safe(html_cal),
-               'calendar_next': mark_safe(html_cal_next),
-               'calendar_prev': mark_safe(html_cal_prev),
-               'date_str': new_date_str,
+               'new_date': new_date,
                'get_int_low_time': get_int_low_time,
                'get_int_high_time': get_int_high_time,
                'services': services,
                'time_now_to_rec': time_now_to_rec,
-               'date': date}
+               'date': date,
+               'project': project,
+               'week_line': week_line}
     return render(request, 'records/records_start.html', context)
 
 

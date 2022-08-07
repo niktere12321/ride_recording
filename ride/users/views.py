@@ -88,8 +88,8 @@ def users_help(request):
         if request.POST and form.is_valid():
             subject = 'Сообщение об ошибке'
             message = form.cleaned_data['message']
-            email_from = request.user.email
-            email = [settings.EMAIL_HOST_USER]
+            email = [request.user.email]
+            email_from = settings.EMAIL_HOST_USER
             try:
                 send_mail(subject, message, email_from, email)
             except Exception as e:

@@ -53,31 +53,29 @@ class RecordsForm(forms.ModelForm):
         for i in range(0, len(record_list)):
             record_st.append(record_list[i].start_time)
             record_en.append(record_list[i].end_time)
-        for i in record_st:
-            for p in record_en:
-                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
-                    raise forms.ValidationError("Это время уже занято!")
-                elif start_ti <= i and end_ti >=p:
-                    raise forms.ValidationError("Это время уже занято!")
-                elif start_ti < i and end_ti <= i:
-                    break
-                elif start_ti < i and end_ti <= p:
-                    raise forms.ValidationError("Это время уже занято!")
+        for i in range(len(record_st)):
+            if (start_ti >= record_st[i] and end_ti <= record_en[i]) or (start_ti > record_st[i] and start_ti < record_en[i] and end_ti > record_en[i]):
+                raise forms.ValidationError("Это время уже занято!")
+            elif start_ti <= record_st[i] and end_ti >= record_en[i]:
+                raise forms.ValidationError("Это время уже занято!")
+            elif start_ti < record_st[i] and end_ti <= record_st[i]:
+                break
+            elif start_ti < record_st[i] and end_ti <= record_en[i]:
+                raise forms.ValidationError("Это время уже занято!")
         record_st_p = []
         record_en_p = []
         for i in range(0, len(record_list_p)):
             record_st_p.append(record_list_p[i].start_time)
             record_en_p.append(record_list_p[i].end_time)
-        for i in record_st_p:
-            for p in record_en_p:
-                if (start_ti >= i and end_ti <= p) or (start_ti > i and start_ti < p and end_ti > p):
-                    raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
-                elif start_ti <= i and end_ti >=p:
-                    raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
-                elif start_ti < i and end_ti <= i:
-                    break
-                elif start_ti < i and end_ti < p:
-                    raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
+        for i in range(len(record_st)):
+            if (start_ti >= record_st[i] and end_ti <= record_en[i]) or (start_ti > record_st[i] and start_ti < record_en[i] and end_ti > record_en[i]):
+                raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
+            elif start_ti <= record_st[i] and end_ti >= record_en[i]:
+                raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
+            elif start_ti < record_st[i] and end_ti <= record_st[i]:
+                break
+            elif start_ti < record_st[i] and end_ti <= record_en[i]:
+                raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
         return data
 
 

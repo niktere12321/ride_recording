@@ -6,38 +6,30 @@
 {% block content %}
 {% load thumbnail %}
 {% include 'records/includes/switcher.html' %}
-  <h1 class="text-center">Выбор транспортного средства:</h1>
+  <h1 class="text-center-main">Выбор транспортного средства:</h1>
+  <div class="main_content">
   {% for project in all_services %}
-    <div style="position: relative; margin: 20px; padding: 20px; margin-bottom: 40px; border: 1px solid #2a52be; display: inline-block; border-radius: 20px; min-height: 690px; max-height: 690px; width: 45%; text-align: center">
-      <div>
-        <h2>{{ project.name_project }}</h2>
-      </div>
-      <div>
-        {% thumbnail project.image "600x300" upscale=True as im %}
-          <img class="card-img my-2" src="{{ im.url }}" alt="Изображения нету" class="minimumiPadWidth" style="border-radius: 20px; height: 400px; width: 565px;">
+    <div class="card_for_car">
+      <span class="main_text_for_card">{{ project.name_project }}</span>
+      <div class="center">
+        {% thumbnail project.image "500x300" upscale=True as im %}
+        <img class="card-img my-2 img_border_for_card" src="{{ im.url }}" alt="Изображения нету">
         {% endthumbnail %}
       </div>
-      <div style="word-wrap: break-word;">
-        {% if project.description %}
-        {{ project.description }}
-        {% else %}
-        <br>
-        {% endif %}
-      </div>
-      <br>
-      <div>
-      {% if project.contact %}
-        Помощь в дороге: {{ project.contact }}
-        {%else %}
-        <br>
+      {% if project.description %}
+      <span class="description_and_contact_main">Описание: {{ project.description }}</span>
+      {% else %}
+      <br/>
       {% endif %}
-      </div>
-      <br>
+      {% if project.contact %}
+      <span class="description_and_contact_main">Помощь в дороге: {{ project.contact }}</span>
+      {% endif %}
       <a href="{% url 'records:index_records' project.pk %}">
-        <div class="btn btn-primary" style="width: 50%; font-size: 2.5vw; white-space: nowrap; border-radius: 15px;">
-          Расписание
+        <div class="button_for_main_card">
+          <span class="text_button">Расписание</span>
         </div>
       </a>
     </div>
   {% endfor %}
+  </div>
 {% endblock %} 

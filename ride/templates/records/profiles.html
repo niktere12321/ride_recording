@@ -6,55 +6,73 @@
 {% block content %}
 {% include 'records/includes/switcher.html' %}
 <div class="row justify-content-center lol_width">
-  <div class="col-md-8 p-5">
-    <div class="card">
-      <div class="card-body">
-        <h1 class="text-center">Профиль</h1>
-        <div class="label-row">
-          <label>
-            Имя пользователя
-          </label>
-        </div>
-        <p>{{prof}}</p>
-        <div class="label-row">
-          <label>
-            Адрес электронной почты
-          </label>
-        </div>
-        <p> {{prof.email}} </p>
-        <div class="label-row">
-          <label>
-            Ваше имя
-          </label>
-        </div>
-        <p> {{prof.first_name}} </p>
-        <div class="label-row">
-          <label>
-            Ваша фамилия
-          </label>
-        </div>
-        <p> {{prof.last_name}} </p>
-      </div>
+  <div class="container_for_profile">
+    <h1 class="text-center">Профиль</h1>
+    <div class="label-row text_open_sans">
+      <label>
+        Имя пользователя
+      </label>
     </div>
+    <p>{{prof}}</p>
+    <div class="label-row text_open_sans">
+      <label>
+        Адрес электронной почты
+      </label>
+    </div>
+    <p> {{prof.email}} </p>
+    <div class="label-row text_open_sans">
+      <label>
+        Ваше имя
+      </label>
+    </div>
+    <p> {{prof.first_name}} </p>
+    <div class="label-row text_open_sans">
+      <label>
+        Ваша фамилия
+      </label>
+    </div>
+    <p> {{prof.last_name}} </p>
   </div>
 </div>
-<div style="padding: 0px 150px 50px 150px;" id="new_rec">
-  <h1 class="text-center">
-    Будующие записи
-  </h1>
-  <table border="0" cellpadding="0" cellspacing="0" class="table table-hover">
+<div class="profile_record">
+  <div class="flex_profile">
+    <img src="{% static 'img/arroy-left.png' %}" height="35" width="35" alt="К истории записей" id="prev" >
+    <div class="inline_profile">
+      <h1 class="profile_record_text new_rec">
+        Будующие записи
+      </h1>
+      <h1 class="profile_record_text old_rec">
+        История поедок
+      </h1>
+    </div>
+    <img src="{% static 'img/arroy-right.png' %}" height="35" width="35" alt="К будующим записям" id="next">
+  </div>
+  <table border="0" cellpadding="0" cellspacing="0" class="table table-hover new_rec">
     {{ ride_rec|safe }}
     </table>
-</div>
-<div style="padding: 0px 150px 100px 150px;" id="old_rec">
-  <h1 class="text-center">
-    Прошлые записи
-  </h1>
-  <table border="0" cellpadding="0" cellspacing="0" class="table table-hover">
+  <table border="0" cellpadding="0" cellspacing="0" class="table table-hover old_rec">
     {{ ride_rec_old|safe }}
   </table>
 </div>
+{% endblock %}
+{% block script %}
 <script>
+  document.getElementById('prev').addEventListener("click", function() {
+    document.querySelector('.profile_record_text.new_rec').style.display = 'none';
+    document.querySelector('.table.table-hover.new_rec').style.display = 'none';
+    document.querySelector('.profile_record_text.old_rec').style.display = 'flex';
+    document.querySelector('.table.table-hover.old_rec').style.display = 'table';
+    document.getElementById('prev').style.opacity = '0';
+    document.getElementById('next').style.opacity = '1';
+  });
+  document.querySelector('#next').addEventListener("click", function() {
+    document.querySelector('.profile_record_text.old_rec').style.display = 'none';
+    document.querySelector('.table.table-hover.old_rec').style.display = 'none';
+    document.querySelector('.profile_record_text.new_rec').style.display = 'flex';
+    document.querySelector('.table.table-hover.new_rec').style.display = 'table';
+    document.getElementById('prev').style.opacity = '1';
+    document.getElementById('next').style.opacity = '0';
+  });
   function pagination (pages, status, table, getIdToButton, getOldOrNewToClass) {
     if (table.length >= 5 && status == false) {
       let num_pages = Math.ceil(table.length / 5)
@@ -68,9 +86,9 @@
       for (let i = pages; i < num_pages; i++) {
         let button_pagination = document.createElement('button')
         button_pagination.appendChild(document.createTextNode(i+1))
-        button_pagination.className = 'btn btn-primary pagination_button_' + getOldOrNewToClass
+        button_pagination.className = 'pagination_button pagination_button_' + getOldOrNewToClass
         button_pagination.id = 'pagination_button'
-        document.getElementById(getIdToButton).appendChild(button_pagination)
+        document.querySelector(getIdToButton).appendChild(button_pagination)
       }
     }
     else if (table.length >= 5 && status == true) {
@@ -101,14 +119,14 @@
   let records_count_old = document.querySelectorAll('tr#count_old')
 
   if (records_count_new.length >= 5) {
-    pagination(0, false, records_count_new, 'new_rec', 'new')
+    pagination(0, false, records_count_new, '.table.table-hover.new_rec', 'new')
   }
   if (records_count_old.length >= 5) {
-    pagination(0, false, records_count_old, 'old_rec', 'old')
+    pagination(0, false, records_count_old, '.table.table-hover.old_rec', 'old')
   }
 
-  let num_of_button_old = document.getElementsByClassName('btn btn-primary pagination_button_old')
-  let num_of_button_new = document.getElementsByClassName('btn btn-primary pagination_button_new')
+  let num_of_button_old = document.getElementsByClassName('pagination_button pagination_button_old')
+  let num_of_button_new = document.getElementsByClassName('pagination_button pagination_button_new')
   function get_click_to_button() {
     let records_count_new = document.querySelectorAll('tr#count_new')
     for (let i = 0; i < num_of_button_new.length; i++) {

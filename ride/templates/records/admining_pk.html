@@ -64,6 +64,8 @@
     {{ ride_rec_old|safe }}
   </table>
 </div>
+{% endblock %}
+{% block script %}
 <script>
   function pagination (pages, status, table, getIdToButton, getOldOrNewToClass) {
     if (table.length >= 5 && status == false) {

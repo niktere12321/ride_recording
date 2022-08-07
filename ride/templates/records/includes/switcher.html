@@ -1,29 +1,33 @@
 {% if user.is_authenticated %}
   <div class="switch_main">
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a class="nav-link" {% if index %}active{% endif %}
-          href="{% url 'records:index_services' %}"  style='color: rgb(255, 255, 255)'>
-          Транспортные средства
+    <div class="line_3">
+    </div>
+    <ul class="nav main_center">
+      <li class="nav-item nav_main">
+        <a class="nav-link nav_main_link" {% if index_services %}active{% endif %}
+          href="{% url 'records:index_services' %}">
+          <span class="text_nav_link">Транспортные средства</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a href="{% url 'records:profiles' %}" class="nav-link"  style='color: rgb(255, 255, 255)'>
-          Ваш профиль
+      <li class="nav-item nav_main">
+        <a href="{% url 'records:profiles' %}" class="nav-link nav_main_link">
+          <span class="text_nav_link">Ваш профиль</span>
         </a>
       </li>
       {% if user.is_authenticated and user.role == 'admin' %}
-      <li class="nav-item">
-        <a href="{% url 'records:admining' %}" class="nav-link"  style='color: rgb(255, 255, 255)'>
-          Управление
+      <li class="nav-item nav_main">
+        <a href="{% url 'records:admining' %}" class="nav-link nav_main_link">
+          <span class="text_nav_link">Управление</span>
         </a>
       </li>
       {% endif %}
-      <li class="nav-item">
-        <a href="{% url 'users:logout'%}" class="nav-link" style='color: rgb(255, 255, 255)'>
-          Выйти
+      <li class="nav-item nav_main">
+        <a href="{% url 'users:logout'%}" class="nav-link nav_main_link">
+          <span class="text_nav_link">Выйти</span>
         </a>
       </li>
     </ul>
+    <div class="line_4">
+    </div>
   </div>
 {% endif %}
