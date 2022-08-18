@@ -59,7 +59,7 @@ class RecordsForm(forms.ModelForm):
             elif start_ti <= record_st[i] and end_ti >= record_en[i]:
                 raise forms.ValidationError("Это время уже занято!")
             elif start_ti < record_st[i] and end_ti <= record_st[i]:
-                break
+                continue
             elif start_ti < record_st[i] and end_ti <= record_en[i]:
                 raise forms.ValidationError("Это время уже занято!")
         record_st_p = []
@@ -73,7 +73,7 @@ class RecordsForm(forms.ModelForm):
             elif start_ti <= record_st[i] and end_ti >= record_en[i]:
                 raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
             elif start_ti < record_st[i] and end_ti <= record_st[i]:
-                break
+                continue
             elif start_ti < record_st[i] and end_ti <= record_en[i]:
                 raise forms.ValidationError("В это время вы уже катаетесь на другом т.с.")
         return data

@@ -14,6 +14,23 @@
           <span class="text_nav_link">Ваш профиль</span>
         </a>
       </li>
+      <div class="dropdown">
+        <button onclick="openmenu()" class="dropbtn">Меню</button>
+        <div id="myDropdown" class="dropdown-content">
+          <a href="{% url 'records:index_services' %}">
+            Транспортные средства
+          </a>
+          <a href="{% url 'records:profiles' %}">
+            Ваш профиль
+          </a>
+          <a href="{% url 'records:admining' %}">
+            Управление
+          </a>
+          <a href="{% url 'users:logout'%}">
+            Выйти
+          </a>
+        </div>
+      </div>
       {% if user.is_authenticated and user.role == 'admin' %}
       <li class="nav-item nav_main">
         <a href="{% url 'records:admining' %}" class="nav-link nav_main_link">

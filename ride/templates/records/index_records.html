@@ -5,11 +5,6 @@
 {% endblock %}
 {% block content %}
 {% include 'records/includes/switcher.html' %}
-  {% comment %} <h1 class="text-center">Календарик покатушек на {{project_name}}</h1> {% endcomment %}
-  {% comment %} <a class="left" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{prev_month}}">
-  </a>
-  <a class="right" style="width: 10%; position: relative; display: inline-block" href="{% url 'records:index_records' project %}?{{ next_month }}">
-  </a> {% endcomment %}
   <table border="0" cellpadding="0" cellspacing="0" class="calendar">
     {{calendar}}
   </table>

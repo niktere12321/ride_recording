@@ -278,10 +278,11 @@ class Calendar(HTMLCalendar):
 
     def formatmonth(self, withyear=True):
         events = Records.objects.filter(date_start__year=self.year, date_start__month=self.month, project=self.project)
-        week_day = f'''<tr><th class="text_day_in_week" id="border-left"> Пн </th>'
+        week_day = f'''<tr><th class="text_day_in_week" id="border-left"> Пн </th>
                     <th class="text_day_in_week"> Вт </th><th class="text_day_in_week">
                     Ср </th><th class="text_day_in_week"> Чт </th><th class="text_day_in_week">
-                    Пт </th><th class="text_day_in_week"> Сб </th><th class="text_day_in_week" id="border-right"> Вс </th></tr>'''
+                    Пт </th><th class="text_day_in_week"> Сб </th>
+                    <th class="text_day_in_week" id="border-right"> Вс </th></tr>'''
         cal = f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{week_day}\n'
         for week in self.monthdays2calendar(self.year, self.month):

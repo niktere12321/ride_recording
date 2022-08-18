@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = '*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -97,9 +97,9 @@ AUTH_USER_MODEL = 'users.User'
 
 STATIC_URL = '/static/'
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'
 
@@ -124,9 +124,3 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'nikterekhoff42@gmail.com'
 
 EMAIL_HOST_PASSWORD = 'rstsvmrocospiram'
-
-#RECIPIENTS_EMAIL = ['nikterekhoff42@gmail.com']
-
-#DEFAULT_FROM_EMAIL = 'nikterekhoff4242@gmail.com'
-
-#EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')

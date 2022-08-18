@@ -81,6 +81,7 @@ def next_month(d):
 def records_start(request, date, project):
     """Создание записи для пользователя"""
     new_date = date[:4] + '-' + date[4:6] + '-' + date[6:]
+    d = get_date(date[:4] + '-' + date[4:6])
     date_record = datetime.strptime(new_date, '%Y-%m-%d').date()
     services = Services.objects.get(pk=project)
     time_now_to_rec = services.low_time
@@ -99,7 +100,10 @@ def records_start(request, date, project):
     if len(record_list) > 0:
         ride_rec_empty = None
         user_list = list(User.objects.filter(active=True))
-        ride_rec = f'<th></th><th>Транспортное средство</th><th>Пользователя</th><th>Запись</th></tr>'
+        ride_rec = f'''<th></th>
+                       <th class="th_cal_record">Транспортное средство</th>
+                       <th class="th_cal_record">Пользователя</th>
+                       <th class="th_cal_record">Запись</th></tr>'''
         count_rec = 0
         for i in range(0, len(user_list)):
             records_to_user = list(Records.objects.filter(date_start=new_date, project=project, driver=user_list[i].pk).order_by('start_time'))
@@ -121,6 +125,8 @@ def records_start(request, date, project):
                    "ride_rec_empty": ride_rec_empty,
                    "color_table": color_table,
                    "new_date": new_date,
+                   "prev_month": prev_month(d),
+                   "next_month": next_month(d),
                    "get_int_low_time": get_int_low_time,
                    "get_int_high_time": get_int_high_time,
                    "date": date,
@@ -134,6 +140,8 @@ def records_start(request, date, project):
                    'ride_rec_empty': ride_rec_empty,
                    'color_table': color_table,
                    'new_date': new_date,
+                   'prev_month': prev_month(d),
+                   'next_month': next_month(d),
                    'get_int_low_time': get_int_low_time,
                    'get_int_high_time': get_int_high_time,
                    'date': date,
@@ -163,6 +171,8 @@ def records_start(request, date, project):
                'color_table': color_table,
                'form': form,
                'new_date': new_date,
+               'prev_month': prev_month(d),
+               'next_month': next_month(d),
                'get_int_low_time': get_int_low_time,
                'get_int_high_time': get_int_high_time,
                'services': services,
