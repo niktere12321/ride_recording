@@ -139,7 +139,7 @@
   function nextWeek () {
     addDays()
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
-    const yourUrl = `http://127.0.0.1:8000/api/next_week/${date_future}/${project}`
+    const yourUrl = `http://51.250.90.254/api/next_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
     xhr.open("GET", yourUrl);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -174,7 +174,7 @@
   function prevWeek () {
     remDays()
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
-    const yourUrl = `http://127.0.0.1:8000/api/prev_week/${date_future}/${project}`
+    const yourUrl = `http://51.250.90.254/api/prev_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
     xhr.open("GET", yourUrl);
     xhr.setRequestHeader('Content-Type', 'application/json');
