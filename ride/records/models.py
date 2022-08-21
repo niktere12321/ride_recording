@@ -15,6 +15,10 @@ class Services(models.Model):
     image = models.ImageField(upload_to='images/', blank=True, null=True)
     contact = models.TextField(max_length=200, blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Транспортное средство'
+        verbose_name_plural = 'Транспортные средства'
+
 
 class Records(models.Model):
     project = models.ForeignKey(Services, on_delete=models.CASCADE)
@@ -23,3 +27,6 @@ class Records(models.Model):
     end_time = models.TimeField()
     driver = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    class Meta:
+        verbose_name = 'Запись'
+        verbose_name_plural = 'Записи'

@@ -2,13 +2,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 
-from api.views import Next_week, Prev_week
+from api.views import Get_week
 
 app_name = 'api'
 
 urlpatterns = [
-    path('next_week/<int:date>/<int:project>', Next_week, name='Next_week'),
-    path('prev_week/<int:date>/<int:project>', Prev_week, name='Prev_week'),
+    path('get_week/<int:date>/<int:project>', Get_week, name='Get_week'),
 ]
 
 if settings.DEBUG:

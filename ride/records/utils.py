@@ -310,7 +310,7 @@ def get_week_card(date_record, services, new_date, project):
             day_color = "future_day_color"
             day_yes_or_no = f'<p class="record_yes_or_not">Запись доступна с {str(services.low_time)[0:5]} до {str(services.high_time)[0:5]}</p>'
         line = line_day(date_in_day, week_date, services)
-        week_line.append(f"""<a href="../../../{project}/records/{str(week_date).replace('-', '')}/"><div class="day_in_record_week {day_color}"><span class="day_in_week">{str(week_date)[8:11]} {month_name[int(str(week_date).split('-')[1])]}</span>{day_yes_or_no}<div class="line_in_table_week">{line}</div></div></a>""")
+        week_line.append(f"""<a href="../../../{project}/records/{str(week_date).replace('-', '')}/" class='width_230'><div class="day_in_record_week {day_color}"><span class="day_in_week">{str(week_date)[8:11]} {month_name[int(str(week_date).split('-')[1])]}</span>{day_yes_or_no}<div class="line_in_table_week">{line}</div></div></a>""")
     sunday = week_line[0]
     week_line.remove(sunday)
     week_line.append(sunday)

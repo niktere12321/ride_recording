@@ -10,7 +10,7 @@
     <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{prev_month}}">
       <img src="{% static 'img/arroy-left.png' %}" height="35" width="35" alt="Предыдущий месяц">
     </a>
-    <span class="text-center text_for_record_head">Запись на транспортное средство {{services.name_project}}</span>
+    <span class="text-center text_for_record_head">Запись на транспортное средство "{{services.name_project}}"</span>
     <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{ next_month }}">
       <img src="{% static 'img/arroy-right.png' %}" height="35" width="35" alt="Следующий месяц">
     </a>
@@ -124,7 +124,6 @@
   const project = {{project}}
   let date_str = new String ({{date}})
   let dateNow = date_str.slice(0,4) + '-' + date_str.slice(4,6) + '-' + date_str.slice(6,8);
-  console.log(dateNow)
   function addDays() {
     var result = new Date(dateNow);
     result.setDate(result.getDate() + 7);
@@ -139,7 +138,8 @@
   function nextWeek () {
     addDays()
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
-    const yourUrl = `http://51.250.90.254/api/next_week/${date_future}/${project}`
+    {% comment %} 51.250.90.254 {% endcomment %}
+    const yourUrl = `http://127.0.0.1:8000/api/get_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
     xhr.open("GET", yourUrl);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -160,13 +160,14 @@
 
         for (let i=0; i < 7; i++) {
           var wrapper = document.createElement('div');
-          wrapper.innerHTML= array_day_in_week[i].replace("'", "").replace(">'", "");
+          wrapper.innerHTML = array_day_in_week[i].replace("'", "").replace(">'", "");
           var div = wrapper.firstChild;
+          wrapper.className = "width_230"
           week_line_pass.appendChild(wrapper);
         }
 
       } else {
-        {% comment %} console.log('err', xhr.responseText) {% endcomment %}
+        console.log('err', xhr.responseText)
       }
     }
   }
@@ -174,7 +175,7 @@
   function prevWeek () {
     remDays()
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
-    const yourUrl = `http://51.250.90.254/api/prev_week/${date_future}/${project}`
+    const yourUrl = `http://127.0.0.1:8000/api/get_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
     xhr.open("GET", yourUrl);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -197,11 +198,12 @@
           var wrapper = document.createElement('div');
           wrapper.innerHTML= array_day_in_week[i].replace("'", "").replace(">'", "");
           var div = wrapper.firstChild;
+          wrapper.className = "width_230"
           week_line_pass.appendChild(wrapper);
         }
 
       } else {
-        {% comment %} console.log('err', xhr.responseText) {% endcomment %}
+        console.log('err', xhr.responseText)
       }
     }
   }

@@ -11,7 +11,7 @@ class User(AbstractUser):
         (USER, 'User role'),
     ]
     email = models.EmailField(max_length=254, unique=True)
-    username = models.CharField(max_length=150, unique=True)
+    username = models.CharField(max_length=150, unique=True, verbose_name='Имя пользователя')
     first_name = models.CharField(max_length=150, verbose_name='Имя')
     last_name = models.CharField(max_length=150, verbose_name='Фамилия')
     active = models.BooleanField(default=True)
@@ -36,3 +36,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
