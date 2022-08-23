@@ -53,7 +53,7 @@ def add_new_user(request):
                 for i in range(len(email)):
                     email_from = settings.EMAIL_HOST_USER
                     subject = 'Приглашение на регистрацию'
-                    message = f'Приглашаем пройти регистрацию на http://51.250.10.161/users/signup/{email[i]}/'
+                    message = f'Приглашаем пройти регистрацию на http://51.250.90.254/users/signup/{email[i]}/'
                     go_to_email = [email[i]]
                     try:
                         send_mail(subject, message, email_from, go_to_email)
@@ -63,7 +63,7 @@ def add_new_user(request):
                 email = [to_email]
                 email_from = settings.EMAIL_HOST_USER
                 subject = 'Приглашение на регистрацию'
-                message = f'Приглашаем пройти регистрацию на http://51.250.10.161/users/signup/{email[0]}/'
+                message = f'Приглашаем пройти регистрацию на http://51.250.90.254/users/signup/{email[0]}/'
                 try:
                     send_mail(subject, message, email_from, email)
                 except Exception as e:

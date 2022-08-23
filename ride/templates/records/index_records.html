@@ -28,7 +28,7 @@
   let th = document.querySelector('th')
 
   let name_calendar = document.createElement("span")
-  let new_text_th = `Календарь эксплатации транспортного средства "${{project_name}}" на `
+  let new_text_th = `Календарь эксплуатации транспортного средства "${{project_name}}" на `
   new_text_th = new_text_th.replace('$', '')
   let name_month = th.textContent.split(' ')[0]
   let prev_text_th = arr_month[name_month] + ' ' + th.textContent.split(' ')[1]
