@@ -81,7 +81,10 @@ def next_month(d):
 def records_start(request, date, project):
     """Создание записи для пользователя"""
     new_date = date[:4] + '-' + date[4:6] + '-' + date[6:]
+    date_str = date[6:] + '.' + date[4:6] +'.' + date[:4]
     d = get_date(date[:4] + '-' + date[4:6])
+    month_now_for_url = f"month={date[:4]}-{date[4:6]}"
+    month_now = date[4:6]
     date_record = datetime.strptime(new_date, '%Y-%m-%d').date()
     services = Services.objects.get(pk=project)
     time_now_to_rec = services.low_time
@@ -110,10 +113,10 @@ def records_start(request, date, project):
             for j in range(0, len(records_to_user)):
                 count_rec += 1
                 if request.user.role == 'admin' or request.user.pk == user_list[i].pk:
-                    del_rec = f" <a href='../../../records/records/{records_to_user[j].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
-                    ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name} {user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time} {del_rec}</td>'
+                    del_rec = f" <a href='../../../records/records/{records_to_user[j].pk}/delete/{project}/{date}/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+                    ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name}</br>{user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time} {del_rec}</td>'
                 else:
-                    ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name} {user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time}</td>'
+                    ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name}</br>{user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time}</td>'
             ride_rec += f'</tr>'
     else:
         ride_rec = None
@@ -125,13 +128,17 @@ def records_start(request, date, project):
                    "ride_rec_empty": ride_rec_empty,
                    "color_table": color_table,
                    "new_date": new_date,
+                   "date_str": date_str,
                    "prev_month": prev_month(d),
                    "next_month": next_month(d),
+                   "month_now_for_url": month_now_for_url,
+                   "month_now": month_now,
                    "get_int_low_time": get_int_low_time,
                    "get_int_high_time": get_int_high_time,
                    "date": date,
                    "project": project,
-                   "week_line": week_line}
+                   "week_line": week_line,
+                   "record_list_for_line": record_list_for_line}
         return render(request, 'records/records_start.html', context)
     """Проверка усли у пользователя меньше 10 записей на это транспортное средство"""
     about_count = Records.objects.filter(driver=request.user.pk, project=project, date_start__gte=datetime.now()).count()
@@ -140,18 +147,22 @@ def records_start(request, date, project):
                    'ride_rec_empty': ride_rec_empty,
                    'color_table': color_table,
                    'new_date': new_date,
+                   "date_str": date_str,
                    'prev_month': prev_month(d),
                    'next_month': next_month(d),
+                   "month_now_for_url": month_now_for_url,
+                   "month_now": month_now,
                    'get_int_low_time': get_int_low_time,
                    'get_int_high_time': get_int_high_time,
                    'date': date,
                    'project': project,
                    'services': services,
                    'many_rec': 'Максимум записей 10',
-                   'week_line': week_line}
+                   'week_line': week_line,
+                   "record_list_for_line": record_list_for_line}
         return render(request, 'records/records_start.html', context)
     """Создание формы"""
-    form = RecordsForm(request.POST or None, project_to_validate = project, date_to_validate = new_date)
+    form = RecordsForm(request.POST or None, project_to_validate=project, date_to_validate=new_date)
     if request.POST and form.is_valid() and (date_record >= datetime.now().date()):
         records = form.save(commit=False)
         records.date_start = new_date
@@ -171,15 +182,19 @@ def records_start(request, date, project):
                'color_table': color_table,
                'form': form,
                'new_date': new_date,
+               "date_str": date_str,
                'prev_month': prev_month(d),
                'next_month': next_month(d),
+               "month_now_for_url": month_now_for_url,
+               "month_now": month_now,
                'get_int_low_time': get_int_low_time,
                'get_int_high_time': get_int_high_time,
                'services': services,
                'time_now_to_rec': time_now_to_rec,
                'date': date,
                'project': project,
-               'week_line': week_line}
+               'week_line': week_line,
+               "record_list_for_line": list(record_list_for_line)}
     return render(request, 'records/records_start.html', context)
 
 
@@ -219,13 +234,13 @@ def profiles(request):
 
 @active
 @login_required
-def records_delete(request, rec_pk):
+def records_delete(request, rec_pk, project, date):
     """Удаление записи"""
     records_del = get_object_or_404(Records, pk=rec_pk)
     if request.user == records_del.driver or request.user.role == 'admin':
         records_del.delete()
         context = {'messages': 'Вы успешно удалили запись'}
-        return render(request, 'records/delete.html', context)
+        return redirect(reverse('records:records_start', args=[project, date]))
     context = {'messages': 'У вас нету прав'}
     return render(request, 'records/index.html', context)
 
@@ -312,7 +327,7 @@ def admining_services_del(request, services_id):
     services = get_object_or_404(Services, pk=services_id)
     services.delete()
     context = {'messages': 'Вы успешно удалили Транспортное средство'}
-    return render(request, 'records/delete.html', context)
+    return redirect(reverse('records:admining'))
 
 
 @admin
@@ -585,7 +600,7 @@ def user_delete(request, username):
     user = get_object_or_404(User, username=username)
     user.delete()
     context = {'messages': 'Вы успешно удалили пользоваеля'}
-    return render(request, 'records/delete.html', context)
+    return redirect(reverse('records:admining_users'))
 
 
 @admin

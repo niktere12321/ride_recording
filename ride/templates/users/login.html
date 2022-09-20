@@ -4,7 +4,7 @@
 {% load user_filters %}
   <div class="row justify-content-center lol_width">
     <div class="col-md-8 p-5">
-      <div class="card">
+      <div class="card static_login">
         <div class="card-header">
           Войти на сайт
         </div>
@@ -28,6 +28,7 @@
             {% if action_url %}
               action="{% url action_url %}"
             {% endif %}
+            style="max-width:60%; margin: 0 auto;"
           >
           {% csrf_token %}
 

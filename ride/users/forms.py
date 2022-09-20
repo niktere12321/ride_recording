@@ -47,8 +47,8 @@ class EditUserForm(forms.ModelForm):
 
 
 class Add_new_userForm(forms.Form):
-    to_email = forms.CharField(label='Введите email новых пользователей(я)', widget=forms.Textarea(attrs={'cols': 50, 'rows': 1, 'required': True, 'placeholder': 'email1@email1.email1,email2@email1.email1'}))
+    to_email = forms.CharField(label='Введите email новых пользователей(я)', widget=forms.TextInput(attrs={'required': True, 'placeholder': 'email1@email1.email1,email2@email1.email1'}))
 
 
 class HelpForm(forms.Form):
-    message = forms.CharField(label='Сообщение', widget=forms.Textarea(attrs={'cols': 30, 'rows': 5, 'type': 'text', 'required': True,}))
+    message = forms.CharField(label='Сообщение', widget=forms.TextInput(attrs={'type': 'text', 'required': True}))

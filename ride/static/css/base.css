@@ -376,6 +376,7 @@ header {
 /* календапь для для просмотра занятости т.с. */
 
 .calendar {
+  max-width: 1400px;
   border-collapse: separate;
   border: solid black 3px;
   border-radius: 30px;
@@ -506,7 +507,14 @@ header {
 
 /* страничка записи */
 
+.back_to_calendar {
+  position: fixed;
+  top: 2%;
+  left: 5%;
+}
+
 .container_for_record {
+  max-width: 1400px;
   width: 94%;
   margin: 20px auto auto auto;
   border: 1px solid #000000;
@@ -552,11 +560,11 @@ header {
 }
 
 .week_name_text:last-child {
-  margin-right: 35px;
+  margin-right: 50px;
 }
 
 .week_name_text:first-child {
-  margin-left: 35px;
+  margin-left: 50px;
 }
 
 .week_day {
@@ -659,6 +667,14 @@ header {
   align-items: center;
 }
 
+
+.but_for_back_calendar {
+  width: 130px;
+  background: rgba(89, 135, 194, 0.3);
+  border: none;
+  z-index: 100000;
+}
+
 .flex_center {
   display: flex;
   justify-content: center;
@@ -712,6 +728,7 @@ header {
 /* страничка профиля*/
 
 .container_for_profile {
+  max-width: 1400px;
   width: 92%;
   margin: 20px auto auto auto;
   border: 1px solid #000000;
@@ -730,6 +747,7 @@ header {
 }
 
 .profile_record {
+  max-width: 1400px;
   width: 92%;
   margin: 20px auto auto auto;
 }
@@ -849,6 +867,11 @@ h3 {
 
 #clickme {
   color: rgb(255, 255, 255);
+}
+
+.static_login {
+  max-width: 1140px;
+  margin: 0 auto;
 }
 
 /* for admining_statistics */
@@ -975,6 +998,9 @@ body {font-family: Arial;}
   .record_yes_or_not {
     display: none;
   }
+  .line_in_table{
+    margin: 10px 5px 0px;
+  }
 }
 
 @media (max-width:820px){
@@ -988,6 +1014,9 @@ body {font-family: Arial;}
   }
   .text_opensans_for_footer{
     font-size: 20px;
+  }
+  .day_in_week {
+    font-size: 16px;
   }
 }
 
@@ -1005,6 +1034,9 @@ body {font-family: Arial;}
   }
   .line_in_table{
     margin: 10px 2px 0px;
+  }
+  .day_in_week {
+    font-size: 14px;
   }
 }
 
@@ -1032,7 +1064,7 @@ body {font-family: Arial;}
     font-size: 16px;
   }
   .day_in_week {
-    font-size: 16px;
+    font-size: 12px;
   }
   .line_in_table_week {
     margin: 10px 2px 0;
@@ -1060,7 +1092,7 @@ body {font-family: Arial;}
     font-size: 14px;
   }
   .day_in_week {
-    font-size: 12px;
+    font-size: 10px;
   }
   .text_center_for_phone {
     text-align: center;
@@ -1079,7 +1111,7 @@ body {font-family: Arial;}
     width: 300px;
   }
   .day_in_week {
-    font-size: 10px;
+    font-size: 8px;
   }
   .head_calendar_text {
     font-size: 18px;
@@ -1099,5 +1131,8 @@ body {font-family: Arial;}
   .header_text {
     font-size: 25px;
     width: 160px;
+  }
+  .day_in_week {
+    font-size: 7px;
   }
 }

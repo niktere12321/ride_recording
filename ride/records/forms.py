@@ -48,6 +48,10 @@ class RecordsForm(forms.ModelForm):
             raise forms.ValidationError(f"Нельзя кататься больше {services.high_duration} часов")
         if (convert_end_time - convert_start_time) <= convert_time(f'{services.low_duration}:00:00'):
             raise forms.ValidationError(f"Нельзя кататься меньше {services.low_duration} часов")
+        if convert_end_time > convert_time(f'{services.high_time}:00:00'):
+            raise forms.ValidationError(f"Нельзя кататься после {services.high_time} часов")
+        if convert_start_time < convert_time(f'{services.low_time}:00:00'):
+            raise forms.ValidationError(f"Нельзя кататься раньше {services.low_time} часов")
         record_st = []
         record_en = []
         for i in range(0, len(record_list)):

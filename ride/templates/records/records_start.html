@@ -1,10 +1,43 @@
 {% extends 'base.html' %}
+{% block link_and_script_in_head %}
+<link rel="stylesheet" href="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.css">
+<link rel="stylesheet" href="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+{% endblock %}
 {% block tittle %}
 Запись
 {% endblock %}
 {% load static %}
 {% block content %}
+<style type="text/css">
+  :root {
+      --td-textColor: #555555;
+      --td-backgroundColor: #FFF;
+      --td-primaryColor: #6E99FF;
+      --td-displayBackgroundColor: #FFF;
+      --td-displayBorderColor: #6E99FF50;
+      --td-displayBorderStyle: solid;
+      --td-displayBorderWidth: 4px;
+      --td-handsColor: #6E99FF50;
+      --td-handleColor: #6E99FF;
+      --td-handlePointColor: white;
+  }
+  .td-select:after {
+    display: none;
+  }
+</style>
 {% include 'records/includes/switcher.html' %}
+<div class="back_to_calendar">
+  <a href="{% url 'records:index_records' project %}?{{ month_now_for_url }}" style="z-index: 5">
+    <button class="button_for_main_form but_for_back_calendar" type="submit">
+      <img src="{% static 'img/arroy-left.png' %}" height="30" width="30" alt="Календарь" style="display: inline-block;">
+      <span class="text_button" style="font-size: 16px; color: black;display: inline-block; margin-left: 10%" id="name_of_month">
+        a
+      </span>
+    </button>
+  </a>
+</div>
 <div class="container_for_record">
   <div class="flex_record">
     <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{prev_month}}">
@@ -37,7 +70,7 @@
       <img id="next_img"  class="card-img my-2" src="{% static 'img/arrow-point.png' %}" width="75px" height="75px" alt="Следующая неделя">
     </div>
   </div>
-  <span class="records_start_text">Запись</span>
+  <span class="records_start_text">{{date_str}}</span>
   <div class="card_to_main_form">
     {% if not error and not old_date and not many_rec %}
       <span class="text_free_time_to_record">
@@ -68,13 +101,13 @@
     {% if form.errors %}
     {% for field in form %}
     {% for error in field.errors %}            
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" style="text-align: center">
       {{ error|escape }}
     </div>
     {% endfor %}
     {% endfor %}
     {% for error in form.non_field_errors %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" style="text-align: center">
       {{ error|escape }}
     </div>
     {% endfor %}
@@ -120,7 +153,42 @@
 <script src="https://snipp.ru/cdn/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://snipp.ru/cdn/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://snipp.ru/cdn/jQuery-Timepicker-Addon/dist/jquery-ui-timepicker-addon.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="{% static 'js/timedropper-jquery.js' %}"></script>
 <script>
+if( screen.width <= 1023 ) {
+  $( document ).ready(function(){
+    $('#id_start_time').timeDropper({
+      format: 'HH:mm',
+      minutesSteps: 5,
+      customClass: 'picker2'
+    });
+    $('#id_end_time').timeDropper({
+      format: 'HH:mm',
+      minutesSteps: 5
+    });
+  });
+}
+</script>
+<script>
+  const arr_month = {
+    '1': 'Январь',
+    '2': 'Февраль',
+    '3': 'Март',
+    '4': 'Апрель',
+    '5': 'Май',
+    '6': 'Июнь',
+    '7': 'Июль',
+    '8': 'Август',
+    '9': 'Сентябрь',
+    '10': 'Октябрь',
+    '11': 'Ноябрь',
+    '12': 'Декабрь',
+  };
+  const name_of_month = document.querySelector("#name_of_month")
+  name_month = {{ month_now }}
+  name_of_month.textContent = arr_month[name_month]
   const project = {{project}}
   let date_str = new String ({{date}})
   let dateNow = date_str.slice(0,4) + '-' + date_str.slice(4,6) + '-' + date_str.slice(6,8);
@@ -207,11 +275,74 @@
       }
     }
   }
-
   let next_week = document.querySelector('#next_img');
   let prev_week = document.querySelector('#prev_img');
   next_week.addEventListener('click', nextWeek)
   prev_week.addEventListener('click', prevWeek)
+
+  
+  function time_step(time) {
+    time_full = time.split(":")
+    time_hours = time_full[0]
+    time_minuts = time_full[1]
+    int_time = Number(time_hours) * 12 + Number(time_minuts) / 5;
+    return int_time;
+}
+
+  let list_rec_start = []
+  let list_rec_end = []
+  {% for rec in record_list_for_line %}
+    list_rec_start.push(time_step("{{rec.start_time}}"))
+    list_rec_end.push(time_step("{{rec.end_time}}"))
+  {% endfor %}
+
+  function jsValidate (values, list_rec_start, list_rec_end) {
+    for (let i=0; i<list_rec_start.length; i++) {
+      if ((values[0] >= list_rec_start[i] && values[1] <= list_rec_end[i]) || (values[0] > list_rec_start[i] && values[0] < list_rec_end[i] && values[1] > list_rec_end[i])) {
+        createError()
+        break
+      }
+      else if (values[0] <= list_rec_start[i] && values[1] >= list_rec_end[i]) {
+        createError()
+        break
+      }
+      else if (values[0] < list_rec_start[i] && values[1] <= list_rec_start[i]) {
+        deleteError()
+      }
+      else if (values[0] < list_rec_start[i] && values[1] <= list_rec_end[i]) {
+        createError()
+        break
+      }
+      else {
+        deleteError()
+      }
+    }
+  }
+
+  function createError () {
+    if (document.querySelector("#error_js") == null) {
+      let error = document.createElement('div');
+      error.className = "alert"
+      error.id = "error_js"
+      error.className += " alert-danger"
+      error.style["text-align"] = "center"
+      error.style["height"] = "5%"
+      error.textContent = "К сожалению уже занято"
+      document.querySelector(".card_to_main_form").insertBefore(error, document.querySelector("form"))
+    }
+    else {
+      return true
+    }
+  }
+
+  function deleteError () {
+    if (document.querySelector("#error_js") != null) {
+      let elem = document.querySelector("#error_js")
+      elem.remove()
+      return true
+    }
+  }
+
   function time_hour(val){
     if (val < 120){
       return '0' + (val - val % 12) / 12;
@@ -228,18 +359,22 @@
       return (val % 12) * 5;
     }
 }
+if( screen.width >= 1023 ) {
   $(document).ready(function(){
     $( "#slider-range" ).slider({
-        range: true,
-        min: {{get_int_low_time}},
-        max: {{get_int_high_time}},
-        values: [ {{get_int_low_time}}, {{get_int_high_time}} ],
-        slide: function( event, ui ) {
-          $("#id_start_time").val(time_hour(ui.values[0])+":"+time_minute(ui.values[0]));
-          $("#id_end_time").val(time_hour(ui.values[1])+":"+time_minute(ui.values[1]));
-        }
-      });
-});
+      range: true,
+      min: {{get_int_low_time}},
+      max: {{get_int_high_time}},
+      values: [ {{get_int_low_time}}, {{get_int_high_time}} ],
+      slide: function( event, ui ) {
+        $("#id_start_time").val(time_hour(ui.values[0])+":"+time_minute(ui.values[0]));
+        $("#id_end_time").val(time_hour(ui.values[1])+":"+time_minute(ui.values[1]));
+        {% comment %} console.log(ui.values) {% endcomment %}
+        jsValidate(ui.values, list_rec_start, list_rec_end)
+      }
+    });
+  });
+}
 document.getElementById('id_start_time').value = time_hour({{get_int_low_time}})+":"+time_minute({{get_int_low_time}});
 document.getElementById('id_end_time').value = time_hour({{get_int_high_time}})+":"+time_minute({{get_int_high_time}});
 </script>
