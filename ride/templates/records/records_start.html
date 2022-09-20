@@ -327,7 +327,7 @@ if( screen.width <= 1023 ) {
       error.className += " alert-danger"
       error.style["text-align"] = "center"
       error.style["height"] = "5%"
-      error.textContent = "К сожалению уже занято"
+      error.textContent = "К сожалению выбранное время уже занято"
       document.querySelector(".card_to_main_form").insertBefore(error, document.querySelector("form"))
     }
     else {
