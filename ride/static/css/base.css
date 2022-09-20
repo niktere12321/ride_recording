@@ -995,6 +995,9 @@ body {font-family: Arial;}
   .text_opensans_for_footer{
     font-size: 18px;
   }
+  .line_in_table{
+    margin: 20px 2px 0px;
+  }
 }
 
 @media (max-width:620px){
