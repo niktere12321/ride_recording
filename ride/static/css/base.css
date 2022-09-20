@@ -551,6 +551,14 @@ header {
   text-align: center;
 }
 
+.week_name_text:last-child {
+  margin-right: 35px;
+}
+
+.week_name_text:first-child {
+  margin-left: 35px;
+}
+
 .week_day {
   display: flex;
   justify-content: space-between;
@@ -996,7 +1004,7 @@ body {font-family: Arial;}
     font-size: 18px;
   }
   .line_in_table{
-    margin: 20px 2px 0px;
+    margin: 10px 2px 0px;
   }
 }
 
