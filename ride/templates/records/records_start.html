@@ -233,7 +233,7 @@ if( screen.width <= 1023 ) {
       remDays()
     }
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
-    const yourUrl = `http://84.201.173.5/api/get_week/${date_future}/${project}`
+    const yourUrl = `http://broniryu-itochka.ddns.net/api/get_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
     xhr.open("GET", yourUrl);
     xhr.setRequestHeader('Content-Type', 'application/json');
