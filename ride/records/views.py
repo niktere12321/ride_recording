@@ -311,7 +311,7 @@ def admining_services_create(request):
         form.name_project = name_project
         form.save()
     else:
-        context =  {'form': form}
+        context = {'form': form}
         return render(request, 'records/create_services.html', context)
     return redirect(reverse('records:admining'))
 
