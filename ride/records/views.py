@@ -174,8 +174,8 @@ def records_start(request, date, project):
         records.end_time = end_ti
         records.save()
         """Отправка сообщения на почту пользователя и администратору на телеграмм"""
-        # send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
-        # send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
+        send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
+        send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
         return redirect(reverse('records:records_start', args=[project, date]))
     context = {'ride_rec': ride_rec,
                'ride_rec_empty': ride_rec_empty,
