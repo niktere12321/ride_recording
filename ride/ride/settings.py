@@ -5,8 +5,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('secret_key', default='*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul')
 
 DEBUG = False
-#'84.201.173.5', 'broniryu-itochka.ddns.net', 'localhost', '127.0.0.1:8000'
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = ['84.201.173.5', 'broniryu-itochka.ddns.net', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'users.apps.UsersConfig',

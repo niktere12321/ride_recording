@@ -225,13 +225,7 @@ if( screen.width <= 1023 ) {
     dateNow = result;
   }
 
-  function getWeek (remOrAdd) {
-    if (remOrAdd == true) {
-      addDays()
-    }
-    else if (remOrAdd == false) {
-      remDays()
-    }
+  function getWeek(remOrAdd) {
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
     const yourUrl = `http://broniryu-itochka.ddns.net/api/get_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
@@ -268,8 +262,10 @@ if( screen.width <= 1023 ) {
 
   let next_week = document.querySelector('#next_img');
   let prev_week = document.querySelector('#prev_img');
-  next_week.addEventListener('click', getWeek(true))
-  prev_week.addEventListener('click', getWeek(false))
+  next_week.addEventListener('click', addDays)
+  next_week.addEventListener('click', getWeek)
+  prev_week.addEventListener('click', remDays)
+  prev_week.addEventListener('click', getWeek)
 
 
 
