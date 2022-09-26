@@ -104,7 +104,7 @@ def line_day(events_per_day, date_day, services, day=1):
                     time_end = time_step(record.end_time)
                     if index == 0:
                         if time_start <= time_now:
-                            list_color.append('green')
+                            list_color.append('brown')
                             list_number.append(time_start - young_time)
                             list_color.append('red')
                             list_number.append(time_end - time_start)
@@ -133,7 +133,7 @@ def line_day(events_per_day, date_day, services, day=1):
                                 pass
                     else:
                         if time_start <= time_now:
-                            list_color.append('green')
+                            list_color.append('brown')
                             list_number.append(time_start - time_step(events_per_day[index-1].end_time))
                             list_color.append('red')
                             list_number.append(time_end - time_start)
@@ -149,8 +149,14 @@ def line_day(events_per_day, date_day, services, day=1):
                             else:
                                 pass
                         elif time_start > time_now:
-                            list_color.append('green')
-                            list_number.append(time_start - time_step(events_per_day[index-1].end_time))
+                            if time_step(events_per_day[index-1].end_time) < time_now:
+                                list_color.append('brown')
+                                list_number.append(time_now - time_step(events_per_day[index-1].end_time))
+                                list_color.append('green')
+                                list_number.append(time_start - time_now)
+                            else:
+                                list_color.append('green')
+                                list_number.append(time_start - time_step(events_per_day[index-1].end_time))
                             list_color.append('red')
                             list_number.append(time_end - time_start)
                             if index+1 == len(events_per_day):

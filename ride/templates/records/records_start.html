@@ -28,23 +28,23 @@
   }
 </style>
 {% include 'records/includes/switcher.html' %}
-<div class="back_to_calendar">
-  <a href="{% url 'records:index_records' project %}?{{ month_now_for_url }}" style="z-index: 5">
-    <button class="button_for_main_form but_for_back_calendar" type="submit">
-      <img src="{% static 'img/arroy-left.png' %}" height="30" width="30" alt="Календарь" style="display: inline-block;">
-      <span class="text_button" style="font-size: 16px; color: black;display: inline-block; margin-left: 10%" id="name_of_month">
-        a
-      </span>
-    </button>
-  </a>
-</div>
 <div class="container_for_record">
   <div class="flex_record">
-    <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{prev_month}}">
+    <a class="back_to_calendar" href="{% url 'records:index_records' project %}?{{prev_month}}">
       <img src="{% static 'img/arroy-left.png' %}" height="35" width="35" alt="Предыдущий месяц">
+      <span class="text_for_record_head but_for_back_calendar" id="prev_of_month">
+        
+      </span>
     </a>
-    <span class="text-center text_for_record_head">Запись на транспортное средство "{{services.name_project}}"</span>
-    <a style="margin: 0 10px 0" href="{% url 'records:index_records' project %}?{{ next_month }}">
+    <a href="{% url 'records:index_records' project %}?{{ month_now_for_url }}">
+      <span class="text_for_record_head but_for_back_calendar" id="name_of_month">
+        Вернуться обратно в
+      </span>
+    </a>
+    <a class="back_to_calendar" href="{% url 'records:index_records' project %}?{{ next_month }}">
+      <span class="text_for_record_head but_for_back_calendar" id="next_of_month">
+        
+      </span>
       <img src="{% static 'img/arroy-right.png' %}" height="35" width="35" alt="Следующий месяц">
     </a>
   </div>
@@ -70,7 +70,12 @@
       <img id="next_img"  class="card-img my-2" src="{% static 'img/arrow-point.png' %}" width="75px" height="75px" alt="Следующая неделя">
     </div>
   </div>
-  <span class="records_start_text">{{date_str}}</span>
+  <span class="text-center text_for_record_head">
+    Запись на транспортное средство "{{services.name_project}}"
+  </span>
+  <span class="records_start_text">
+    {{date_str}}
+  </span>
   <div class="card_to_main_form">
     {% if not error and not old_date and not many_rec %}
       <span class="text_free_time_to_record">
@@ -101,13 +106,13 @@
     {% if form.errors %}
     {% for field in form %}
     {% for error in field.errors %}            
-    <div class="alert alert-danger" style="text-align: center">
+    <div class="alert alert-danger error_left" style="text-align: center">
       {{ error|escape }}
     </div>
     {% endfor %}
     {% endfor %}
     {% for error in form.non_field_errors %}
-    <div class="alert alert-danger" style="text-align: center">
+    <div class="alert alert-danger error_left" style="text-align: center">
       {{ error|escape }}
     </div>
     {% endfor %}
@@ -124,7 +129,7 @@
       </div>
       {% if not error and not old_date and not many_rec %}
       <div class="form_main">
-        <button type="submit" class="button_for_main_form">
+        <button type="submit" class="button_for_main_form" id="disable_or_not">
           <span class="text_button">Записаться</span>
         </button>
       </div>
@@ -186,62 +191,47 @@ if( screen.width <= 1023 ) {
     '11': 'Ноябрь',
     '12': 'Декабрь',
   };
+  const prev_of_month = document.querySelector("#prev_of_month")
+  const next_of_month = document.querySelector("#next_of_month")
   const name_of_month = document.querySelector("#name_of_month")
-  name_month = {{ month_now }}
-  name_of_month.textContent = arr_month[name_month]
+  let name_month = {{ month_now }}
+  name_of_month.textContent += arr_month[name_month]
+  if (name_month == 1) {
+    prev_of_month.textContent += arr_month['12']
+  }
+  else {
+    prev_of_month.textContent += arr_month[name_month-1]
+  }
+  if (name_month == 12) {
+    next_of_month.textContent += arr_month['1']
+  }
+  else {
+    next_of_month.textContent += arr_month[name_month+1]
+  }
+
   const project = {{project}}
   let date_str = new String ({{date}})
   let dateNow = date_str.slice(0,4) + '-' + date_str.slice(4,6) + '-' + date_str.slice(6,8);
+
   function addDays() {
     var result = new Date(dateNow);
     result.setDate(result.getDate() + 7);
     dateNow = result;
   }
+
   function remDays() {
     var result = new Date(dateNow);
     result.setDate(result.getDate() - 7);
     dateNow = result;
   }
 
-  function nextWeek () {
-    addDays()
-    let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
-    {% comment %} 51.250.90.254 {% endcomment %}
-    const yourUrl = `http://51.250.65.39/api/get_week/${date_future}/${project}`
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", yourUrl);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send();
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState != 4) {
-        return
-      }
-      if (xhr.status === 200) {
-        let week_line_pass = document.querySelector(".flex_week")
-        let del_el = document.querySelectorAll('.flex_week a');
-        for (let element of del_el) {
-          element.remove();
-        }
-
-        let json_week = JSON.parse(xhr.responseText).week_line
-        let array_day_in_week = json_week.replace('[', '').replace(']', '').replace("'", '').split(', ')
-
-        for (let i=0; i < 7; i++) {
-          var wrapper = document.createElement('div');
-          wrapper.innerHTML = array_day_in_week[i].replace("'", "").replace(">'", "");
-          var div = wrapper.firstChild;
-          wrapper.className = "width_230"
-          week_line_pass.appendChild(wrapper);
-        }
-
-      } else {
-        console.log('err', xhr.responseText)
-      }
+  function getWeek (remOrAdd=true) {
+    if (remOrAdd == true) {
+      addDays()
     }
-  }
-
-  function prevWeek () {
-    remDays()
+    else {
+      remDays()
+    }
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
     const yourUrl = `http://51.250.65.39/api/get_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
@@ -275,19 +265,15 @@ if( screen.width <= 1023 ) {
       }
     }
   }
+
   let next_week = document.querySelector('#next_img');
   let prev_week = document.querySelector('#prev_img');
-  next_week.addEventListener('click', nextWeek)
-  prev_week.addEventListener('click', prevWeek)
+  next_week.addEventListener('click', getWeek())
+  prev_week.addEventListener('click', getWeek(false))
 
-  
-  function time_step(time) {
-    time_full = time.split(":")
-    time_hours = time_full[0]
-    time_minuts = time_full[1]
-    int_time = Number(time_hours) * 12 + Number(time_minuts) / 5;
-    return int_time;
-}
+
+
+
 
   let list_rec_start = []
   let list_rec_end = []
@@ -296,8 +282,27 @@ if( screen.width <= 1023 ) {
     list_rec_end.push(time_step("{{rec.end_time}}"))
   {% endfor %}
 
+  let dateNowReverse = date_str.slice(6,8) + '-' + date_str.slice(4,6) + '-' + date_str.slice(0,4);
+  let today = new Date();
+  let dd = String(today.getDate()).padStart(2, '0');
+  let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  let yyyy = today.getFullYear();
+  today = dd + '-' + mm + '-' + yyyy;
+  let timeNow = new Date().toLocaleTimeString().slice(0,-3)
+
+  let disable_or_not = document.querySelector("#disable_or_not")
+
   function jsValidate (values, list_rec_start, list_rec_end) {
     for (let i=0; i<list_rec_start.length; i++) {
+      if (String(today) == String(dateNowReverse)) {
+        if (values[0] <= time_step(String(timeNow))) {
+          createError("Выберите корректное время")
+          break
+        }
+        else {
+          deleteError()
+        }
+      }
       if ((values[0] >= list_rec_start[i] && values[1] <= list_rec_end[i]) || (values[0] > list_rec_start[i] && values[0] < list_rec_end[i] && values[1] > list_rec_end[i])) {
         createError()
         break
@@ -319,15 +324,23 @@ if( screen.width <= 1023 ) {
     }
   }
 
-  function createError () {
+  function createError (text="К сожалению выбранное время уже занято") {
     if (document.querySelector("#error_js") == null) {
+      disable_or_not.disabled = true
+      disable_or_not.style["background"] = "rgba(0, 0, 0, 0.2)"
       let error = document.createElement('div');
       error.className = "alert"
       error.id = "error_js"
       error.className += " alert-danger"
       error.style["text-align"] = "center"
       error.style["height"] = "5%"
-      error.textContent = "К сожалению выбранное время уже занято"
+      error.style["position"] = "absolute"
+      error.style["top"] = "1%"
+      error.style["right"] = "5%"
+      error.style["margin"] = "0"
+      error.style["display"] = "flex"
+      error.style["align-items"] = "center"
+      error.textContent = text
       document.querySelector(".card_to_main_form").insertBefore(error, document.querySelector("form"))
     }
     else {
@@ -337,10 +350,112 @@ if( screen.width <= 1023 ) {
 
   function deleteError () {
     if (document.querySelector("#error_js") != null) {
+      disable_or_not.disabled = false
+      disable_or_not.style["background"] = "rgba(45, 129, 171, 1)"
       let elem = document.querySelector("#error_js")
       elem.remove()
       return true
     }
+  }
+
+
+
+
+
+  let counter = 0
+  const firstMiddleTime = {{get_int_high_time}} - {{get_int_low_time}}
+  let constYesOrNo = false
+  let finalTime = [{{get_int_low_time}}, {{get_int_high_time}}]
+
+  function getLowTimeToUnloadFirst() {
+    const timeArray = getMiddleTime()
+    let startMiddleTime = timeArray[0]
+    let endMiddleTime = timeArray[1]
+    let notCheck = false
+
+    for (let i=0; i<list_rec_start.length; i++) {
+      if ((startMiddleTime >= list_rec_start[i] && endMiddleTime <= list_rec_end[i]) || (startMiddleTime > list_rec_start[i] && startMiddleTime < list_rec_end[i] && endMiddleTime > list_rec_end[i])) {
+        notCheck = true
+        getLowTimeToUnloadFinal()
+      }
+      else if (startMiddleTime <= list_rec_start[i] && endMiddleTime >= list_rec_end[i]) {
+        notCheck = true
+        getLowTimeToUnloadFinal()
+      }
+      else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_start[i]) {
+        continue
+      }
+      else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_end[i]) {
+        notCheck = true
+        getLowTimeToUnloadFinal()
+      }
+      else {
+        continue
+      }
+    }
+    if (notCheck == false) {
+      finalTime = [startMiddleTime, endMiddleTime]
+    }
+  }
+
+  function getMiddleTime(time=firstMiddleTime) {
+    let counterTime = 0
+    if (counter != 0 && (counter % 2) == 1) {
+      counterTime = counter * 1
+    }
+    else {
+      counterTime = counter * -1
+    }
+    counter += 1
+    let middlTime = time / 100 * (50 + counterTime)
+    let startMiddleTime = middlTime - 12
+    let endMiddleTime = middlTime + 12
+    let finalArrayMiddleTime = [Math.round(startMiddleTime), Math.round(endMiddleTime)]
+    return finalArrayMiddleTime
+  }
+
+  function getLowTimeToUnloadFinal() {
+    if (counter <= 40) {
+      const timeArray = getMiddleTime()
+      let startMiddleTime = timeArray[0]
+      let endMiddleTime = timeArray[1]
+      for (let i=0; i<list_rec_start.length; i++) {
+        if ((startMiddleTime >= list_rec_start[i] && endMiddleTime <= list_rec_end[i]) || (startMiddleTime > list_rec_start[i] && startMiddleTime < list_rec_end[i] && endMiddleTime > list_rec_end[i])) {
+          getLowTimeToUnloadFinal()
+        }
+        else if (startMiddleTime <= list_rec_start[i] && endMiddleTime >= list_rec_end[i]) {
+          getLowTimeToUnloadFinal()
+        }
+        else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_start[i]) {
+          continue
+        }
+        else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_end[i]) {
+          getLowTimeToUnloadFinal()
+        }
+        else {
+          continue
+        }
+      }
+      if (constYesOrNo == false) {
+        constYesOrNo = true
+        finalTime = [startMiddleTime, endMiddleTime]
+      }
+    }
+  }
+  if (String(today) == String(dateNowReverse)) {
+    finalTime = [Math.round(time_step(String(timeNow))), {{get_int_high_time}}]
+  }
+  else {
+    getLowTimeToUnloadFirst()
+  }
+
+
+  function time_step(time) {
+    time_full = time.split(":")
+    time_hours = time_full[0]
+    time_minuts = time_full[1]
+    int_time = Number(time_hours) * 12 + Number(time_minuts) / 5;
+    return int_time;
   }
 
   function time_hour(val){
@@ -350,32 +465,32 @@ if( screen.width <= 1023 ) {
     else{
       return (val - val % 12) / 12;
     }
-}
-  function time_minute(val){
-    if ((val % 12) == (0) || (val % 12) == (1)) {
-      return '0' + (val % 12) * 5;
-    }
-    else{
-      return (val % 12) * 5;
-    }
-}
-if( screen.width >= 1023 ) {
-  $(document).ready(function(){
-    $( "#slider-range" ).slider({
-      range: true,
-      min: {{get_int_low_time}},
-      max: {{get_int_high_time}},
-      values: [ {{get_int_low_time}}, {{get_int_high_time}} ],
-      slide: function( event, ui ) {
-        $("#id_start_time").val(time_hour(ui.values[0])+":"+time_minute(ui.values[0]));
-        $("#id_end_time").val(time_hour(ui.values[1])+":"+time_minute(ui.values[1]));
-        {% comment %} console.log(ui.values) {% endcomment %}
-        jsValidate(ui.values, list_rec_start, list_rec_end)
+  }
+    function time_minute(val){
+      if ((val % 12) == (0) || (val % 12) == (1)) {
+        return '0' + (val % 12) * 5;
       }
+      else{
+        return (val % 12) * 5;
+      }
+  }
+
+  if( screen.width >= 1023 ) {
+    $(document).ready(function(){
+      $( "#slider-range" ).slider({
+        range: true,
+        min: {{get_int_low_time}},
+        max: {{get_int_high_time}},
+        values: [ finalTime[0], finalTime[1] ],
+        slide: function( event, ui ) {
+          $("#id_start_time").val(time_hour(ui.values[0])+":"+time_minute(ui.values[0]));
+          $("#id_end_time").val(time_hour(ui.values[1])+":"+time_minute(ui.values[1]));
+          jsValidate(ui.values, list_rec_start, list_rec_end)
+        }
+      });
     });
-  });
-}
-document.getElementById('id_start_time').value = time_hour({{get_int_low_time}})+":"+time_minute({{get_int_low_time}});
-document.getElementById('id_end_time').value = time_hour({{get_int_high_time}})+":"+time_minute({{get_int_high_time}});
+  }
+  document.getElementById('id_start_time').value = time_hour(finalTime[0])+":"+time_minute(finalTime[0]);
+  document.getElementById('id_end_time').value = time_hour(finalTime[1])+":"+time_minute(finalTime[1]);
 </script>
 {% endblock %}

@@ -1,4 +1,6 @@
+import re
 from datetime import date, datetime
+from tracemalloc import start
 
 from django import forms
 from django.contrib.auth import get_user_model
@@ -33,6 +35,9 @@ class RecordsForm(forms.ModelForm):
         data = self.cleaned_data
         start_ti = data.get('start_time')
         end_ti = data.get('end_time')
+        regex = r"^\d{2}:\d{2}:00$"
+        if re.search(regex, str(start_ti)) is None or re.search(regex, str(end_ti)) is None:
+            raise forms.ValidationError("Время должно быть в формате: 20:00")
         services = Services.objects.get(pk=self.project)
         record_list_p = list(Records.objects.filter(date_start=self.new_date))
         record_list = list(Records.objects.filter(date_start=self.new_date, project=self.project))

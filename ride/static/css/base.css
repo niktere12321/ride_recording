@@ -508,9 +508,10 @@ header {
 /* страничка записи */
 
 .back_to_calendar {
-  position: fixed;
-  top: 2%;
-  left: 5%;
+  margin: 0 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container_for_record {
@@ -538,6 +539,7 @@ header {
   display: flex;
   align-items: center;
   text-align: center;
+  justify-content: center;
 }
 
 .week_name {
@@ -615,6 +617,7 @@ header {
 }
 
 .card_to_main_form{
+  position: relative;
   border: 1px solid #000000;
   border-radius: 30px;
   margin: 0 40px 20px;
@@ -667,12 +670,17 @@ header {
   align-items: center;
 }
 
+#next_of_month {
+  padding-right: 10px;
+}
+
+#prev_of_month {
+  padding-left: 10px;
+}
 
 .but_for_back_calendar {
-  width: 130px;
-  background: rgba(89, 135, 194, 0.3);
-  border: none;
-  z-index: 100000;
+  color: rgba(0, 0, 0, 1);
+  font-size: 16px;
 }
 
 .flex_center {
@@ -721,6 +729,16 @@ header {
 .error {
   background-color: rgb(226, 180, 28);
   color: red;
+}
+
+.error_left {
+  position: absolute;
+  top: 1%;
+  left: 5%;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  height: 5%;
 }
 
 /**/
@@ -1069,6 +1087,9 @@ body {font-family: Arial;}
   .line_in_table_week {
     margin: 10px 2px 0;
   }
+  .but_for_back_calendar {
+    line-height: 16px;
+  }
 }
 
 @media (max-width:480px){
@@ -1106,6 +1127,9 @@ body {font-family: Arial;}
 }
 
 @media (max-width:400px){
+  .but_for_back_calendar {
+    font-size: 13px;
+  }
   .text-center-main {
     font-size: 16px;
     width: 300px;
