@@ -137,6 +137,7 @@ def records_start(request, date, project):
                    "get_int_high_time": get_int_high_time,
                    "date": date,
                    "project": project,
+                   "services": services,
                    "week_line": week_line,
                    "record_list_for_line": record_list_for_line}
         return render(request, 'records/records_start.html', context)
