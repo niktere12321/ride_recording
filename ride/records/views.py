@@ -246,7 +246,7 @@ def records_delete_prof(request, rec_pk, prof):
         elif prof == "admin_prof":
             return redirect(reverse('records:admining_pk', args=[driver_return]))
         elif prof == "statistic":
-            return redirect(reverse('records:admining_statistics'))
+            return redirect(reverse('records:admining_statistics', args=["default", "default"]))
     context = {'messages': 'У вас нету прав'}
     return render(request, 'records/index.html', context)
 
