@@ -112,7 +112,7 @@ def records_start(request, date, project):
             records_to_user = list(Records.objects.filter(date_start=new_date, project=project, driver=user_list[i].pk).order_by('start_time'))
             for j in range(0, len(records_to_user)):
                 count_rec += 1
-                if request.user.role == 'admin' or request.user.pk == user_list[i].pk:
+                if (request.user.role == 'admin' or request.user.pk == user_list[i].pk) and date_record >= datetime.now().date():
                     del_rec = f" <a href='../../../records/records/{records_to_user[j].pk}/delete/{project}/{date}/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
                     ride_rec += f'<tr><td>{count_rec}</td><td>{services.name_project}</td><td>{user_list[i].first_name}</br>{user_list[i].last_name}</td><td>С {records_to_user[j].start_time} до {records_to_user[j].end_time} {del_rec}</td>'
                 else:
@@ -211,7 +211,7 @@ def profiles(request):
         for i in range(0, len(records_to_user_new)):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
-            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/prof' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
             ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у вас нету записей в будующем</th></tr>'
@@ -230,6 +230,25 @@ def profiles(request):
                'ride_rec': ride_rec,
                'prof': user}
     return render(request, 'records/profiles.html', context)
+
+
+@active
+@login_required
+def records_delete_prof(request, rec_pk, prof):
+    """Удаление записи"""
+    records_del = get_object_or_404(Records, pk=rec_pk)
+    driver_return = records_del.driver
+    if request.user == driver_return or request.user.role == 'admin':
+        records_del.delete()
+        context = {'messages': 'Вы успешно удалили запись'}
+        if prof == "prof":
+            return redirect(reverse('records:profiles'))
+        elif prof == "admin_prof":
+            return redirect(reverse('records:admining_pk', args=[driver_return]))
+        elif prof == "statistic":
+            return redirect(reverse('records:admining_statistics'))
+    context = {'messages': 'У вас нету прав'}
+    return render(request, 'records/index.html', context)
 
 
 @active
@@ -365,7 +384,7 @@ def admining_statistics(request, pass_date, future_date):
         table_for_all_records += f"<td>{counter_all_services}</td></tr>"
     table_for_all_records += f"<tr><td>Итого</td>"
     for service in range(len(all_services)):
-        all_records_for_service  = Records.objects.filter(project=all_services[service].pk, date_start__gte=pass_date, date_start__lte=future_date)
+        all_records_for_service = Records.objects.filter(project=all_services[service].pk, date_start__gte=pass_date, date_start__lte=future_date)
         count_rec = 0
         for records in range(len(all_records_for_service)):
             count_rec += 1
@@ -398,7 +417,7 @@ def admining_statistics(request, pass_date, future_date):
         for i in range(0, len(records_to_user_new)):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
-            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/statistic' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
             ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{records_to_user_new[i].driver.first_name} {records_to_user_new[i].driver.last_name}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">С {pass_date} до {future_date} нету новых записей</th></tr>'
@@ -558,7 +577,7 @@ def admining_pk(request, username):
         for i in range(0, len(records_to_user_new)):
             services = get_object_or_404(Services, pk=int(records_to_user_new[i].project.pk))
             count_rec += 1
-            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
+            del_rec = f" <a href='../../../records/records/{records_to_user_new[i].pk}/delete/admin_prof' onclick=\"return confirm('Вы уверены что хотите удалить?')\"> удалить ?</a>"
             ride_rec += f'<tr id="count_new"><td>{count_rec}</td><td>{services.name_project}</td><td>{records_to_user_new[i].date_start}</td><td>С {records_to_user_new[i].start_time} до {records_to_user_new[i].end_time} {del_rec}</td></tr>'
     else:
         ride_rec = f'<tr><th style="text-align: center">На сегоднишний день у пользователя нету записей в будующем</th></tr>'

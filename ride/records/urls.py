@@ -11,6 +11,7 @@ urlpatterns = [
     path(r'<int:project>', views.CalendarView.as_view(), name='index_records'),
     url(r'(?P<project>[0-9])/records/(?P<date>[0-9]{8})/$', views.records_start, name='records_start'),
     path('records/records/<int:rec_pk>/delete/<int:project>/<int:date>/', views.records_delete, name='records_delete'),
+    path('records/records/<int:rec_pk>/delete/<str:prof>', views.records_delete_prof, name='records_delete_prof'),
     path('records/profiles', views.profiles, name='profiles'),
     path('records/admining', views.admining, name='admining'),
     path('records/services/<int:service_id>', views.admining_services, name='admining_services'),
