@@ -1,9 +1,10 @@
 APScheduler==3.6.3
 asgiref==3.2.10
-backports.zoneinfo==0.2.1;python_version<"3.9"
+backports.zoneinfo==0.2.1
+cachetools==4.2.2
 certifi==2021.10.8
 charset-normalizer==2.0.12
-Django==2.2.16
+Django==2.2.28
 django-phonenumber-field==6.1.0
 gunicorn==20.0.4
 idna==3.3
@@ -18,11 +19,15 @@ requests==2.26.0
 six==1.16.0
 sorl-thumbnail==12.7.0
 sqlparse==0.4.2
-# telegram==0.0.1
-# tornado==6.1
+telegram==0.0.1
+tornado==6.1
 tzdata==2022.1
 tzlocal==4.2
 urllib3==1.26.8
 bootstrap4==0.1.0
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.8.0
+graphene==2.1.9
+graphene-django==2.15.0
+graphql-core==2.3.2
+graphql-relay==2.0.1
