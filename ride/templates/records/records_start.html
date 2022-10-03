@@ -329,7 +329,7 @@ if( screen.width <= 1023 ) {
       error.id = "error_js"
       error.className += " alert-danger"
       error.style["text-align"] = "center"
-      error.style["height"] = "5%"
+      error.style["height"] = "4%"
       error.style["position"] = "absolute"
       error.style["top"] = "1%"
       error.style["right"] = "5%"
@@ -356,15 +356,16 @@ if( screen.width <= 1023 ) {
 
 
 
-
-
-  let counter = 0
+  let counterLow = 0
+  let counterHight = 0
   const firstMiddleTime = {{get_int_high_time}} - {{get_int_low_time}}
-  let constYesOrNo = false
+  let constYesOrNolow = false
+  let constYesOrNoHigh = false
   let finalTime = [{{get_int_low_time}}, {{get_int_high_time}}]
+  const prosentForGetMiddle = firstMiddleTime / 100 * 40
 
   function getLowTimeToUnloadFirst() {
-    const timeArray = getMiddleTime()
+    const timeArray = getMiddleTime(hightOrLow=1)
     let startMiddleTime = timeArray[0]
     let endMiddleTime = timeArray[1]
     let notCheck = false
@@ -372,18 +373,21 @@ if( screen.width <= 1023 ) {
     for (let i=0; i<list_rec_start.length; i++) {
       if ((startMiddleTime >= list_rec_start[i] && endMiddleTime <= list_rec_end[i]) || (startMiddleTime > list_rec_start[i] && startMiddleTime < list_rec_end[i] && endMiddleTime > list_rec_end[i])) {
         notCheck = true
-        getLowTimeToUnloadFinal()
+        returnNormTime()
+        break
       }
       else if (startMiddleTime <= list_rec_start[i] && endMiddleTime >= list_rec_end[i]) {
         notCheck = true
-        getLowTimeToUnloadFinal()
+        returnNormTime()
+        break
       }
       else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_start[i]) {
         continue
       }
       else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_end[i]) {
         notCheck = true
-        getLowTimeToUnloadFinal()
+        returnNormTime()
+        break
       }
       else {
         continue
@@ -394,56 +398,145 @@ if( screen.width <= 1023 ) {
     }
   }
 
-  function getMiddleTime(time=firstMiddleTime) {
-    let counterTime = 0
-    if (counter != 0 && (counter % 2) == 1) {
-      counterTime = counter * 1
+  function returnNormTime() {
+    let hightTime = getLowTimeToUnloadFinal(lowOrHight=true)
+    let lowTime = getLowTimeToUnloadFinal(lowOrHight=false)
+    let hightTimeToMiddle = 0
+    let lowTimeToMiddle = 0
+    if (hightTime != false) {
+      hightTimeToMiddle = hightTime[0] - (firstMiddleTime / 100 * 50)
     }
-    else {
-      counterTime = counter * -1
+    if (lowTime != false) {
+      lowTimeToMiddle = (firstMiddleTime / 100 * 50) - lowTime[1]
     }
-    counter += 1
-    let middlTime = time / 100 * (50 + counterTime)
-    let startMiddleTime = middlTime - 12
-    let endMiddleTime = middlTime + 12
-    let finalArrayMiddleTime = [Math.round(startMiddleTime), Math.round(endMiddleTime)]
-    return finalArrayMiddleTime
+    if (hightTimeToMiddle < lowTimeToMiddle) {
+      finalTime = [hightTime[0], hightTime[1]]
+    }
+    if (hightTimeToMiddle > lowTimeToMiddle) {
+      finalTime = [lowTime[0], lowTime[1]]
+    }
+    if ((hightTime != false) && (lowTime == false)) {
+      finalTime = [hightTime[0], hightTime[1]]
+    }
+    if ((hightTime == false) && (lowTime != false)) {
+      finalTime = [lowTime[0], lowTime[1]]
+    }
   }
 
-  function getLowTimeToUnloadFinal() {
-    if (counter <= 40) {
-      const timeArray = getMiddleTime()
-      let startMiddleTime = timeArray[0]
-      let endMiddleTime = timeArray[1]
+  function getMiddleTime(hightOrLow=1) {
+    let middlTime = firstMiddleTime / 100 * 50
+    if (hightOrLow == true) {
+      middlTime = firstMiddleTime / 100 * 50 + counterHight
+      counterHight += 1
+      return [Math.round(middlTime - 12), Math.round(middlTime + 12)]
+    }
+    else if (hightOrLow == false) {
+      middlTime = firstMiddleTime / 100 * 50 - counterLow
+      counterLow += 1
+      return [Math.round(middlTime - 12), Math.round(middlTime + 12)]
+    }
+  }
+
+  function getLowTimeToUnloadFinal(lowOrHight=true) {
+    let timeArraylow = 0
+    if (lowOrHight == true) {
+      timeArraylow = getMiddleTime(hightOrLow=true)
+    }
+    else if (lowOrHight == false) {
+      timeArraylow = getMiddleTime(hightOrLow=false)
+    }
+    let startMiddleTime = timeArraylow[0]
+    let endMiddleTime = timeArraylow[1]
+    if ((lowOrHight == true && counterHight <= prosentForGetMiddle) || (lowOrHight == false && counterLow <= prosentForGetMiddle)) {
       for (let i=0; i<list_rec_start.length; i++) {
         if ((startMiddleTime >= list_rec_start[i] && endMiddleTime <= list_rec_end[i]) || (startMiddleTime > list_rec_start[i] && startMiddleTime < list_rec_end[i] && endMiddleTime > list_rec_end[i])) {
-          getLowTimeToUnloadFinal()
+          if (lowOrHight == true) {
+            return getLowTimeToUnloadFinal(lowOrHight=true)
+          }
+          else if (lowOrHight == false) {
+            return getLowTimeToUnloadFinal(lowOrHight=false)
+          }
         }
         else if (startMiddleTime <= list_rec_start[i] && endMiddleTime >= list_rec_end[i]) {
-          getLowTimeToUnloadFinal()
+          if (lowOrHight == true) {
+            return getLowTimeToUnloadFinal(lowOrHight=true)
+          }
+          else if (lowOrHight == false) {
+            return getLowTimeToUnloadFinal(lowOrHight=false)
+          }
         }
         else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_start[i]) {
           continue
         }
         else if (startMiddleTime < list_rec_start[i] && endMiddleTime <= list_rec_end[i]) {
-          getLowTimeToUnloadFinal()
+          if (lowOrHight == true) {
+            return getLowTimeToUnloadFinal(lowOrHight=true)
+          }
+          else if (lowOrHight == false) {
+            return getLowTimeToUnloadFinal(lowOrHight=false)
+          }
         }
         else {
           continue
         }
       }
-      if (constYesOrNo == false) {
-        constYesOrNo = true
-        finalTime = [startMiddleTime, endMiddleTime]
+      if ((lowOrHight == false) && (constYesOrNolow == false)) {
+        constYesOrNolow = true
+        return [startMiddleTime, endMiddleTime]
+      }
+      if ((lowOrHight == true) && (constYesOrNoHigh == false)) {
+        constYesOrNoHigh = true
+        return [startMiddleTime, endMiddleTime]
       }
     }
+    return false
   }
+
   if (String(today) == String(dateNowReverse)) {
     finalTime = [Math.round(time_step(String(timeNow))), {{get_int_high_time}}]
   }
   else {
     getLowTimeToUnloadFirst()
   }
+
+
+
+  let arrayCreateGreenButtonStart = new Array()
+  let arrayCreateGreenButtonEnd = new Array()
+
+  function createGrenButtonClick() {
+    for (let i=0; i<list_rec_start.length; i++) {
+      if ((i == 0) && (list_rec_start[i] > 0)) {
+        arrayCreateGreenButtonStart.push(0)
+        arrayCreateGreenButtonEnd.push(list_rec_start[i])
+      }
+      else if ((i != 0) && (list_rec_start[i] > 0) && (list_rec_start[i] != list_rec_end[i-1])) {
+        arrayCreateGreenButtonStart.push(list_rec_end[i-1])
+        arrayCreateGreenButtonEnd.push(list_rec_start[i])
+      }
+      if ((i == (list_rec_start.length - 1)) && (list_rec_end[i] != firstMiddleTime)) {
+        arrayCreateGreenButtonStart.push(list_rec_end[i])
+        arrayCreateGreenButtonEnd.push(firstMiddleTime)
+      }
+    }
+  }
+  createGrenButtonClick()
+
+  function createEventToGreenButton () {
+    const greenLine = document.querySelectorAll(".greenButton")
+    for (let i=0; i<greenLine.length; i++) {
+      document.querySelector(`#gren_but${i}`).addEventListener('click', function () {
+        document.getElementById('id_start_time').value = time_hour(arrayCreateGreenButtonStart[i])+":"+time_minute(arrayCreateGreenButtonStart[i]);
+        document.getElementById('id_end_time').value = time_hour(arrayCreateGreenButtonEnd[i])+":"+time_minute(arrayCreateGreenButtonEnd[i]);
+        $( "#slider-range" ).slider({
+          values: [ arrayCreateGreenButtonStart[i], arrayCreateGreenButtonEnd[i] ]
+        })
+      })
+    }
+  }
+
+  createEventToGreenButton()
+
 
 
   function time_step(time) {

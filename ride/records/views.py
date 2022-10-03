@@ -97,7 +97,7 @@ def records_start(request, date, project):
     get_int_low_time = time_step(services.low_time)
     get_int_high_time = time_step(services.high_time)
     record_list_for_line = Records.objects.filter(date_start=new_date, project=project).order_by('start_time')
-    line = line_day(record_list_for_line, date_record, services)
+    line = line_day(record_list_for_line, date_record, services, in_record=True)
     color_table = f"<div class='line_for_form'>{line}</div>"
     """Создание таблицы показывающей записи в этот день"""
     if len(record_list) > 0:
@@ -174,9 +174,9 @@ def records_start(request, date, project):
         records.start_time = start_ti
         records.end_time = end_ti
         records.save()
-        """Отправка сообщения на почту пользователя и администратору на телеграмм"""
-        send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
-        send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
+        # """Отправка сообщения на почту пользователя и администратору на телеграмм"""
+        # send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
+        # send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
         return redirect(reverse('records:records_start', args=[project, date]))
     context = {'ride_rec': ride_rec,
                'ride_rec_empty': ride_rec_empty,

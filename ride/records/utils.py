@@ -7,6 +7,7 @@ import telegram
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
+from phonenumbers import country_code_for_valid_region
 
 from .models import Records, Services
 
@@ -61,7 +62,7 @@ def time_step(time):
     return int_time
 
 
-def line_day(events_per_day, date_day, services, day=1):
+def line_day(events_per_day, date_day, services, day=1, in_record=None):
     """Получение полоски показывающей загруженость дня"""
     list_color = []
     list_number = []
@@ -175,8 +176,9 @@ def line_day(events_per_day, date_day, services, day=1):
                     time_start = time_step(record.start_time)
                     time_end = time_step(record.end_time)
                     if index == 0:
-                        list_color.append('green')
-                        list_number.append(time_start - young_time)
+                        if (time_start - young_time) != 0:
+                            list_color.append('green')
+                            list_number.append(time_start - young_time)
                         list_color.append('red')
                         list_number.append(time_end - time_start)
                         if index+1 == len(events_per_day):
@@ -185,8 +187,9 @@ def line_day(events_per_day, date_day, services, day=1):
                         else:
                             pass
                     else:
-                        list_color.append('green')
-                        list_number.append(time_start - time_step(events_per_day[index-1].end_time))
+                        if (time_start - time_step(events_per_day[index-1].end_time)) != 0:
+                            list_color.append('green')
+                            list_number.append(time_start - time_step(events_per_day[index-1].end_time))
                         list_color.append('red')
                         list_number.append(time_end - time_start)
                         if index+1 == len(events_per_day):
@@ -198,13 +201,24 @@ def line_day(events_per_day, date_day, services, day=1):
                 list_color.append('green')
                 list_number.append(old_time - young_time)
     line = ""
-    for i, color in enumerate(list_color):
-        if color == 'brown':
-            line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #808080;"> </div>'
-        elif color == 'red':
-            line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #FD6060;"> </div>'
-        else:
-            line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #08B408;"> </div>'
+    if in_record == True:
+        count_id = 0
+        for i, color in enumerate(list_color):
+            if color == 'brown':
+                line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #808080;"> </div>'
+            elif color == 'red':
+                line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #FD6060;"> </div>'
+            else:
+                line += f'<div class="greenButton" id="gren_but{count_id}" style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #08B408;"> </div>'
+                count_id += 1
+    else:
+        for i, color in enumerate(list_color):
+            if color == 'brown':
+                line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #808080;"> </div>'
+            elif color == 'red':
+                line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #FD6060;"> </div>'
+            else:
+                line += f'<div style="display: flex; border-radius: 10px; height: 40px; width: {list_number[i] / (old_time - young_time) * 100}%; background: #08B408;"> </div>'
     return line
 
 
