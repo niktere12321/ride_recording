@@ -996,6 +996,12 @@ body {font-family: Arial;}
 
 /* для телефонов*/
 
+@media (max-width:1023px){
+  #slider-range {
+    display: none;
+  }
+}
+
 @media (min-width:950px){
   .dropdown {
     display: none;

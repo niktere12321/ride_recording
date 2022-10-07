@@ -528,9 +528,11 @@ if( screen.width <= 1023 ) {
       document.querySelector(`#gren_but${i}`).addEventListener('click', function () {
         document.getElementById('id_start_time').value = time_hour(arrayCreateGreenButtonStart[i])+":"+time_minute(arrayCreateGreenButtonStart[i]);
         document.getElementById('id_end_time').value = time_hour(arrayCreateGreenButtonEnd[i])+":"+time_minute(arrayCreateGreenButtonEnd[i]);
-        $( "#slider-range" ).slider({
-          values: [ arrayCreateGreenButtonStart[i], arrayCreateGreenButtonEnd[i] ]
-        })
+        if( screen.width >= 1023 ) {
+          $( "#slider-range" ).slider({
+            values: [ arrayCreateGreenButtonStart[i], arrayCreateGreenButtonEnd[i] ]
+          })
+        }
       })
     }
   }
