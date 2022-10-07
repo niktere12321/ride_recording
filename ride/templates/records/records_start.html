@@ -117,7 +117,7 @@
     </div>
     {% endfor %}
     {% endif %}
-    <form method="post">
+    <form method="post" class="form_record_start">
       {% csrf_token %}
       <div class="form_main">
         {% for field in form %}
@@ -503,20 +503,32 @@ if( screen.width <= 1023 ) {
 
   let arrayCreateGreenButtonStart = new Array()
   let arrayCreateGreenButtonEnd = new Array()
-
+  console.log(list_rec_start.length)
   function createGrenButtonClick() {
-    for (let i=0; i<list_rec_start.length; i++) {
-      if ((i == 0) && (list_rec_start[i] > 0)) {
+    if (list_rec_start.length > 0) {
+      for (let i=0; i<list_rec_start.length; i++) {
+        if ((i == 0) && (list_rec_start[i] > 0)) {
+          arrayCreateGreenButtonStart.push(0)
+          arrayCreateGreenButtonEnd.push(list_rec_start[i])
+        }
+        else if ((i != 0) && (list_rec_start[i] > 0) && (list_rec_start[i] != list_rec_end[i-1])) {
+          arrayCreateGreenButtonStart.push(list_rec_end[i-1])
+          arrayCreateGreenButtonEnd.push(list_rec_start[i])
+        }
+        if ((i == (list_rec_start.length - 1)) && (list_rec_end[i] != firstMiddleTime)) {
+          arrayCreateGreenButtonStart.push(list_rec_end[i])
+          arrayCreateGreenButtonEnd.push(firstMiddleTime)
+        }
+      }
+    }
+    else {
+      if (String(today) == String(dateNowReverse)) {
+        arrayCreateGreenButtonStart.push(Math.round(time_step(String(timeNow))))
+        arrayCreateGreenButtonEnd.push({{get_int_high_time}})
+      }
+      else {
         arrayCreateGreenButtonStart.push(0)
-        arrayCreateGreenButtonEnd.push(list_rec_start[i])
-      }
-      else if ((i != 0) && (list_rec_start[i] > 0) && (list_rec_start[i] != list_rec_end[i-1])) {
-        arrayCreateGreenButtonStart.push(list_rec_end[i-1])
-        arrayCreateGreenButtonEnd.push(list_rec_start[i])
-      }
-      if ((i == (list_rec_start.length - 1)) && (list_rec_end[i] != firstMiddleTime)) {
-        arrayCreateGreenButtonStart.push(list_rec_end[i])
-        arrayCreateGreenButtonEnd.push(firstMiddleTime)
+        arrayCreateGreenButtonEnd.push({{get_int_high_time}})
       }
     }
   }

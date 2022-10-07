@@ -1000,6 +1000,13 @@ body {font-family: Arial;}
   #slider-range {
     display: none;
   }
+  .form_record_start {
+    margin-bottom: 20px;
+  }
+  .error_left {
+    position: relative;
+    left: 0%;
+  }
 }
 
 @media (min-width:950px){
