@@ -227,6 +227,7 @@ if( screen.width <= 1023 ) {
 
   function getWeek(remOrAdd) {
     let date_future = dateNow.toISOString().split('T')[0].replace('-', '').replace('-', '')
+    {% comment %} broniryu-itochka.ddns.net 127.0.0.1:8000 {% endcomment %}
     const yourUrl = `http://broniryu-itochka.ddns.net/api/get_week/${date_future}/${project}`
     var xhr = new XMLHttpRequest();
     xhr.open("GET", yourUrl);
@@ -241,6 +242,12 @@ if( screen.width <= 1023 ) {
         let del_el = document.querySelectorAll('.flex_week a');
         for (let element of del_el) {
           element.remove();
+        }
+        if (document.querySelectorAll('.flex_week div')) {
+          let del_el_dev = document.querySelectorAll('.flex_week div');
+          for (let element of del_el_dev) {
+            element.remove();
+          }
         }
 
         let json_week = JSON.parse(xhr.responseText).week_line
@@ -503,7 +510,7 @@ if( screen.width <= 1023 ) {
 
   let arrayCreateGreenButtonStart = new Array()
   let arrayCreateGreenButtonEnd = new Array()
-  console.log(list_rec_start.length)
+
   function createGrenButtonClick() {
     if (list_rec_start.length > 0) {
       for (let i=0; i<list_rec_start.length; i++) {
