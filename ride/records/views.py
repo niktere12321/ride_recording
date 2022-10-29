@@ -87,6 +87,7 @@ def records_start(request, date, project):
     month_now = date[4:6]
     date_record = datetime.strptime(new_date, '%Y-%m-%d').date()
     services = Services.objects.get(pk=project)
+    time_now_to_js = time_step(datetime.now().time())
     time_now_to_rec = services.low_time
     if date_record == datetime.now().date():
         time_now_to_rec = datetime.now().time()
@@ -135,6 +136,7 @@ def records_start(request, date, project):
                    "month_now": month_now,
                    "get_int_low_time": get_int_low_time,
                    "get_int_high_time": get_int_high_time,
+                   "time_now_to_js": time_now_to_js,
                    "date": date,
                    "project": project,
                    "services": services,
@@ -155,6 +157,7 @@ def records_start(request, date, project):
                    "month_now": month_now,
                    'get_int_low_time': get_int_low_time,
                    'get_int_high_time': get_int_high_time,
+                   'time_now_to_js': time_now_to_js,
                    'date': date,
                    'project': project,
                    'services': services,
@@ -175,8 +178,8 @@ def records_start(request, date, project):
         records.end_time = end_ti
         records.save()
         """Отправка сообщения на почту пользователя и администратору на телеграмм"""
-        send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
-        send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
+        # send_email(request.user.email, services.name_project, request.user.first_name, request.user.last_name, new_date, start_ti, end_ti)
+        # send_message(f'{records.driver}:{new_date} с {start_ti} {end_ti}')
         return redirect(reverse('records:records_start', args=[project, date]))
     context = {'ride_rec': ride_rec,
                'ride_rec_empty': ride_rec_empty,
@@ -190,6 +193,7 @@ def records_start(request, date, project):
                "month_now": month_now,
                'get_int_low_time': get_int_low_time,
                'get_int_high_time': get_int_high_time,
+               'time_now_to_js': time_now_to_js,
                'services': services,
                'time_now_to_rec': time_now_to_rec,
                'date': date,

@@ -365,7 +365,7 @@ if( screen.width <= 1023 ) {
 
   let counterLow = 0
   let counterHight = 0
-  const firstMiddleTime = {{get_int_high_time}} - {{get_int_low_time}}
+  const firstMiddleTime = {{get_int_high_time}}
   let constYesOrNolow = false
   let constYesOrNoHigh = false
   let finalTime = [{{get_int_low_time}}, {{get_int_high_time}}]
@@ -500,12 +500,11 @@ if( screen.width <= 1023 ) {
   }
 
   if (String(today) == String(dateNowReverse)) {
-    finalTime = [Math.ceil(time_step(String(timeNow))) + 3, {{get_int_high_time}}]
+    finalTime = [{{time_now_to_js}}+1, {{get_int_high_time}}]
   }
   else {
     getLowTimeToUnloadFirst()
   }
-
 
 
   let arrayCreateGreenButtonStart = new Array()
@@ -514,33 +513,65 @@ if( screen.width <= 1023 ) {
   function createGrenButtonClick() {
     if (list_rec_start.length > 0) {
       for (let i=0; i<list_rec_start.length; i++) {
-        if ((i == 0) && (list_rec_start[i] > 0)) {
-          arrayCreateGreenButtonStart.push(0)
-          arrayCreateGreenButtonEnd.push(list_rec_start[i])
+        if ((String(today) == String(dateNowReverse))) {
+          if ((i == 0) && (i == (list_rec_start.length - 1)) && (list_rec_start[i] < {{time_now_to_js}})) {
+            arrayCreateGreenButtonStart.push({{time_now_to_js}})
+            arrayCreateGreenButtonEnd.push({{get_int_high_time}})
+          }
+          else if ((i == 0) && (i == (list_rec_start.length - 1)) && (list_rec_start[i] > {{time_now_to_js}})) {
+            arrayCreateGreenButtonStart.push({{time_now_to_js}})
+            arrayCreateGreenButtonEnd.push(list_rec_start[i])
+          }
+          else if ((i == 0) && (list_rec_start[i] > {{time_now_to_js}})) {
+            arrayCreateGreenButtonStart.push({{time_now_to_js}})
+            arrayCreateGreenButtonEnd.push(list_rec_start[i])
+          }
+          else if ((i != 0) && (list_rec_start[i] > {{time_now_to_js}}) && (list_rec_end[i-1] < {{time_now_to_js}})) {
+            arrayCreateGreenButtonStart.push({{time_now_to_js}})
+            arrayCreateGreenButtonEnd.push(list_rec_start[i])
+          }
+          else if ((i != 0) && (list_rec_start[i] > {{time_now_to_js}})) {
+            arrayCreateGreenButtonStart.push(list_rec_end[i-1])
+            arrayCreateGreenButtonEnd.push(list_rec_start[i])
+          }
+          else if ((i != 0) && (i == (list_rec_start.length - 1)) && (list_rec_start[i] > {{time_now_to_js}})) {
+            arrayCreateGreenButtonStart.push(list_rec_end[i])
+            arrayCreateGreenButtonEnd.push({{get_int_high_time}})
+          }
+          if (i == (list_rec_start.length - 1)) {
+            arrayCreateGreenButtonStart.push(list_rec_end[i])
+            arrayCreateGreenButtonEnd.push({{get_int_high_time}})
+          }
         }
-        else if ((i != 0) && (list_rec_start[i] > 0) && (list_rec_start[i] != list_rec_end[i-1])) {
-          arrayCreateGreenButtonStart.push(list_rec_end[i-1])
-          arrayCreateGreenButtonEnd.push(list_rec_start[i])
-        }
-        if ((i == (list_rec_start.length - 1)) && (list_rec_end[i] != firstMiddleTime)) {
-          arrayCreateGreenButtonStart.push(list_rec_end[i])
-          arrayCreateGreenButtonEnd.push(firstMiddleTime)
+        else {
+          if ((i == 0) && (list_rec_start[i] > {{get_int_low_time}})) {
+            arrayCreateGreenButtonStart.push({{get_int_low_time}})
+            arrayCreateGreenButtonEnd.push(list_rec_start[i])
+          }
+          else if ((i != 0) && (list_rec_start[i] > 0) && (list_rec_start[i] != list_rec_end[i-1])) {
+            arrayCreateGreenButtonStart.push(list_rec_end[i-1])
+            arrayCreateGreenButtonEnd.push(list_rec_start[i])
+          }
+          if ((i == (list_rec_start.length - 1)) && (list_rec_end[i] != {{get_int_high_time}})) {
+            arrayCreateGreenButtonStart.push(list_rec_end[i])
+            arrayCreateGreenButtonEnd.push({{get_int_high_time}})
+          }
         }
       }
     }
     else {
       if (String(today) == String(dateNowReverse)) {
-        arrayCreateGreenButtonStart.push(Math.round(time_step(String(timeNow))))
+        arrayCreateGreenButtonStart.push({{time_now_to_js}})
         arrayCreateGreenButtonEnd.push({{get_int_high_time}})
       }
       else {
-        arrayCreateGreenButtonStart.push(0)
+        arrayCreateGreenButtonStart.push({{get_int_low_time}})
         arrayCreateGreenButtonEnd.push({{get_int_high_time}})
       }
     }
   }
   createGrenButtonClick()
-
+  
   function createEventToGreenButton () {
     const greenLine = document.querySelectorAll(".greenButton")
     for (let i=0; i<greenLine.length; i++) {
