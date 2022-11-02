@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('secret_key', default='*1+u4nm8emh@x6%^ni8e(nvzzcs7!g$+pr&t#t-cwmt$(#g7ul')
 
 DEBUG = False
-#'84.201.173.5', 'broniryu-itochka.ddns.net', 'localhost', '127.0.0.1'
+
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -120,6 +120,6 @@ EMAIL_USE_TLS = True
 
 EMAIL_PORT = 587
 
-EMAIL_HOST_USER = 'nikterekhoff42@gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 
-EMAIL_HOST_PASSWORD = 'rstsvmrocospiram'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
