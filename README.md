@@ -108,6 +108,7 @@ sudo docker compose exec web python manage.py createsuperuser
 ```bash
 sudo docker compose exec web python manage.py collectstatic --noinput
 ```
+
 ---
 ## Техническая информация
 
@@ -123,5 +124,7 @@ API фреймворк: Django REST (контейнер web)
 
 ---
 ## Об авторе
+
+Терехов Никита Алексеевич
 
 Терехов Никита Алексеевич
