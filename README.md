@@ -49,7 +49,7 @@ secret_key=<...>
 * Cоздать и активировать виртуальное окружение:
 
 ```bash
-python -m venv env
+python -m venv venv
 ```
 
 ```bash
